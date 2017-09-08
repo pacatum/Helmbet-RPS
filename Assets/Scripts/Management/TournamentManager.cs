@@ -1,0 +1,178 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Base;
+using Base.Config;
+using Base.Data;
+using Base.Data.Accounts;
+using Base.Data.Assets;
+using Base.Data.Tournaments;
+using Promises;
+using Tools;
+using UnityEngine;
+
+
+public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
+
+	public event Action<TournamentObject> OnTournamentChanged;
+    
+	Dictionary<uint, AssetObject> cacheAsset = new Dictionary<uint, AssetObject>();
+    List<TournamentObject> awaitingStartTournaments = new List<TournamentObject>();
+    public TournamentObject CurrentTournament { get; set; }
+
+
+	protected override void Awake() {
+		base.Awake();
+		Repository.OnObjectUpdate -= UpdateTournamentsHandler;
+		Repository.OnObjectUpdate += UpdateTournamentsHandler;
+	    StartCoroutine( UpdateAwaitingStartTournaments() );
+	}
+
+    public void AddAwaitingStartTournaments( TournamentObject tournament ) {
+        if ( awaitingStartTournaments.Contains( tournament ) || ((tournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2.0) ) {
+            return;
+        }
+        awaitingStartTournaments.Add( tournament );
+    }
+
+    IEnumerator UpdateAwaitingStartTournaments() {
+        while ( true ) {
+            foreach ( var tournament in awaitingStartTournaments ) {
+                if ( (tournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2.0 ) {
+                    UpdateTournaments( tournament );
+                }
+            }
+            yield return new WaitForSecondsRealtime( 1f );
+        }
+    }
+
+    void UpdateTournamentsHandler( IdObject idObject ) {
+		if ( idObject.SpaceType.Equals( SpaceType.Tournament ) ) {
+			UpdateTournaments( idObject as TournamentObject );
+		}
+	}
+
+    void UpdateTournaments( TournamentObject tournament ) {
+        if ( OnTournamentChanged != null ) {
+            OnTournamentChanged( tournament );
+        }
+        ApiManager.Instance.Database.GetTournamentDetails( tournament.Id.Id ).Then( tournamentDetails => {
+            var me = AuthorizationManager.Instance.UserData.FullAccount.Account;
+            if ( !AuthorizationManager.Instance.IsAuthorized ||
+                 !tournamentDetails.RegisteredPlayers.Contains( me.Id ) ) {
+                return;
+            }
+            if ( tournament.State.Equals( ChainTypes.TournamentState.AwaitingStart ) ) {
+				if ( tournament.StartTime.HasValue && ((tournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2.0) || tournament.Options.StartDelay.HasValue ) {
+                    awaitingStartTournaments.Remove( tournament );
+                    UIController.Instance.HidePopups();
+                    UIController.Instance.UpdateStartGamePreview( tournament );
+                }
+            }
+            if ( tournament.State.Equals( ChainTypes.TournamentState.InProgress ) ) {
+                if ( PlayerPrefs.GetInt( tournament.Id.Id.ToString() ) == 0 ) {
+                    PlayerPrefs.SetInt( tournament.Id.ToString(), 1 );
+                    if ( UIManager.Instance.CurrentState != UIManager.ScreenState.Game ) {
+                        UIController.Instance.UpdateTournamentInProgress( tournament );
+                    }
+
+                }
+            }
+        } );
+    }
+    
+    public IPromise<TournamentObject[]> LoadTournaments( uint fromId, int maxCount, uint toId ) {
+		return ApiManager.Instance.Database.GetTournaments( fromId, maxCount, toId );
+	}
+
+	public IPromise<TournamentObject> LoadTournament( uint id ) {
+		return ApiManager.Instance.Database.GetTournament( id );
+	}
+
+	public IPromise<TournamentObject[]> LoadTournamentsInState( ChainTypes.TournamentState state, int maxCount ) {
+		return ApiManager.Instance.Database.GetTournamentsInState( state, maxCount );
+	}
+
+	public IPromise<TournamentDetailsObject> GetDetailsTournamentObject( uint tournamentId ) {
+		return ApiManager.Instance.Database.GetTournamentDetails( tournamentId );
+	}
+
+	public IPromise<AssetObject> GetAssetObject( uint assetId ) {
+		return new Promise<AssetObject>( ( resolve, reject ) => {
+			if ( !cacheAsset.ContainsKey( assetId ) ) {
+				ApiManager.Instance.Database.GetAsset( assetId ).Then( result => {
+					cacheAsset.Add( assetId, result );
+					resolve( result );
+				} );
+			} else {
+				resolve( cacheAsset[ assetId ] );
+			}
+		} );
+	}
+
+	public IPromise<AssetObject[]> GetAssetsObject( uint[] assetIds ) {
+		return ApiManager.Instance.Database.GetAssets( assetIds );
+	}
+
+    public IPromise<MatchObject[]> GetMatchesPromise( uint tournamentId ) {
+		return new Promise<MatchObject[]> ( ( resolve, exeption ) => ApiManager.Instance.Database.GetTournamentDetails( tournamentId ).Then( details => {
+			ApiManager.Instance.Database.GetMatches( Array.ConvertAll( details.Matches, matche => matche.Id ) ).Then( resolve );
+		} ) );
+	}
+
+    public IPromise<TournamentDetailsObject[]> GetDetailsTournamentsObject( uint[] tournamentIds ) {
+		return ApiManager.Instance.Database.GetTournamentsDetails( tournamentIds );
+	}
+
+    public IEnumerator GetTournamentDetailsObject( uint tournamentId, List<TournamentDetailsObject> result ) {
+        List<TournamentDetailsObject> tournamentDetailList = null;
+        ApiManager.Instance.Database.GetTournamentDetails( tournamentId ).Then( details =>
+        	(tournamentDetailList = new List<TournamentDetailsObject>()).Add( details )
+		).Catch( exeption =>
+            tournamentDetailList = new List<TournamentDetailsObject>()
+        );
+        while ( tournamentDetailList == null ) {
+            yield return null;
+        }
+        result.AddRange( tournamentDetailList );
+    }
+
+    public IEnumerator GetMatcheWinnerAccountsObjects( uint tournamentId, List<AccountObject> accountWinners ) {
+		List<AccountObject> loadedAccounts = null;
+		ApiManager.Instance.Database.GetTournamentDetails( tournamentId ).Then( details => {
+			ApiManager.Instance.Database.GetMatche( details.Matches[details.Matches.Length-1].Id ).Then( matchResult => {
+				ApiManager.Instance.Database.GetAccounts( Array.ConvertAll( matchResult.MatchWinners, winner => winner.Id ) ).Then( accountResult => {
+					loadedAccounts = new List<AccountObject>( accountResult );
+				} ).Catch( exception =>
+					loadedAccounts = new List<AccountObject>()
+				);
+			} ).Catch( exception =>
+				loadedAccounts = new List<AccountObject>()
+			);
+		} ).Catch( exception =>
+			loadedAccounts = new List<AccountObject>()
+		);
+		while ( loadedAccounts == null ) {
+			yield return null;
+		}
+		if ( loadedAccounts.Count > 0 ) {
+			accountWinners.AddRange( loadedAccounts );
+		}
+	}
+    
+    public IPromise<AccountObject[]> GetMatchWinners( TournamentDetailsObject[] tournamentDetails ) {
+		return new Promise<AccountObject[]>( ( resolve, exeption ) => {
+			var lastMatchesIds = new List<uint>();
+			foreach ( var detail in tournamentDetails ) {
+				lastMatchesIds.Add( detail.Matches[ detail.Matches.Length - 1 ].Id );
+			}
+			ApiManager.Instance.Database.GetMatches( lastMatchesIds.ToArray() ).Then( matchResult => {
+				var matchWinners = new List<uint>();
+				foreach ( var match in matchResult ) {
+					matchWinners.Add( match.MatchWinners[ 0 ].Id );
+				}
+				ApiManager.Instance.Database.GetAccounts( matchWinners.ToArray() ).Then( resolve );
+			} );
+		} );
+	}
+}
