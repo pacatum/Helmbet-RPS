@@ -61,10 +61,7 @@ public class HistoryTournamentsListView : DashboardTabView {
                                 numberOfPages--;
                             }
                             tournamentsOnPages.Clear();
-                            tournamentsOnPages.AddRange( resultList.GetRange( 0,
-                                                                             Math.Min( resultList.Count,
-                                                                                      maxItemsOnPage *
-                                                                                      numberOfPages ) ) );
+							tournamentsOnPages.AddRange( filterResult.GetRange( 0, Math.Min( filterResult.Count, maxItemsOnPage * numberOfPages ) ) );
                             StartCoroutine( UpdateTable( tournamentsOnPages ) );
 
                         } else {

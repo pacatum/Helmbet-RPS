@@ -1,11 +1,10 @@
-﻿
-using System;
-using Newtonsoft.Json.Serialization;
+﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SearchView : MonoBehaviour, IDeselectHandler {
+
+public class SearchView : MonoBehaviour {
 
     public event Action<string> OnValueChange;
 
@@ -17,16 +16,11 @@ public class SearchView : MonoBehaviour, IDeselectHandler {
 
 
     void Awake() {
-
         input = GetComponent<InputField>();
         searchFilterText = input.text;
-        input.onEndEdit.AddListener( delegate {
-            Value_OnChange();
-        } );
 
         GlobalManager.Instance.OnCopyClick += Copy;
         GlobalManager.Instance.OnPasteClick += Paste;
-
     }
 
     void Value_OnChange() {
@@ -80,12 +74,6 @@ public class SearchView : MonoBehaviour, IDeselectHandler {
         }
     }
 
- 
-
-    void IDeselectHandler.OnDeselect( BaseEventData eventData ) {
-      //  gameObject.SetActive( false );
-    }
-
     public void Show() {
         gameObject.SetActive( true );
         input.OnSelect( new PointerEventData( EventSystem.current ) );
@@ -95,7 +83,5 @@ public class SearchView : MonoBehaviour, IDeselectHandler {
         if ( input != null ) {
             input.text = searchFilterText = string.Empty;
         }
-
     }
-
 }

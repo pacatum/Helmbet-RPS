@@ -38,7 +38,7 @@ public class LastRoundChoiseView : MonoBehaviour {
             resultText.text = "YOU WON";
             resultText.color = winResultTextColor;
         } else {
-            resultText.text = "YOU LOOSE";
+            resultText.text = "YOU LOSE";
             resultText.color = looseColor;
         }
         UpdateOpponentImage( opponentGesture, result );

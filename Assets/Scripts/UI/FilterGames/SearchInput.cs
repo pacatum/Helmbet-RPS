@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using Base.Data.Tournaments;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
 
 public class SearchInput : MonoBehaviour, ISelectHandler {
 
@@ -16,8 +13,8 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
 
     [SerializeField] SearchView searchInput;
 
-    void Awake() {
 
+    void Awake() {
         input = GetComponent<InputField>();
         searchInput.OnValueChange += Value_OnChange;
     }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Base.Config;
-using Base.Data;
 using Base.Data.Tournaments;
 using UnityEngine;
+
 
 public enum CursorState {
 
@@ -12,15 +11,17 @@ public enum CursorState {
 
 }
 
+
 public class UIController : SingletonMonoBehaviour<UIController> {
 
     public event Action OnDashboardButton;
     public event Action OnGamesButton;
 
     List<BaseCanvasView> allCanvases = new List<BaseCanvasView>();
+	TournamentObject currenTournamentObject;
 
-    [Header( "Cursor" )] [SerializeField] Texture2D hoverCursorTexture;
-
+    [Header( "Cursor" ), SerializeField] Texture2D hoverCursorTexture;
+	[Header( "Popups" ), SerializeField] MessagePopupView messagePopupView;
 
     [SerializeField] HeaderView headerView;
     [SerializeField] DashdoardView dashboardView;
@@ -34,10 +35,8 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     [SerializeField] TournamentDetailsView tournamentDetailsView;
     [SerializeField] GameInfoView gameInfoView;
 
-
-    [Header( "Popups" )] [SerializeField] private MessagePopupView messagePopupView;
-
     public string bufferString;
+
 
     protected override void Awake() {
         base.Awake();
@@ -65,7 +64,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         gameHeaderView.OnMinimazeButton += Header_OnDashboardClick;
         accountView.OnLogoutButton += Account_OnLogoutClick;
 
-
         UIManager.Instance.OnStateChanged += GlobalManager_Instance_OnStateChanged;
     }
 
@@ -88,37 +86,36 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     }
 
     void GlobalManager_Instance_OnStateChanged( UIManager.ScreenState state ) {
-        switch ( state ) {
-            case UIManager.ScreenState.Dashboard:
-                ShowDashboardCanvas();
-                break;
-            case UIManager.ScreenState.Settings:
-                ShowSettingsView();
-                break;
-            case UIManager.ScreenState.Login:
-                ShowLoginView();
-                break;
-            case UIManager.ScreenState.CreateNew:
-                ShowCreateNewView();
-                break;
-            case UIManager.ScreenState.Game:
-                ShowGameScreenView();
-                break;
-            case UIManager.ScreenState.Account:
-                ShowAccountView();
-                break;
-            case UIManager.ScreenState.TournamentDetails:
-                ShowTournamentDetailsView();
-                break;
-            case UIManager.ScreenState.GameStartPreview:
-                ShowGameScreenView();
-                break;
-            case UIManager.ScreenState.GameInfo:
-                ShowGameInfoView();
-                break;
-        }
-    }
-
+		switch ( state ) {
+		case UIManager.ScreenState.Dashboard:
+			ShowDashboardCanvas();
+			break;
+		case UIManager.ScreenState.Settings:
+			ShowSettingsView();
+			break;
+		case UIManager.ScreenState.Login:
+			ShowLoginView();
+			break;
+		case UIManager.ScreenState.CreateNew:
+			ShowCreateNewView();
+			break;
+		case UIManager.ScreenState.Game:
+			ShowGameScreenView();
+			break;
+		case UIManager.ScreenState.Account:
+			ShowAccountView();
+			break;
+		case UIManager.ScreenState.TournamentDetails:
+			ShowTournamentDetailsView();
+			break;
+		case UIManager.ScreenState.GameStartPreview:
+			ShowGameScreenView();
+			break;
+		case UIManager.ScreenState.GameInfo:
+			ShowGameInfoView();
+			break;
+		}
+	}
 
     void Account_OnLogoutClick() {
         AuthorizationManager.Instance.ResetAuthorization();
@@ -133,7 +130,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         }
     }
 
-
     void Header_OnAccountClick() {
         if ( accountView.IsActive ) {
             accountView.Hide();
@@ -144,10 +140,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
 
     void Header_OnSettingsClick() {
         UIManager.Instance.CurrentState = UIManager.ScreenState.Settings;
-    }
-
-    void Dashboard_OnDepositClick() {
-        UIManager.Instance.CurrentState = UIManager.ScreenState.DepositWithdraw;
     }
 
     void Dashboard_OnCreateNewClick() {
@@ -192,7 +184,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         }
     }
 
-
     void ShowTournamentDetailsView() {
         SwitchCanvas( tournamentDetailsView );
         tournamentDetailsView.ShowTournamentInfo( currenTournamentObject );
@@ -203,17 +194,15 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     }
 
     public void SwitchCursorState( CursorState state ) {
-        switch ( state ) {
-            case CursorState.Normal:
-                Cursor.SetCursor( null, Vector2.zero, CursorMode.Auto );
-                break;
-            case CursorState.Hover:
-                Cursor.SetCursor( hoverCursorTexture, Vector2.zero, CursorMode.ForceSoftware );
-                break;
-        }
-    }
-
-    private TournamentObject currenTournamentObject;
+		switch ( state ) {
+		case CursorState.Normal:
+			Cursor.SetCursor( null, Vector2.zero, CursorMode.Auto );
+			break;
+		case CursorState.Hover:
+			Cursor.SetCursor( hoverCursorTexture, Vector2.zero, CursorMode.ForceSoftware );
+			break;
+		}
+	}
 
     public void UpdateTournamentDetails( TournamentObject info ) {
         currenTournamentObject = info;
@@ -233,5 +222,4 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     public void HidePopups() {
         messagePopupView.HideAll();
     }
-
 }

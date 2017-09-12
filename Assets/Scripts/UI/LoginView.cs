@@ -45,7 +45,7 @@ public class LoginView : BaseCanvasView {
 
 
     void OpenRegistrationPageInBrowser() {
-        Application.OpenURL("https://Base.com/");
+        Application.OpenURL("https://peerplays.com/");
     }
 
     void Start() {

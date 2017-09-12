@@ -20,21 +20,27 @@ public class FilterChoiseInputView : MonoBehaviour {
         } );
     }
 
-    void OnValueEndEdit() {
-        if ( input.text == "" ) {
-            input.text = "0";
-        }
-        if ( Char.IsPunctuation( input.text[0] ) ) {
-            var tempText = "0" + input.text;
-            input.text = tempText;
-        }
-        if ( !InputText.Equals( input.text )) {
-            InputText = input.text;
-            if ( OnValueChange != null ) {
-                OnValueChange();
-            }
-        }
-    }
+	void OnValueEndEdit() {
+		if ( input.text == "" ) {
+			input.text = "0";
+		}
+		if ( Char.IsPunctuation( input.text[0] ) ) {
+			var tempText = "0" + input.text;
+			input.text = tempText;
+		}
+
+		if ( input.text.Length > 1 && input.text[0].ToString() == "0" && !Char.IsPunctuation( input.text[1] ) ) {
+			var tempText = input.text.Remove( 0, 1 );
+			input.text = tempText;
+		}
+
+		if ( !InputText.Equals( input.text )) {
+			InputText = input.text;
+			if ( OnValueChange != null ) {
+				OnValueChange();
+			}
+		}
+	}
 
     public void ChangeValue( string value ) {
         if ( input == null ) {
