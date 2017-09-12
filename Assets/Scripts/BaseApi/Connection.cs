@@ -58,7 +58,6 @@ namespace Base {
 				if ( webSocket.IsNull() || (!webSocket.ReadyState.Equals( WebSocketState.Connecting ) && !webSocket.ReadyState.Equals( WebSocketState.Open )) ) {
 					try {
 						connectionOpenEvent.Reset(); // set wait connection
-						IgnoreBadCertificates();
 						OpenWebSocket( uri );
 					} catch ( Exception ex ) {
 						Unity.Console.DebugError( "Client::Connect() Exception:", ex.Message );
@@ -257,6 +256,7 @@ namespace Base {
 					wsScheme = serverUri.Scheme.Equals( Uri.UriSchemeHttps ) ? "wss" : "ws";
 				}
 				webSocket = new WebSocket( string.Format( "{0}://{1}/ws", wsScheme, serverUri.Host ) );
+				webSocket.SslConfiguration.ServerCertificateValidationCallback = ( sender, certificate, chain, sslPolicyErrors ) => true;
 				webSocket.OnOpen += WebSocketOpened;
 				webSocket.OnClose += WebSocketClose;
 				webSocket.OnMessage += WebSocketMessageReceived;
@@ -299,18 +299,58 @@ namespace Base {
 		}
 
 		void WebSocketClose( object sender, CloseEventArgs e ) {
-			Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Reason );
+			switch ( e.Code ) {
+			case 1000:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Normal closure.", "Url:", FullUrl );
+				break;
+			case 1001:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is going away.", "Url:", FullUrl );
+				break;
+			case 1002:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is terminating the connection due to a protocol error.", "Url:", FullUrl );
+				break;
+			case 1003:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is terminating the connection because it has received a type of data it cannot accept.", "Url:", FullUrl );
+				break;
+			case 1004:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Reserved. The specific meaning might be defined in the future.", "Url:", FullUrl );
+				break;
+			case 1005:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "No status code was actually present.", "Url:", FullUrl );
+				break;
+			case 1006:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The connection was closed abnormally.", "Url:", FullUrl );
+				break;
+			case 1007:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because a message was received that contained inconsistent data.", "Url:", FullUrl );
+				break;
+			case 1008:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because it received a message that violates its policy.", "Url:", FullUrl );
+				break;
+			case 1009:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because a data frame was received that is too large.", "Url:", FullUrl );
+				break;
+			case 1010:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The client is terminating the connection because it expected the server to negotiate one or more extension, but the server didn't.", "Url:", FullUrl );
+				break;
+			case 1011:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.", "Url:", FullUrl );
+				break;
+			case 1012:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection because it is restarting.", "Url:", FullUrl );
+				break;
+			case 1013:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection due to a temporary condition.", "Url:", FullUrl );
+				break;
+			case 1015:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).", "Url:", FullUrl );
+				break;
+			default:
+				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Unknown error.", "Url:", FullUrl );
+				break;
+			}
 			receivedQueue.Enqueue( Response.Close() );
 		}
 		#endregion
-
-
-		static public void IgnoreBadCertificates() {
-			ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback( AcceptAllCertifications );
-		}
-
-		static bool AcceptAllCertifications( object sender, X509Certificate certification, X509Chain chain, SslPolicyErrors sslPolicyErrors ) {
-			return true;
-		}
 	}
 }

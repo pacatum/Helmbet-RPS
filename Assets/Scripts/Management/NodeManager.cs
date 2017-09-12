@@ -90,11 +90,13 @@ public class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		if ( host.IsNull() || (host = host.Trim()).IsNullOrEmpty() ) {
 			return false;
 		}
-		host = ConnectionManager.WSS + host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
-		if ( !Hosts.Contains( host ) ) {
+		var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
+		var scheme = parts.First();
+		host = parts.Last();
+		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
 			return false;
 		}
-		StartCoroutine( TryConnectTo( host, resultCallback ) );
+		StartCoroutine( TryConnectTo( scheme + ConnectionManager.SEPARATOR + host, resultCallback ) );
 		return true;
 	}
 
@@ -102,11 +104,13 @@ public class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		var ping = new WWW( ConnectionManager.Instance.PingUrl );
 		yield return ping;
 		if ( ping.error.IsNull() ) {
-			host = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
+			var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
+			var scheme = parts.First();
+			host = parts.Last();
 			ping = new WWW( ConnectionManager.HTTP + host );
 			yield return ping;
 			if ( ping.error.IsNull() ) {
-				host = ConnectionManager.WSS + host;
+				host = scheme + ConnectionManager.SEPARATOR + host;
 				ConnectionManager.Instance.ReconnectTo( SelecteHost = host );
 				resultCallback.Invoke( ConnectResult.Ok );
 			} else {

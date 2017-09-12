@@ -19,6 +19,7 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 
 	public const string HTTP = "http://";
 	public const string WSS = "wss://";
+	public const string WS = "ws://";
 	public const string SEPARATOR = "://";
 	public const string DOT = ".";
 
@@ -188,14 +189,16 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 	}
 
 	IEnumerator TryConnect() {
-		var url = Url.Split( new [] { SEPARATOR }, StringSplitOptions.None ).Last();
-		var request = new WWW( HTTP + url );
+		var parts = Url.Split( new [] { SEPARATOR }, StringSplitOptions.None );
+		var scheme = parts.First();
+		var host = parts.Last();
+		var request = new WWW( HTTP + host );
 		yield return request;
-		if ( request.url.Equals( HTTP + url ) && (lastServerAvaliableFlag = request.error.IsNull()) ) {
+		if ( request.url.Equals( HTTP + host ) && (lastServerAvaliableFlag = request.error.IsNull()) ) {
 			lastTryConnectTime = Time.realtimeSinceStartup;
 			connectAttempts++;
 			if ( openConnection.IsNull() ) {
-				openConnection = new Connection( WSS + url, sendFromIndividualThread );
+				openConnection = new Connection( scheme + SEPARATOR + host, sendFromIndividualThread );
 				openConnection.ConnectionOpened += ConnectionOpened;
 				openConnection.ConnectionClosed += ConnectionClosed;
 				openConnection.MessageReceived += MessageReceived;
