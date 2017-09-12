@@ -221,7 +221,7 @@ public class CreateNewView : BaseCanvasView {
 			roundDelay = 10,
 			insuranceEnabled = false,
 			timePerCommitMove = 15,
-			timePerRevealMove = 6
+			timePerRevealMove = 9
 		};
 	}
 
