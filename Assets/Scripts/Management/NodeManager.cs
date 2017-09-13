@@ -50,18 +50,21 @@ public class NodeManager : SingletonMonoBehaviour<NodeManager> {
 
 	protected override void Awake() {
 		base.Awake();
+#if UNITY_EDITOR
 		if ( resetAtStart ) {
+			ResetAll();
+		}
+#endif
+		if ( !Hosts.Contains( defaultHost ) ) {
 			ResetAll();
 		}
 		InitConnection();
 	}
 
 	void ResetAll() {
-#if UNITY_EDITOR
 		PlayerPrefs.DeleteKey( HOSTS_LIST );
 		PlayerPrefs.DeleteKey( SELECTED_HOST );
 		PlayerPrefs.Save();
-#endif
 	}
 
 	void InitConnection() {

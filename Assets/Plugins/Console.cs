@@ -89,10 +89,12 @@ namespace Unity {
 			for ( var i = 0; i < messages.Length; i++ ) {
 				((i > 0) ? builder.Append( separator ) : builder).Append( (messages[ i ] ?? "null").ToString() );
 			}
+#if UNITY_EDITOR
 			if ( builder.Length > 0 ) {
 				builder.Insert( 0, string.Format( "<color={0}>", ColorToHex( color ) ) );
 				builder.Append( "</color>" );
 			}
+#endif
 			return builder.ToString();
 		}
 
