@@ -13,6 +13,9 @@ using WebSocketSharp;
 
 public sealed class ApiManager : SingletonMonoBehaviour<ApiManager>, ISender {
 
+	public static event Action<string> OnConnectionOpened;
+	public static event Action<string> OnConnectionClosed;
+
 	public static event Action OnAllApiInitialized;
 	public static event Action<DatabaseApi> OnDatabaseApiInitialized;
 	public static event Action<NetworkBroadcastApi> OnNetworkBroadcastApiInitialized;
@@ -98,13 +101,24 @@ public sealed class ApiManager : SingletonMonoBehaviour<ApiManager>, ISender {
 
 	#region Initialization
 	void ConnectionOpened( Response response ) {
-		Unity.Console.DebugLog( "RequestManager class", Unity.Console.SetMagentaColor( "Regular Callback:" ), "ConnectionOpened()" );
+		Unity.Console.DebugLog( "ApiManager class", Unity.Console.SetMagentaColor( "Regular Callback:" ), "ConnectionOpened()" );
 		InitializeApi( LoginApi.Create( this ) );
+		response.SendResultData<string>( reason => {
+			if ( OnConnectionOpened != null ) {
+				OnConnectionOpened.Invoke( reason );
+			}
+			Unity.Console.Error( reason );
+		} );
 	}
 
 	void ConnectionClosed( Response response ) {
-		Unity.Console.DebugLog( "RequestManager class", Unity.Console.SetMagentaColor( "Regular Callback:" ), "ConnectionClosed()" );
+		Unity.Console.DebugLog( "ApiManager class", Unity.Console.SetMagentaColor( "Regular Callback:" ), "ConnectionClosed()" );
 		ResetApi();
+		response.SendResultData<string>( reason => {
+			if ( OnConnectionClosed != null ) {
+				OnConnectionClosed.Invoke( reason );
+			}
+		} );
 	}
 
 	void ResetApi() {

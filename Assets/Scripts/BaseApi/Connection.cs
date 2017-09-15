@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Base.Eventing;
 using Base.Requests;
@@ -245,7 +247,7 @@ namespace Base {
 					webSocket.OnOpen -= WebSocketOpened;
 					webSocket.OnClose -= WebSocketClose;
 					if ( webSocket.ReadyState.Equals( WebSocketState.Connecting ) || webSocket.ReadyState.Equals( WebSocketState.Open ) ) {
-						webSocket.Close();
+						webSocket.CloseAsync();
 					}
 				}
 				var wsScheme = serverUri.Scheme;
@@ -282,7 +284,7 @@ namespace Base {
 			if ( !ConnectionOpened.IsNull() ) {
 				ConnectionOpened( this );
 			}
-			receivedQueue.Enqueue( Response.Open() );
+			receivedQueue.Enqueue( Response.Open( FullUrl ) );
 		}
 
 		void WebSocketMessageReceived( object sender, MessageEventArgs e ) {
@@ -291,62 +293,66 @@ namespace Base {
 		}
 
 		void WebSocketError( object sender, ErrorEventArgs e ) {
-			Unity.Console.DebugError( "Client::WebSocketError() Exception:", Unity.Console.SetRedColor( e.Message ) );
+			Unity.Console.DebugError( "Client::WebSocketError() Exception:", Unity.Console.SetRedColor( e.Message ), e.Exception.Message );
 			Close();
 		}
 
 		void WebSocketClose( object sender, CloseEventArgs e ) {
+			var builder = new System.Text.StringBuilder();
+			builder.Append( e.Reason ).Append( ' ' ).Append( e.Code );
 			switch ( e.Code ) {
 			case 1000:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Normal closure.", "Url:", FullUrl );
+				builder.Append( " Normal closure." );
 				break;
 			case 1001:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is going away.", "Url:", FullUrl );
+				builder.Append( " An endpoint is going away." );
 				break;
 			case 1002:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is terminating the connection due to a protocol error.", "Url:", FullUrl );
+				builder.Append( " An endpoint is terminating the connection due to a protocol error." );
 				break;
 			case 1003:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "An endpoint is terminating the connection because it has received a type of data it cannot accept.", "Url:", FullUrl );
+				builder.Append( " An endpoint is terminating the connection because it has received a type of data it cannot accept." );
 				break;
 			case 1004:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Reserved. The specific meaning might be defined in the future.", "Url:", FullUrl );
+				builder.Append( " Reserved." );
 				break;
 			case 1005:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "No status code was actually present.", "Url:", FullUrl );
+				builder.Append( " No status code was actually present." );
 				break;
 			case 1006:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The connection was closed abnormally.", "Url:", FullUrl );
+				builder.Append( " The connection was closed abnormally." );
 				break;
 			case 1007:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because a message was received that contained inconsistent data.", "Url:", FullUrl );
+				builder.Append( " The endpoint is terminating the connection because a message was received that contained inconsistent data." );
 				break;
 			case 1008:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because it received a message that violates its policy.", "Url:", FullUrl );
+				builder.Append( " The endpoint is terminating the connection because it received a message that violates its policy." );
 				break;
 			case 1009:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The endpoint is terminating the connection because a data frame was received that is too large.", "Url:", FullUrl );
+				builder.Append( " The endpoint is terminating the connection because a data frame was received that is too large." );
 				break;
 			case 1010:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The client is terminating the connection because it expected the server to negotiate one or more extension, but the server didn't.", "Url:", FullUrl );
+				builder.Append( " The client is terminating the connection because it expected the server to negotiate one or more extension, but the server didn't." );
 				break;
 			case 1011:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.", "Url:", FullUrl );
+				builder.Append( " The server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request." );
 				break;
 			case 1012:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection because it is restarting.", "Url:", FullUrl );
+				builder.Append( " The server is terminating the connection because it is restarting." );
 				break;
 			case 1013:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The server is terminating the connection due to a temporary condition.", "Url:", FullUrl );
+				builder.Append( " The server is terminating the connection due to a temporary condition." );
 				break;
 			case 1015:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).", "Url:", FullUrl );
+				builder.Append( " The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified)." );
 				break;
 			default:
-				Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", e.Code, "Unknown error.", "Url:", FullUrl );
+				builder.Append( " Unknown error." );
 				break;
 			}
-			receivedQueue.Enqueue( Response.Close() );
+			builder.Append( ' ' ).Append( "Url: " ).Append( FullUrl );
+			Unity.Console.DebugWarning( "Client::WebSocketClose() Reason:", builder );
+			receivedQueue.Enqueue( Response.Close( builder.ToString() ) );
 		}
 		#endregion
 	}

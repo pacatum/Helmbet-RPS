@@ -85,12 +85,12 @@ namespace Base.Responses {
 			}
 		}
 
-		public static Response Open() {
-			return new Response( JsonConvert.SerializeObject( Result.Open() ) );
+		public static Response Open( string url ) {
+			return new Response( JsonConvert.SerializeObject( Result.Open( url ) ) );
 		}
 
-		public static Response Close() {
-			return new Response( JsonConvert.SerializeObject( Result.Close() ) );
+		public static Response Close( string reason ) {
+			return new Response( JsonConvert.SerializeObject( Result.Close( reason ) ) );
 		}
 	}
 
@@ -114,12 +114,12 @@ namespace Base.Responses {
 			return result.ToObject<T>();
 		}
 
-		public static Result Open() {
-			return new Result { id = RequestIdentificator.OPEN_ID, result = JToken.FromObject( string.Empty ) };
+		public static Result Open( string url ) {
+			return new Result { id = RequestIdentificator.OPEN_ID, result = JToken.FromObject( url ) };
 		}
 
-		public static Result Close() {
-			return new Result { id = RequestIdentificator.CLOSE_ID, result = JToken.FromObject( string.Empty ) };
+		public static Result Close( string reason ) {
+			return new Result { id = RequestIdentificator.CLOSE_ID, result = JToken.FromObject( reason ) };
 		}
 
 		public static bool IsInstance( JObject jsonObject ) {

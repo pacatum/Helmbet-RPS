@@ -194,7 +194,7 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 		var host = parts.Last();
 		var request = new WWW( HTTP + host );
 		yield return request;
-		if ( request.url.Equals( HTTP + host ) && (lastServerAvaliableFlag = request.error.IsNull()) ) {
+		if ( (lastServerAvaliableFlag = request.error.IsNull()) ) {
 			lastTryConnectTime = Time.realtimeSinceStartup;
 			connectAttempts++;
 			if ( openConnection.IsNull() ) {
@@ -208,7 +208,7 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 			}
 			openConnection.Connect();
 		} else {
-			Unity.Console.DebugError( "SocketIONetworkConnection", "PingServer()", "Host", Url, "doesn't pinging.", "Error -", request.error );
+			Unity.Console.DebugError( "ConnectionManager", "TryConnect()", "Host", Url, "doesn't pinging.", "Error -", request.error );
 		}
 		connectProcessing = false;
 	}
