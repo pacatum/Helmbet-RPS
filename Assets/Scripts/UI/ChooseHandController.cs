@@ -26,6 +26,7 @@ public class ChooseHandController : SingletonMonoBehaviour<ChooseHandController>
 	
 	
     public event Action<HandColour> OnChooseColor;
+    public event Action<HandSetting> OnUpdateHandPreview;
 
     public List<HandSetting> HandsList = new List<HandSetting>();
 
@@ -37,6 +38,13 @@ public class ChooseHandController : SingletonMonoBehaviour<ChooseHandController>
     public void SetCurrentChoosedHand( HandColour color ) {
         if ( OnChooseColor != null ) {
             OnChooseColor( color );
+        }
+    }
+
+    public void UpdateGamePreview(HandColour color) {
+        var setting = Array.Find( HandsList.ToArray(), handSetting => handSetting.ColourOfHand.Equals( color ) );
+        if ( OnUpdateHandPreview != null ) {
+            OnUpdateHandPreview( setting );
         }
     }
 }

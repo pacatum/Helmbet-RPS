@@ -52,7 +52,7 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
         currentData = data;
         gameTitleText.text = "ROCK, PAPER, SCISSORS";
         var username = AuthorizationManager.Instance.Authorization.UserNameData.UserName;
-        creatorNameText.text = username.Length > 10 ? username.Substring( 0, 10 ) + "..." : username;
+        creatorNameText.text = Utils.GetFormatedString(username); 
         numberOfPlayersText.text = data.numberOfPlayers.ToString();
         winsAmountText.text = data.numberOfWins.ToString();
         registrationDeadlineText.text = data.registrationDeadline.ToString( "MMMM dd, yyyy hh:mmtt (z)" ).ToUpper();
@@ -117,7 +117,7 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
                     .Catch( exception => JoinOperationOnDone( "There was a mistake during joining of a tournament!",
                                                              false ) );
             };
-            Repository.GetInPromise( tournament, () => ApiManager.Instance.Database.GetTournament( tournament.Id ) )
+            Repository.GetInPromise( tournament, () =>TournamentManager.Instance.LoadTournament( tournament.Id ) )
                 .Then( JoinToTournament );
         }
     }

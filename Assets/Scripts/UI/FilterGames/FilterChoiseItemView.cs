@@ -42,6 +42,11 @@ public class FilterChoiseItemView : MonoBehaviour, IPointerClickHandler {
 
     public string SelectChoise {
         get { return targetText == null ? string.Empty : targetText.text; }
+        set {
+            if ( targetText != null ) {
+                targetText.text = value;
+            }
+        }
     }
 
     public void OnPointerClick( PointerEventData eventData ) {

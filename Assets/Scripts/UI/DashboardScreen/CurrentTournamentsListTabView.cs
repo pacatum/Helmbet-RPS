@@ -11,7 +11,6 @@ using Base.Transactions.Tournaments;
 using Tools;
 using UnityEngine;
 
-
 public class CurrentTournamentsListTabView : DashboardTabView {
 
     public event Action<TournamentObject> OnPlayClick;
@@ -22,7 +21,8 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     [SerializeField] ChooseHandController chooseHandController;
 
     [SerializeField] LeaveTournamentConfirmation leaveTournamentConfirmation;
-	[SerializeField] JoinTournamentConfirmation joinTournamentConfirmation;
+    [SerializeField] JoinTournamentConfirmation joinTournamentConfirmation;
+
 
     List<SceduleTournamentItemView> sceduleItemsList = new List<SceduleTournamentItemView>();
     List<TournamentObject> tournamentsOnPages = new List<TournamentObject>();
@@ -56,10 +56,10 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     }
 
     public override void ShowTournaments() {
-		if ( gameObject.activeInHierarchy && gameObject.activeSelf ) {
-			LoadTournaments();
-		}
-	}
+        if ( gameObject.activeInHierarchy && gameObject.activeSelf ) {
+            LoadTournaments();
+        }
+    }
 
     void Item_OnPlayClick( SceduleTournamentItemView item ) {
         if ( OnPlayClick != null ) {
@@ -69,49 +69,26 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     void Item_OnCancelClick( SceduleTournamentItemView item ) {
         currentJoinItem = item;
-        leaveTournamentConfirmation.OnOperationSuccess += Item_OnCancelUpdate;
+        leaveTournamentConfirmation.OnOperationSuccess += Item_OnOperationSuccess;
         leaveTournamentConfirmation.SetUp( item.CurrentTournament );
     }
 
-    void Item_OnCancelUpdate() {
-        StartCoroutine( currentJoinItem.UpdateItem( currentJoinItem.CurrentTournament, null ) );
-        leaveTournamentConfirmation.OnOperationSuccess -= Item_OnCancelUpdate;
-		joinTournamentConfirmation.OnOperationSuccess -= Item_OnCancelUpdate;
+    void Item_OnOperationSuccess() {
+        StartCoroutine( currentJoinItem.UpdateItem( currentJoinItem.CurrentTournament) );
+        leaveTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
+        joinTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
     }
 
 
     void Item_OnJoinClick( SceduleTournamentItemView item ) {
-		currentJoinItem = item;
-		joinTournamentConfirmation.OnOperationSuccess += Item_OnCancelUpdate;
-		joinTournamentConfirmation.SetUp( item.CurrentTournament );
+        currentJoinItem = item;
+        joinTournamentConfirmation.OnOperationSuccess += Item_OnOperationSuccess;
+        joinTournamentConfirmation.SetUp( item.CurrentTournament );
+
     }
 
     private SceduleTournamentItemView currentJoinItem;
-
-   
     
-
-    IEnumerator UpdateItem( SceduleTournamentItemView item ) {
-        if ( item.IsNull() ) {
-            yield break;
-        }
-        TournamentObject tournament = null;
-        TournamentDetailsObject tournamentDetails = null;
-        TournamentManager.Instance.LoadTournament( item.CurrentTournament.Id.Id )
-            .Then( result => {
-                TournamentManager.Instance.GetDetailsTournamentObject( result.Id.Id )
-                    .Then( details => {
-                        tournamentDetails = details;
-                        tournament = result;
-                        loader.IsLoading = false;
-                    } );
-            } );
-        while ( tournament.IsNull() || tournamentDetails.IsNull() ) {
-            yield return null;
-        }
-        yield return item.UpdateItem( tournament, tournamentDetails );
-    }
-		
     void LoadTournaments() {
         loader.IsLoading = true;
         itemContainer.anchoredPosition = new Vector2( itemContainer.anchoredPosition.x, 0f );
@@ -152,29 +129,32 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                     resultList.Clear();
                                     resultList.AddRange( sortResult.Values );
 
-                                    SortBy( currentSortingType, resultList );
-                                    filterSettings.FilterTournaments( resultList, search.searchFilterText )
-                                        .Then( resultTpurnamentList => {
-                                            if ( resultTpurnamentList.Count > 0 ) {
-                                                if ( resultTpurnamentList.Count <=
-                                                     maxItemsOnPage * ( numberOfPages - 1 ) &&
-                                                     numberOfPages > 1 ) {
-                                                    numberOfPages--;
-                                                }
-                                                tournamentsOnPages.Clear();
-                                                tournamentsOnPages.AddRange( resultTpurnamentList
-                                                                                .GetRange( 0,
-                                                                                          Math
-                                                                                              .Min( maxItemsOnPage * numberOfPages,
-                                                                                                   resultTpurnamentList
-                                                                                                       .Count ) ) );
-                                                StartCoroutine( UpdateTable( tournamentsOnPages ) );
-                                            } else {
-                                                ClearTournamentsItemViewList();
-                                                loader.IsLoading = false;
-                                            }
-                                        } )
-                                        .Catch( exception => loader.IsLoading = false );
+                                    SortBy( currentSortingType, resultList )
+                                        .Then( sortedTournaments => {
+                                            filterSettings.FilterTournaments( sortedTournaments, search.searchFilterText )
+                                                .Then( resultTpurnamentList => {
+                                                    if ( resultTpurnamentList.Count > 0 ) {
+                                                        if ( resultTpurnamentList.Count <=
+                                                             maxItemsOnPage * ( numberOfPages - 1 ) &&
+                                                             numberOfPages > 1 ) {
+                                                            numberOfPages--;
+                                                        }
+                                                        tournamentsOnPages.Clear();
+                                                        tournamentsOnPages.AddRange( resultTpurnamentList
+                                                                                        .GetRange( 0,
+                                                                                                  Math
+                                                                                                      .Min( maxItemsOnPage * numberOfPages,
+                                                                                                           resultTpurnamentList
+                                                                                                               .Count ) ) );
+                                                        StartCoroutine( UpdateTable( tournamentsOnPages ) );
+                                                    } else {
+                                                        ClearTournamentsItemViewList();
+                                                        loader.IsLoading = false;
+                                                    }
+                                                } )
+                                                .Catch( exception => loader.IsLoading = false );
+                                        } );
+
                                 }
                             } )
                             .Catch( exception => loader.IsLoading = false );
@@ -195,7 +175,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                  tournament.State == ChainTypes.TournamentState.RegistrationPeriodExpired ) {
                 return;
             }
-            StartCoroutine( GetItem().UpdateItem( tournament, null ) );
+            StartCoroutine( GetItem().UpdateItem( tournament) );
         } else {
 
             if ( tournament.State == ChainTypes.TournamentState.Concluded ||
@@ -208,6 +188,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
             item.UpdateTournament( tournament );
         }
     }
+
 
     void ClearTournamentsItemViewList() {
         foreach ( var item in sceduleItemsList ) {
@@ -231,13 +212,14 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                                         );
             addPage = false;
         }
+        
+
         for ( int i = 0; i < tournamentsList.Count; i++ ) {
             var item = ( sceduleItemsList.Count <= i ) ? GetItem() : sceduleItemsList[i];
             item.gameObject.SetActive( true );
-            var details = new List<TournamentDetailsObject>();
-            yield return TournamentManager.Instance.GetTournamentDetailsObject( tournamentsList[i].Id.Id, details );
-            yield return item.UpdateItem( tournamentsList[i], details[0] );
+            yield return item.UpdateItem( tournamentsList[i]);
         }
+
         for ( int i = sceduleItemsList.Count - 1; i > tournamentsList.Count; i-- ) {
             sceduleItemsList[i].OnJoinClick -= Item_OnJoinClick;
             Destroy( sceduleItemsList[i].gameObject );

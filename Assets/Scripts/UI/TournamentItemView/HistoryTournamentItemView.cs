@@ -29,10 +29,10 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
         }
     }
 
-    public override IEnumerator UpdateItem( TournamentObject info, TournamentDetailsObject details ) {
+    public override IEnumerator UpdateItem( TournamentObject info) {
 
         var winnerAccounts = new List<AccountObject>();
-        yield return StartCoroutine( base.UpdateItem( info, details ) );
+        yield return StartCoroutine( base.UpdateItem( info) );
 
         yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( info.Id.Id, winnerAccounts );
 
@@ -40,7 +40,7 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
         resultText.CurrentResultState = TournamentResultState.Negative;
         winnerText.font = anotherPlayerWinnerFont;
 
-        Winner = winnerAccounts[0].Name.Length>7 ? winnerAccounts[0].Name.Substring(0, 10) + "..." : winnerAccounts[0].Name ;
+        Winner = Utils.GetFormatedString(winnerAccounts[0].Name, 7);
 
         if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
             winnerText.font = thisPlayerWinnerFont;

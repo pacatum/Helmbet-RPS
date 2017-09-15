@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
-public class SearchView : MonoBehaviour {
+public class SearchView : MonoBehaviour{
 
     public event Action<string> OnValueChange;
 
+    [SerializeField] Button endEditSearchButton;
     string searchFilterText;
     InputField input;
     private string selectedText;
@@ -16,11 +16,14 @@ public class SearchView : MonoBehaviour {
 
 
     void Awake() {
+
         input = GetComponent<InputField>();
         searchFilterText = input.text;
-
+        endEditSearchButton.onClick.AddListener( Value_OnChange );
         GlobalManager.Instance.OnCopyClick += Copy;
         GlobalManager.Instance.OnPasteClick += Paste;
+
+        Hide();
     }
 
     void Value_OnChange() {
@@ -30,6 +33,9 @@ public class SearchView : MonoBehaviour {
                 OnValueChange( searchFilterText );
             }
             gameObject.SetActive( false );
+            endEditSearchButton.gameObject.SetActive( false );
+        } else {
+            Hide();
         }
     }
 
@@ -76,12 +82,20 @@ public class SearchView : MonoBehaviour {
 
     public void Show() {
         gameObject.SetActive( true );
+        endEditSearchButton.gameObject.SetActive(true);
         input.OnSelect( new PointerEventData( EventSystem.current ) );
+    }
+
+    void Hide() {
+        gameObject.SetActive(false);
+        endEditSearchButton.gameObject.SetActive(false);
     }
 
     public void Clear() {
         if ( input != null ) {
             input.text = searchFilterText = string.Empty;
         }
+
     }
+
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Base.Config;
 using Base.Data.Tournaments;
 using Tools;
@@ -37,11 +36,8 @@ public class GameDashboardPreview : MonoBehaviour {
     void Update() {
         if ( tournamentAwaitingStart ) {
             var timeSpan = currentTournament.StartTime.Value - DateTime.UtcNow;
-            tournamentStartTimeText.text = "STARTS IN " + String.Format( "{0:00}", timeSpan.Minutes ) + ":" +
-                                           String.Format( "{0:00}", timeSpan.Seconds );
-
+            tournamentStartTimeText.text = "STARTS IN " + String.Format( "{0:00}", timeSpan.Minutes ) + ":" + String.Format( "{0:00}", timeSpan.Seconds );
         }
-        
     }
 
     void BackToGame() {
@@ -55,21 +51,15 @@ public class GameDashboardPreview : MonoBehaviour {
     void UpdateTournamentState( ChainTypes.TournamentState state ) {
         switch ( state ) {
             case ChainTypes.TournamentState.InProgress:
-                ApiManager.Instance.Database.GetTournamentDetails( currentTournament.Id.Id )
+                TournamentManager.Instance.GetDetailsTournamentObject( currentTournament.Id.Id )
                     .Then( details => {
                         ApiManager.Instance.Database
                             .GetMatches( Array.ConvertAll( details.Matches, match => match.Id ) )
                             .Then( matches
                                       => {
                                       var me = AuthorizationManager.Instance.UserData.FullAccount;
-                                      var matcheInProgress =
-                                          Array.Find( matches,
-                                                     match => match.Players.Contains( me.Account.Id ) && match.State ==
-                                                              ChainTypes.MatchState.InProgress );
-                                      var matcheAwatingPrevious =
-                                          Array.Find( matches,
-                                                     match => match.Players.Contains( me.Account.Id ) && match.State ==
-                                                              ChainTypes.MatchState.WaitingOnPreviousMatches );
+                                      var matcheInProgress =Array.Find( matches,match => match.Players.Contains( me.Account.Id ) && match.State.Equals(ChainTypes.MatchState.InProgress) );
+                                      var matcheAwatingPrevious =Array.Find( matches,match => match.Players.Contains( me.Account.Id ) && match.State.Equals(ChainTypes.MatchState.WaitingOnPreviousMatches ));
 
                                       if ( !matcheInProgress.IsNull() ) {
                                           tournamentStartTimeText.text = "IN PROGRESS";

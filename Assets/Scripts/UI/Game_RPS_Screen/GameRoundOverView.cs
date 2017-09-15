@@ -1,5 +1,4 @@
 using Base.Config;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -101,7 +100,6 @@ public class GameRoundOverView : MonoBehaviour {
     }
 
     public void Hide() {
-        ClearHistory();
         gameObject.SetActive( false );
     }
 

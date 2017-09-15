@@ -1,25 +1,37 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+
 
 public class ScreenLoader : MonoBehaviour {
 
-	//public event Action OnLoad;
-
 	[SerializeField] GameObject loader;
+    [SerializeField] float timeoutTimer = 30;
 	bool isLoading;
+    float currentTimeoutTimer;
 
 	public bool IsLoading {
 		get { return isLoading; }
 		set {
 			isLoading = value;
-			if( isLoading ) {
-				ShowLoader();
+		    currentTimeoutTimer = timeoutTimer;
+            if ( isLoading ) {
+                ShowLoader();
 			} else {
-				HideLoader();
+                HideLoader();
 			}
 		}
 	}
+
+
+
+    void Update() {
+        if ( isLoading ) {
+            currentTimeoutTimer -= Time.deltaTime;
+            if (currentTimeoutTimer <= 0 ) {
+                IsLoading = false;
+                currentTimeoutTimer = timeoutTimer;
+            }
+        }
+    }
 
 	public void LoadScreen(bool isLoad) {
 		IsLoading = isLoad;

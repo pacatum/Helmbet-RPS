@@ -19,6 +19,8 @@ public class LoginView : BaseCanvasView {
 
     [SerializeField] ScreenLoader loader;
 
+    [SerializeField] private string connectionURL;
+
 	List<InputFieldView> inputFields = new List<InputFieldView>();
 
 	private string username;
@@ -45,7 +47,7 @@ public class LoginView : BaseCanvasView {
 
 
     void OpenRegistrationPageInBrowser() {
-        Application.OpenURL("https://peerplays.com/");
+        Application.OpenURL(connectionURL);
     }
 
     void Start() {

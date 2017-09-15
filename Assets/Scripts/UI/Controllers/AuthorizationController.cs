@@ -43,17 +43,14 @@ public class AuthorizationController : SingletonMonoBehaviour<AuthorizationContr
 
         var me = data.UserNameData.FullAccount;
 
-        ApiManager.Instance.Database.GetAccountBalances( me.Account.Id.Id,
-                                                        Array.ConvertAll( me.Balances,
-                                                                         balance => balance.AssetType.Id ) )
-            .Then( result
-                      => {
-                      accountBalances.Clear();
-                      accountBalances.AddRange( result );
-                      if ( OnBalanceUpdate != null ) {
-                          OnBalanceUpdate();
-                      }
-                  } );
+        ApiManager.Instance.Database.GetAccountBalances( me.Account.Id.Id, Array.ConvertAll( me.Balances, balance => balance.AssetType.Id ) )
+            .Then( result => {
+                accountBalances.Clear();
+                accountBalances.AddRange( result );
+                if ( OnBalanceUpdate != null ) {
+                    OnBalanceUpdate();
+                }
+            } );
     }
 
 }

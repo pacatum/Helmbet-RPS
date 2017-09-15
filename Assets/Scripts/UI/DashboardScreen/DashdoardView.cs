@@ -15,7 +15,8 @@ public enum SortType {
     RegisterDeadline,
     Players, 
     Game,
-    Winner
+    Winner,
+    Result
 
 }
 
@@ -130,7 +131,7 @@ public class DashdoardView : BaseCanvasView {
                                                  tournament.State.Equals(ChainTypes.TournamentState.AwaitingStart) && (tournament.StartTime.Value-DateTime.UtcNow).TotalMinutes <= 2);
 
 
-        ApiManager.Instance.Database.GetTournamentsDetails( Array.ConvertAll( result, detail => detail.Id.Id ) )
+        TournamentManager.Instance.GetDetailsTournamentsObject( Array.ConvertAll( result, detail => detail.Id.Id ) )
             .Then( details
                       => {
                       var myDetails =

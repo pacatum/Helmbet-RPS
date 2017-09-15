@@ -10,7 +10,7 @@ public class ChooseHandButton : MonoBehaviour {
     public Image HandImage;
 
     ChooseHandController.HandColour handColour;
-
+    
 
     void Awake() {
         ChooseHandController.Instance.SetCurrentChoosedHand((ChooseHandController.HandColour)PlayerPrefs.GetInt("PlayerChoosedHand"));
@@ -24,6 +24,7 @@ public class ChooseHandButton : MonoBehaviour {
 
     public void ChooseNewHand() {
         ChooseHandController.Instance.SetCurrentChoosedHand( handColour );
+        ChooseHandController.Instance.UpdateGamePreview(handColour);
         SetUpFrameState( true );
 
         var otherHands = FindObjectsOfType<ChooseHandButton>();

@@ -11,7 +11,7 @@ public class GameSettingView : MonoBehaviour {
     [SerializeField] Image CurrentChoosedHand;
     [SerializeField] ChooseHandButton ChooseHandButtonPrefab;
     [SerializeField] Transform LayoutGroup;
-    private int viewIndex;
+    int viewIndex;
 
     ChooseHandController.HandSetting currentHandSetting;
     ChooseHandController.HandSetting selectedHandSetting;
@@ -21,11 +21,11 @@ public class GameSettingView : MonoBehaviour {
         applyButton.onClick.AddListener( ApplyOnClick );
         cancelButton.onClick.AddListener( Cancel_OnClick );
         ChooseHandController.Instance.OnChooseColor += SetCurrentChoosedHand;
+        ChooseHandController.Instance.OnUpdateHandPreview += UpdateHandPreview;
         var currentColor = (ChooseHandController.HandColour) PlayerPrefs.GetInt( "PlayerChoosedHand" );
-        var choosenHand =
-            ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == currentColor );
+        currentHandSetting = ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == currentColor );
         if ( playerMeshRendererHand != null ) {
-            playerMeshRendererHand.material = choosenHand.HandMaterial;
+            playerMeshRendererHand.material = currentHandSetting.HandMaterial;
         }
         gameObject.SetActive( false );
     }
@@ -33,6 +33,7 @@ public class GameSettingView : MonoBehaviour {
 
     public void Show() {
         gameObject.SetActive( true );
+        viewIndex = ChooseHandController.Instance.HandsList.IndexOf( currentHandSetting );
         ChangeViewIndex( 0 );
     }
 
@@ -42,8 +43,10 @@ public class GameSettingView : MonoBehaviour {
 
     public void SetCurrentChoosedHand( ChooseHandController.HandColour hand ) {
         selectedHandSetting = ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == hand );
-        CurrentChoosedHand.sprite = selectedHandSetting.HandPalmSprite;
+    }
 
+    public void UpdateHandPreview(ChooseHandController.HandSetting setting) {
+        CurrentChoosedHand.sprite = setting.HandPalmSprite;
     }
 
     public void ChangeViewIndex( int indexIncrement ) {
@@ -69,22 +72,17 @@ public class GameSettingView : MonoBehaviour {
 
         var handButton = Instantiate( ChooseHandButtonPrefab );
         var handStruct = ChooseHandController.Instance.HandsList[viewIndex];
-        handButton.SetUpHandButton( handStruct.HandScissorsSprite, activeHandIndex == viewIndex,
-                                   handStruct.ColourOfHand );
+        handButton.SetUpHandButton( handStruct.HandScissorsSprite, activeHandIndex == viewIndex, handStruct.ColourOfHand );
 
         var nextHandButton = Instantiate( ChooseHandButtonPrefab );
         var nextHandStruct = ChooseHandController.Instance.HandsList[nextIndex];
-        nextHandButton.SetUpHandButton( nextHandStruct.HandScissorsSprite, activeHandIndex == nextIndex,
-                                       nextHandStruct.ColourOfHand );
+        nextHandButton.SetUpHandButton( nextHandStruct.HandScissorsSprite, activeHandIndex == nextIndex, nextHandStruct.ColourOfHand );
 
         handButton.transform.SetParent( LayoutGroup.transform, false );
         nextHandButton.transform.SetParent( LayoutGroup.transform, false );
         handButton.transform.localScale = nextHandButton.transform.localScale = Vector3.one;
-        handButton.transform.localPosition = new Vector3( handButton.transform.localPosition.x,
-                                                         handButton.transform.localPosition.y, 0 );
-        nextHandButton.transform.localPosition = new Vector3( nextHandButton.transform.localPosition.x,
-                                                             nextHandButton.transform.localPosition.y, 0 );
-
+        handButton.transform.localPosition = new Vector3( handButton.transform.localPosition.x, handButton.transform.localPosition.y, 0 );
+        nextHandButton.transform.localPosition = new Vector3( nextHandButton.transform.localPosition.x, nextHandButton.transform.localPosition.y, 0 );
     }
 
     void ApplyOnClick() {

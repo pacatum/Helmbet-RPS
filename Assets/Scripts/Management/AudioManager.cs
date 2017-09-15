@@ -29,10 +29,12 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager> {
     }
 
     public void PlayWinSound() {
+        audioSource.Stop();
         audioSource.PlayOneShot( winRoundSound );
     }
 
     public void PlayLooseSound() {
+        audioSource.Stop();
         audioSource.PlayOneShot( looseRoundSound );
     }
 

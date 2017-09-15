@@ -43,22 +43,6 @@ public class JoinTournamentConfirmation : BaseCanvasView {
     }
 
     public void SetUp( TournamentObject tournament ) {
-
-        var data = new JoinToTournamentData();
-        data.tournament = tournament;
-        data.account = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
-
-        currentData = data;
-
-        gameTitleText.text = "ROCK, PAPER, SCISSORS";
-        var username = AuthorizationManager.Instance.Authorization.UserNameData.UserName;
-        creatorNameText.text = username.Length > 10 ? username.Substring( 0, 10 ) + "..." : username;
-        numberOfPlayersText.text = data.tournament.Options.NumberOfPlayers.ToString();
-        winsAmountText.text = data.tournament.Options.NumberOfWins.ToString();
-        registrationDeadlineText.text = data.tournament.Options.RegistrationDeadline
-            .ToString( "MMMM dd, yyyy hh:mmtt (z)" )
-            .ToUpper();
-
         ApiManager.Instance.Database
             .GetAccountBalances( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id,
                                 Array.ConvertAll( AuthorizationManager.Instance.UserData.FullAccount.Balances,
@@ -74,15 +58,13 @@ public class JoinTournamentConfirmation : BaseCanvasView {
 
                       var feeAsset = SpaceTypeId.CreateOne( SpaceType.GlobalProperties );
 
-                      Repository
-                          .GetInPromise<GlobalPropertiesObject>( feeAsset )
+                      Repository.GetInPromise<GlobalPropertiesObject>( feeAsset )
                           .Then( result => {
 
                               TournamentJoinOperationFeeParametersData myFee = null;
 
                               foreach ( var fee in result.Parameters.CurrentFees.Parameters ) {
                                   if ( fee != null && fee.Type == ChainTypes.FeeParameters.TournamentJoinOperation ) {
-
                                       myFee = fee as TournamentJoinOperationFeeParametersData;
                                   }
                               }
@@ -91,14 +73,22 @@ public class JoinTournamentConfirmation : BaseCanvasView {
                               currentFee = (long) myFee.Fee;
                               Repository.GetInPromise<AssetObject>( asset.Asset )
                                   .Then( assetObject => {
-                                      buyinText.text =
-                                          tournament.Options.BuyIn.Amount /
-                                          Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
-                                      feeText.text =
-                                          myFee.Fee / Math.Pow( 10, assetObject.Precision ) +
-                                          assetObject.Symbol;
-                                      gameObject.SetActive( true );
+                                      buyinText.text = tournament.Options.BuyIn.Amount / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
+                                      feeText.text = myFee.Fee / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
 
+                                      ApiManager.Instance.Database.GetAccount( tournament.Creator.Id )
+                                          .Then( creator => {
+                                              creatorNameText.text = Utils.GetFormatedString( creator.Name );
+                                              var data = new JoinToTournamentData();
+                                              data.tournament = tournament;
+                                              data.account = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
+                                              currentData = data;
+                                              gameTitleText.text = "ROCK, PAPER, SCISSORS";
+                                              numberOfPlayersText.text = data.tournament.Options.NumberOfPlayers.ToString();
+                                              winsAmountText.text = data.tournament.Options.NumberOfWins.ToString();
+                                              registrationDeadlineText.text = data.tournament.Options.RegistrationDeadline.ToString( "MMMM dd, yyyy hh:mmtt (z)" ).ToUpper();
+                                              Show();
+                                          } );
                                   } );
 
                           } );

@@ -47,13 +47,8 @@ public class BuyInSetting : SettingView {
         }
 
         ApiManager.Instance.Database
-            .GetAccountBalance( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id,
-                               selectAssetObject.Id.Id )
-            .Then( result
-                      => {
-                      SetAvailableBalanceText( ( result.Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) +
-                                               selectAssetObject.Symbol );
-                  } );
+            .GetAccountBalance( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, selectAssetObject.Id.Id )
+            .Then( result => SetAvailableBalanceText( ( result.Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + selectAssetObject.Symbol ) );
     }
 
     void SetAvailableBalanceText( string amount ) {
@@ -72,26 +67,18 @@ public class BuyInSetting : SettingView {
             return;
         }
 
-        var assetIds = new List<uint>();
-        foreach ( var balanse in data.UserNameData.FullAccount.Balances ) {
-            assetIds.Add( balanse.AssetType.Id );
-        }
-
         if ( AuthorizationController.Instance.accountBalances.Count == 0 ) {
             var options = new List<Dropdown.OptionData>();
             options.Add( new Dropdown.OptionData( "PPY" ) );
             balanceDropdown.AddOptions( options );
-            ApiManager.Instance.Database.GetAsset()
+            TournamentManager.Instance.GetAssetObject()
                 .Then( asset => {
                     selectAssetObject = asset;
                     SetAvailableBalanceText( 0 + selectAssetObject.Symbol );
                     assetsData.Add( asset );
                 } );
         } else {
-
-            ApiManager.Instance.Database
-                .GetAssets( Array.ConvertAll( AuthorizationController.Instance.accountBalances.ToArray(),
-                                             assetId => assetId.Asset.Id ) )
+            TournamentManager.Instance.GetAssetsObject( Array.ConvertAll( AuthorizationController.Instance.accountBalances.ToArray(), assetId => assetId.Asset.Id ) )
                 .Then( objects => {
                     var options = new List<Dropdown.OptionData>();
                     foreach ( var assetObject in objects ) {
@@ -100,9 +87,7 @@ public class BuyInSetting : SettingView {
                     }
                     balanceDropdown.AddOptions( options );
                     selectAssetObject = objects[0];
-                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount /
-                                               Mathf.Pow( 10, selectAssetObject.Precision ) ) +
-                                             selectAssetObject.Symbol );
+                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + selectAssetObject.Symbol );
                 } );
         }
     }

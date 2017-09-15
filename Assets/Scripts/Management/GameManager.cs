@@ -91,7 +91,7 @@ public sealed class GameManager : SingletonMonoBehaviour<GameManager> {
 	public void UpdateMetches( TournamentObject info ) {
 	    SetCurrentTournament( info.Id );
 
-        ApiManager.Instance.Database.GetTournamentDetails( info.TournamentDetails.Id ).Then( detail => {
+        TournamentManager.Instance.GetDetailsTournamentObject( info.TournamentDetails.Id ).Then( detail => {
 			ApiManager.Instance.Database.GetMatches( Array.ConvertAll( detail.Matches, match => match.Id ) ).Then( matches => {
 				var myMatch = Array.Find( matches, match => match.State.Equals( ChainTypes.MatchState.InProgress ) && match.Players.Contains( me.Id ) );
 				ApiManager.Instance.Database.GetGames( Array.ConvertAll( myMatch.Games, game => game.Id ) ).Then( games => {
@@ -138,8 +138,8 @@ public sealed class GameManager : SingletonMonoBehaviour<GameManager> {
 		if ( updatedMatch.State.Equals( ChainTypes.MatchState.WaitingOnPreviousMatches ) ) {
 			return;
 		}
-		Repository.GetInPromise( updatedMatch.Tournament, () => ApiManager.Instance.Database.GetTournament( updatedMatch.Tournament.Id ) ).Then( tournament => {
-			Repository.GetInPromise( tournament.TournamentDetails, () => ApiManager.Instance.Database.GetTournamentDetails( tournament.TournamentDetails.Id ) ).Then( tournamentDetails => {
+		Repository.GetInPromise( updatedMatch.Tournament, () => TournamentManager.Instance.LoadTournament( updatedMatch.Tournament.Id ) ).Then( tournament => {
+			Repository.GetInPromise( tournament.TournamentDetails, () => TournamentManager.Instance.GetDetailsTournamentObject( tournament.TournamentDetails.Id ) ).Then( tournamentDetails => {
 				var existTournament = IsTournamentExist( updatedMatch.Tournament );
 				var existMatch = existTournament && myTournaments[ updatedMatch.Tournament ].StartedMatches.Contains( updatedMatch.Id );
 				if ( !existTournament ) {

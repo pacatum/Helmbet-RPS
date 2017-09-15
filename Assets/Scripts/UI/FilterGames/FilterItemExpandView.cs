@@ -7,22 +7,21 @@ using UnityEngine.UI;
 public class FilterItemExpandView : MonoBehaviour {
 
     public event Action<string, string> OnSelectChoiseChange;
-    string currentChoise;
+    protected string currentChoise;
 
-    [SerializeField] Text selectChoiseText;
-    [SerializeField] Text endRangeSelectChoise;
-    [SerializeField] List<FilterChoiseItemView> items = new List<FilterChoiseItemView>();
-    [SerializeField] FilterChoiseInputView firstInput;
-    [SerializeField] FilterChoiseInputView secondInput;
-    [SerializeField] Button closeItemViewButton;
+    [SerializeField] protected Text selectChoiseText;
+    [SerializeField] protected Text endRangeSelectChoise;
+    [SerializeField] protected List<FilterChoiseItemView> items = new List<FilterChoiseItemView>();
+    [SerializeField] protected FilterChoiseInputView firstInput;
+    [SerializeField] protected FilterChoiseInputView secondInput;
+    [SerializeField] protected Button closeItemViewButton;
 
-    [SerializeField] int firstInputDefaultValue;
-    [SerializeField] int secondInputDefaultValue;
-    [SerializeField] int indexDefaultValue;
+    [SerializeField] protected int firstInputDefaultValue;
+    [SerializeField] protected int secondInputDefaultValue;
+    [SerializeField] protected int indexDefaultValue;
 
 
-    void Awake() {
-        RestoreItemValuesToDefault();
+    protected virtual void Awake() {
         closeItemViewButton.onClick.AddListener( HideExpandView );
 
         foreach ( var item in items ) {
@@ -40,6 +39,10 @@ public class FilterItemExpandView : MonoBehaviour {
 
     void HideExpandView() {
         FilterGamesController.Instance.SwitchItemView( null );
+    }
+
+    public virtual void ShowExpandView() {
+        gameObject.SetActive( true );
     }
 
     public string CurrentChoise {
@@ -131,8 +134,6 @@ public class FilterItemExpandView : MonoBehaviour {
 
             Choise_OnChanged( firstInputDefaultValue.ToString(), secondInputDefaultValue.ToString() );
         }
-        //InputsOnChanged();
-
     }
 
 }

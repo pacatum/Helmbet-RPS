@@ -58,23 +58,15 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         toGameButtom.gameObject.SetActive( false );
         liveMessageView.SetActive( false );
 
-
         switch ( currentTournament.State ) {
             case ChainTypes.TournamentState.InProgress:
                 if ( !IsPlayerJoined( tournamentDetailsObject ) ) {
                     liveMessageView.SetActive( true );
                 } else {
-                    ApiManager.Instance.Database
-                        .GetMatches( Array.ConvertAll( tournamentDetailsObject.Matches, matche => matche.Id ) )
-                        .Then( matches
-                                  => {
-
-                                  var matchesInProgress =
-                                      Array.FindAll( matches,
-                                                    match => match.State == ChainTypes.MatchState.InProgress );
-                                  var playerInMatches =
-                                      Array.FindAll( matchesInProgress,
-                                                    match => match.Players.Contains( me.FullAccount.Account.Id ) );
+                    ApiManager.Instance.Database.GetMatches( Array.ConvertAll( tournamentDetailsObject.Matches, matche => matche.Id ) )
+                        .Then( matches=> {
+                                  var matchesInProgress = Array.FindAll( matches, match => match.State == ChainTypes.MatchState.InProgress );
+                                  var playerInMatches =Array.FindAll( matchesInProgress, match => match.Players.Contains( me.FullAccount.Account.Id ) );
 
                                   if ( playerInMatches.Length == 0 ) {
                                       liveMessageView.SetActive( true );
@@ -114,8 +106,8 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
                                                       .Id );
     }
 
-    public override IEnumerator UpdateItem( TournamentObject info, TournamentDetailsObject details ) {
-        yield return StartCoroutine( base.UpdateItem( info, details ) );
+    public override IEnumerator UpdateItem( TournamentObject info) {
+        yield return StartCoroutine( base.UpdateItem( info) );
         playerRegisteredText.color = ( info.RegisteredPlayers == info.Options.NumberOfPlayers )
             ? fullPlayersColor
             : notFullPlayersColor;
@@ -126,8 +118,7 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         if ( !gameObject.activeInHierarchy || !gameObject.activeSelf ) {
             return;
         }
-
-        StartCoroutine( UpdateItem( tournament, tournamentDetailsObject ) );
+        StartCoroutine( UpdateItem( tournament) );
     }
 
 

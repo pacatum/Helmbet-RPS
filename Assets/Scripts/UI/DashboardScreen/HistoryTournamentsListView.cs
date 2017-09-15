@@ -53,6 +53,11 @@ public class HistoryTournamentsListView : DashboardTabView {
                     }
                 }
 
+                if ( resultList.Count == 0 ) {
+                    loader.IsLoading = false;
+                    return;
+                }
+
                 filterSettings.FilterTournaments( resultList, search.searchFilterText )
                     .Then( filterResult => {
 
@@ -61,15 +66,15 @@ public class HistoryTournamentsListView : DashboardTabView {
                                 numberOfPages--;
                             }
                             tournamentsOnPages.Clear();
-							tournamentsOnPages.AddRange( filterResult.GetRange( 0, Math.Min( filterResult.Count, maxItemsOnPage * numberOfPages ) ) );
+                            tournamentsOnPages.AddRange( filterResult.GetRange( 0, Math.Min( filterResult.Count, maxItemsOnPage * numberOfPages ) ) );
                             StartCoroutine( UpdateTable( tournamentsOnPages ) );
 
                         } else {
-
                             ClearTournamentsItemViewList();
                             loader.IsLoading = false;
                         }
-                    } );
+                    } )
+                    .Catch( exception =>  loader.IsLoading = false);
 
 
             } );
@@ -80,12 +85,13 @@ public class HistoryTournamentsListView : DashboardTabView {
         itemContainer.anchoredPosition = new Vector2( itemContainer.anchoredPosition.x, 0f );
         TournamentManager.Instance.LoadTournamentsInState( ChainTypes.TournamentState.Concluded, 100 )
             .Then( tournamentsResult => {
+                if ( tournamentsResult.Length > 0 ) {
+                    var tournaments = new List<TournamentObject>( tournamentsResult );
+                    SortBy( currentSortingType, tournaments ).Then( sortedTournaments => CheckUserTournaments( sortedTournaments ));
+                } else {
+                    loader.IsLoading = false;
+                }
 
-                var tournaments = new List<TournamentObject>( tournamentsResult );
-
-                SortBy( currentSortingType, tournaments );
-                CheckUserTournaments( tournaments );
-                
             } );
     }
 
@@ -102,19 +108,13 @@ public class HistoryTournamentsListView : DashboardTabView {
 
         if (numberOfPages > 1 && addPage)
         {
-            itemContainer.anchoredPosition = new Vector2(
-                                                         itemContainer.anchoredPosition.x,
-                                                         maxItemsOnPage * (numberOfPages - 1) *
-                                                         tournamentItem.GetComponent<RectTransform>().sizeDelta.y
-                                                        );
+            itemContainer.anchoredPosition = new Vector2(itemContainer.anchoredPosition.x,maxItemsOnPage * (numberOfPages - 1) * tournamentItem.GetComponent<RectTransform>().sizeDelta.y );
             addPage = false;
         }
 
         for ( int i = 0; i < tournamentsList.Count; i++ ) {
             var item = ( historyItemsList.Count <= i ) ? GetItem() : historyItemsList[i];
-            var details = new List<TournamentDetailsObject>();
-            yield return TournamentManager.Instance.GetTournamentDetailsObject( tournamentsList[i].Id.Id, details );
-            yield return item.UpdateItem( tournamentsList[i], details[0] );
+            yield return item.UpdateItem( tournamentsList[i]);
         }
 
         for ( int i = historyItemsList.Count - 1; i >= tournamentsList.Count; i-- ) {

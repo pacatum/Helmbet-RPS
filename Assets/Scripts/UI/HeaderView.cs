@@ -59,11 +59,7 @@ public class HeaderView : BaseCanvasView {
     }
 
     public void OnSetLoginUsername( string username ) {
-        if ( username.Length > 10 ) {
-            accountButton.GetComponentInChildren<Text>().text = username.Substring( 0, 10 ) + "...";
-        } else {
-            accountButton.GetComponentInChildren<Text>().text = username;
-        }
+        accountButton.GetComponentInChildren<Text>().text = Utils.GetFormatedString( username );
     }
 
     void SettingsBtn_Click() {

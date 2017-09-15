@@ -60,6 +60,6 @@ public class TournamentMatchePlayerView : MonoBehaviour {
 
 
     public void SetUsername( string username ) {
-        usernameText.text = username.Length > 10 ? username.Substring(0, 10) + "..." : username; 
+        usernameText.text = Utils.GetFormatedString(username);  
     }
 }

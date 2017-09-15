@@ -93,8 +93,7 @@ public class LastRoundChoiseView : MonoBehaviour {
                     break;
                 case Gesture.Paper:
                     playerChoiseText.text = "PAPER";
-                    playerChoiseItemBgImage.color = playerChoiseItemGesture.color =
-                        playerChoiseText.color = result == GameResult.Win ? paperColor : looseColor;
+                    playerChoiseItemBgImage.color = playerChoiseItemGesture.color = playerChoiseText.color = result == GameResult.Win ? paperColor : looseColor;
                     playerChoiseItemGesture.sprite = paperSprite;
                     break;
             }

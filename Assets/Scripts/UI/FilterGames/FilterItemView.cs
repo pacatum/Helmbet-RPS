@@ -31,7 +31,7 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
 
     public void ShowExpandItem() {
         gameObject.SetActive( false );
-        expandFilterItemview.gameObject.SetActive( true );
+        expandFilterItemview.ShowExpandView();
     }
 
     public void ShowCloseItem() {

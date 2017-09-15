@@ -128,18 +128,13 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         }
     }
 
-    public virtual IEnumerator UpdateItem( TournamentObject info, TournamentDetailsObject details ) {
+    public virtual IEnumerator UpdateItem( TournamentObject info ) {
         if ( gameObject.activeSelf && gameObject.activeInHierarchy ) {
             CurrentTournament = info;
 
-            if ( details.IsNull() ) {
-                var detailsObject = new List<TournamentDetailsObject>();
-                yield return TournamentManager.Instance.GetTournamentDetailsObject( info.Id.Id, detailsObject );
-                tournamentDetailsObject = detailsObject[0];
-            } else {
-                tournamentDetailsObject = details;
-            }
-
+            var detailsObject = new List<TournamentDetailsObject>();
+            yield return TournamentManager.Instance.GetTournamentDetailsObject( info.Id.Id, detailsObject );
+            tournamentDetailsObject = detailsObject[0];
             Game = "RPS";
             ID = "#RPS" + info.Id;
             PlayerRegistered = info.RegisteredPlayers.ToString();
@@ -150,20 +145,14 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             if ( currentAsset.IsNull() || !currentAsset.Id.Equals( currentTournament.Options.BuyIn.Asset ) ) {
                 AssetObject asset = null;
                 TournamentManager.Instance.GetAssetObject( currentTournament.Options.BuyIn.Asset.Id )
-                    .Then( assetResult =>
-                              asset = assetResult );
-
-
+                    .Then( assetResult => asset = assetResult );
                 while ( asset.IsNull() ) {
                     yield return null;
                 }
-
                 currentAsset = asset;
             }
 
-            var buyIn =
-                Decimal.Parse( ( info.Options.BuyIn.Amount / Math.Pow( 10, currentAsset.Precision ) ).ToString(),
-                              NumberStyles.Float );
+            var buyIn = Decimal.Parse( ( info.Options.BuyIn.Amount / Math.Pow( 10, currentAsset.Precision ) ).ToString(), NumberStyles.Float );
 
             BuyIn = buyIn + currentAsset.Symbol;
             Jackpot = buyIn * info.Options.NumberOfPlayers + currentAsset.Symbol;
@@ -195,7 +184,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     public void UpdateDetails( TournamentObject tournament ) {
-        StartCoroutine( UpdateItem( tournament, tournamentDetailsObject ) );
+        StartCoroutine( UpdateItem( tournament) );
     }
 
     public void OnPointerExit( PointerEventData eventData ) {
@@ -236,8 +225,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
         
         if ( tournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
-            ApiManager.Instance.Database
-                .GetMatches( Array.ConvertAll( tournamentDetailsObject.Matches, match => match.Id ) )
+            ApiManager.Instance.Database.GetMatches( Array.ConvertAll( tournamentDetailsObject.Matches, match => match.Id ) )
                 .Then( matches
                           => {
                           var matchesInProgress =
@@ -269,13 +257,4 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             }
         }
     }
-
-    //public virtual bool IsMatch( string searchText ) {
-    //    return ID.Contains( searchText ) || StartTime.Contains( searchText ) ||
-    //           RegistrationDeadline.Contains( searchText )
-    //           || BuyIn.Contains( searchText ) || Jackpot.Contains( searchText ) ||
-    //           PlayerRegistered.Contains( searchText ) || MaxPlayers.Contains( searchText )
-    //           || Game.Contains( searchText );
-    //}
-
 }
