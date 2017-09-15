@@ -107,7 +107,6 @@ public sealed class ApiManager : SingletonMonoBehaviour<ApiManager>, ISender {
 			if ( OnConnectionOpened != null ) {
 				OnConnectionOpened.Invoke( reason );
 			}
-			Unity.Console.Error( reason );
 		} );
 	}
 
