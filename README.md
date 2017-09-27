@@ -7,6 +7,8 @@
 
 - using [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json.git);
 
+- using [HtmlAgilityPack](https://github.com/zzzprojects/html-agility-pack);
+
 This is a BETA release of the HelmBet RPS application, powered by [Peerplays](https://peerplays.com) blockchain. 
 
 Note: there is know issue with wss connection to the testnet, please use ws as of now, Issue will be fixed in next version.
