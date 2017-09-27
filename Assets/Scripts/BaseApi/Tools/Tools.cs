@@ -181,6 +181,17 @@ namespace Tools {
 			return result.ToArray();
 		}
 
+		public static string FromHex2Chars( string hex ) {
+			var data = Tool.FromHex( hex );
+			var builder = new StringBuilder();
+			for ( var i = 0; i < data.Length; i++ ) {
+				if ( data[ i ] > 0 ) {
+					builder.Append( ( char )data[ i ] );
+				}
+			}
+			return builder.ToString();
+		}
+
 		public static byte[] FromBinary( string binary ) {
 			if ( binary.IsNullOrEmpty() ) {
 				throw new ArgumentException( "Binary is null or empty!" );
@@ -280,7 +291,11 @@ namespace Tools {
 		}
 
 		public static List<T> OrEmpty<T>( this List<T> l ) {
-			return l ?? new List<T>();
+			return l.Or( new List<T>() );	
+		}
+
+		public static List<T> Or<T>( this List<T> l, List<T> defaultValue ) {
+			return l ?? defaultValue;
 		}
 
 		public static bool IsNullOrEmpty( this Base.Data.SpaceTypeId sti ) {
@@ -293,7 +308,11 @@ namespace Tools {
 		}
 
 		public static string OrEmpty( this string s ) {
-			return s ?? string.Empty;
+			return s.Or( string.Empty );
+		}
+
+		public static string Or( this string s, string defaultValue ) {
+			return s ?? defaultValue;
 		}
 
 		public static string ToNullableString<T>( this T n ) where T : class {

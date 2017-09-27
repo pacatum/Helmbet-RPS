@@ -35,7 +35,7 @@ namespace Base.Data.Accounts {
 				if ( !item.IsNull() ) {
 					item.ToBuffer( b );
 				}
-			}, VoteId.CompareTo );
+			}, VoteId.Compare );
 			buffer.WriteArray( Extensions, ( b, item ) => {
 				if ( !item.IsNull() ) {
 					;

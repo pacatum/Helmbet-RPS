@@ -31,6 +31,8 @@ namespace Base.Data.Json {
 				return GameMoveOperationData.Create( value.Last as JObject );
 			case ChainTypes.Operation.ProposalCreate:
 				return ProposalCreateOperationData.Create( value.Last as JObject );
+			case ChainTypes.Operation.AssetDividendDistribution:
+				return AssetDividendDistributionOperationData.Create( value.Last as JObject );
 			default:
 				Unity.Console.Error( "Unexpected operation type:", type );
 				return null;

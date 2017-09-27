@@ -23,7 +23,7 @@ namespace Base.Api.Database {
 			} ).Then( apiId => ( HistoryApi )Init( apiId ) );
 		}
 
-		public IPromise<OperationHistoryObject[]> GetAccountHistory( uint accountId, uint fromOperationId, int maxCount, uint toOperationId ) {
+		public IPromise<OperationHistoryObject[]> GetAccountHistory( uint accountId, uint fromId, uint maxCount, uint toId ) {
 			if ( IsInitialized ) {
 				return new Promise<OperationHistoryObject[]>( ( resolve, reject ) => {
 					var debug = true;
@@ -31,11 +31,11 @@ namespace Base.Api.Database {
 					var methodName = "get_account_history";
 					var title = methodName + " " + requestId;
 					var parameters = new Parameters { Id.Value, methodName,
-						new object[] { SpaceTypeId.ToString( SpaceType.Account, accountId ), SpaceTypeId.ToString( SpaceType.OperationHistory, toOperationId ), maxCount, SpaceTypeId.ToString( SpaceType.OperationHistory, fromOperationId ) } };
+						new object[] { SpaceTypeId.ToString( SpaceType.Account, accountId ), SpaceTypeId.ToString( SpaceType.OperationHistory, fromId ), maxCount, SpaceTypeId.ToString( SpaceType.OperationHistory, toId ) } };
 					DoRequest( requestId, parameters, resolve, reject, title, debug );
 				} );
 			}
-			return Init().Then( api => api.GetAccountHistory( accountId, fromOperationId, maxCount, toOperationId ) );
+			return Init().Then( api => api.GetAccountHistory( accountId, fromId, maxCount, toId ) );
 		}
 	}
 }

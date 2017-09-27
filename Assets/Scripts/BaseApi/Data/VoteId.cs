@@ -101,7 +101,7 @@ namespace Base.Data {
 			return ( int )id - ( int )other.id;
 		}
 
-		public static int CompareTo( VoteId a, VoteId b ) {
+		public static int Compare( VoteId a, VoteId b ) {
 			return a.CompareTo( b );
 		}
 	}

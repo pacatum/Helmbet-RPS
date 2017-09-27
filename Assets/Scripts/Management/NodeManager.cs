@@ -5,7 +5,7 @@ using Tools;
 using UnityEngine;
 
 
-public class NodeManager : SingletonMonoBehaviour<NodeManager> {
+public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 
 	public enum ConnectResult {
 		

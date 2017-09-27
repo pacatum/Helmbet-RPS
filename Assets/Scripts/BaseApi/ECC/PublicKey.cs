@@ -176,7 +176,7 @@ namespace Base.ECC {
 			return string.Compare( ToAddressString(), other.ToAddressString(), StringComparison.Ordinal );
 		}
 
-		public static int CompareTo( PublicKey a, PublicKey b ) {
+		public static int Compare( PublicKey a, PublicKey b ) {
 			return a.CompareTo( b );
 		}
 

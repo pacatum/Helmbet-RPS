@@ -116,7 +116,7 @@ namespace Base.ECC {
 			if ( c.CompareTo( Curve.SecP256k1.N ) >= 0 ) {
 				throw new InvalidOperationException( "Child offset went out of bounds, try again" );
 			}
-			var derived = d.Addition( c );//.Mod( Curve.SecP256k1.N );
+			var derived = d.Addition( c );//.Modulo( Curve.SecP256k1.N );
 			if ( derived.Sign == 0 ) {
 				throw new InvalidOperationException( "Child offset derived to an invalid key, try again" );
 			}
