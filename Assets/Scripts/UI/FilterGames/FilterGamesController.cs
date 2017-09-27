@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Base.Config;
 using Base.Data;
@@ -22,6 +23,8 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
     [SerializeField] Button applyButton;
     [SerializeField] Button restoreButton;
+
+    [SerializeField] UnityEngine.GameObject buttonsContainer;
     
 
     private List<FilterItemView> items = new List<FilterItemView>();
@@ -48,6 +51,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
     void Start() {
         SwitchItemView( null );
+        SetApplyButton( false );
     }
 
     public void SwitchItemView( FilterItemView target ) {
@@ -105,7 +109,24 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
                                                                                               .Length] ) ) );
                                   } );
                     } else {
-                        var result = FilterTournaments( tournaments, assets, searchFilter,
+
+                        var myTournaments = new List<TournamentObject>();
+                        var otherTournaments = new List<TournamentObject>();
+                        var me = AuthorizationManager.Instance.UserData;
+
+                        for ( int i = 0; i < tournaments.Count; i++ ) {
+                            if ( details[i].RegisteredPlayers.Contains( me.FullAccount.Account.Id ) ) {
+                                myTournaments.Add( tournaments[i] );
+                            } else {
+                                otherTournaments.Add( tournaments[i] );
+                            }
+                        }
+
+                        var resultList = new List<TournamentObject>();
+                        resultList.AddRange( myTournaments );
+                        resultList.AddRange(otherTournaments);
+
+                        var result = FilterTournaments( resultList, assets, searchFilter,
                                                        details,
                                                        new AccountObject[details.Length] );
                         resolve( result );
@@ -136,7 +157,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
                          currency.SelectChoise.Equals( "ANY" );
 
             var gameName = game.SelectChoise.Equals( "ANY" ) ||
-                           game.SelectChoise.Equals( "ROCK, PAPER, SCISSORS " );
+                           game.SelectChoise.Equals("ROCK, PAPER, SCISSORS");
             
 
             var search = IsTournamentContains( tournaments[i], assets[i], searchFilter, accounts[i]==null? null : accounts[i] );
@@ -215,9 +236,6 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         }
         return false;
     }
-
- 
-
     
 
     void FilterRestoreValuesToDefault() {
@@ -239,7 +257,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
     }
 
     public void SetApplyButton( bool active ) {
-        applyButton.enabled = active;
+        buttonsContainer.SetActive(active);
     }
 
 }

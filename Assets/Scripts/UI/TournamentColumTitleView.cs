@@ -7,29 +7,19 @@ public class TournamentColumTitleView : MonoBehaviour {
 
     public event Action<SortType, ButtonView> OnSortChange;
 
-    [SerializeField] protected ButtonView gameIdButton;
-    [SerializeField] protected ButtonView gameNameButton;
     [SerializeField] protected ButtonView playersButton;
     [SerializeField] protected ButtonView startTimeButton;
     [SerializeField] protected ButtonView buyInButton;
-    [SerializeField] protected ButtonView jackpotButton;
     [SerializeField] protected ButtonView registerDeadlineButton;
-    [SerializeField] protected ButtonView winnerButton;
-    [SerializeField] protected ButtonView resultButton;
 
     List<ButtonView> columnButtons = new List<ButtonView>();
 
     protected virtual void Awake() {
-
-        AddButtonToList( gameIdButton );
-        AddButtonToList( gameNameButton );
+        
         AddButtonToList( playersButton );
         AddButtonToList( startTimeButton );
         AddButtonToList( buyInButton );
-        AddButtonToList( jackpotButton );
         AddButtonToList( registerDeadlineButton );
-        AddButtonToList( winnerButton );
-        AddButtonToList( resultButton );
 
         foreach ( var button in columnButtons ) {
             button.OnButtonClick += SwitchButtonState;
@@ -67,28 +57,8 @@ public class TournamentColumTitleView : MonoBehaviour {
             Sort_OnChange( SortType.BuyIn, target );
         }
 
-        if ( target.Equals( jackpotButton ) ) {
-            Sort_OnChange( SortType.Jackpot, target );
-        }
-
-        if ( target.Equals( gameNameButton ) ) {
-            Sort_OnChange( SortType.Game, target );
-        }
-
         if ( target.Equals( playersButton ) ) {
             Sort_OnChange( SortType.Players, target );
-        }
-
-        if ( target.Equals( gameIdButton ) ) {
-            Sort_OnChange( SortType.GameId, target );
-        }
-
-        if ( target.Equals( winnerButton ) ) {
-            Sort_OnChange( SortType.Winner, target );
-        }
-
-        if ( target.Equals( resultButton ) ) {
-            Sort_OnChange( SortType.Result, target );
         }
     }
 

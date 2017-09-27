@@ -37,11 +37,7 @@ public class DashdoardView : BaseCanvasView {
 
     [SerializeField] DashboardTabView currentTournamentView;
     [SerializeField] DashboardTabView historyTournamentView;
-
-    [SerializeField] GameDashboardPreview gameDashboardPreviewPrefab;
-    [SerializeField] Transform dashboardPreviewContainer;
-
-
+    
     List<DashboardTabView> views = new List<DashboardTabView>();
     List<GameDashboardPreview> dashboardPreviews = new List<GameDashboardPreview>();
     DashboardTabView currentActiveView;
@@ -54,9 +50,6 @@ public class DashdoardView : BaseCanvasView {
 
         historyTournamentsButton.onClick.AddListener( OpenHistoryTournaments );
         currentTournamentsButton.onClick.AddListener( OpenCurrentTournaments );
-
-        currentTournamentView.GetComponent<CurrentTournamentsListTabView>().OnUpdateTournaments += UpdateGamePreviews;
-        TournamentManager.Instance.OnTournamentChanged += UpdateTournament;
 
         createNewButton.onClick.AddListener( ShowCreateNewNiew );
         Clear();
@@ -112,64 +105,5 @@ public class DashdoardView : BaseCanvasView {
         CurrentActiveView.Clear();
     }
 
-    void UpdateTournament( TournamentObject tournament ) {
-        var gamePreview = Array.Find( dashboardPreviews.ToArray(),
-                                     preview => preview.CurrentTournament.Equals( tournament ) );
-        if ( gamePreview == null ) {
-            return;
-        }
-
-        if ( tournament.State.Equals(ChainTypes.TournamentState.Concluded) ) {
-            dashboardPreviews.RemoveAt( dashboardPreviews.IndexOf( gamePreview ) );
-            Destroy( gamePreview.gameObject );
-        }
-    }
-
-    void UpdateGamePreviews( List<TournamentObject> tournaments ) {
-        var result = Array.FindAll( tournaments.ToArray(),
-                                   tournament => tournament.State.Equals( ChainTypes.TournamentState.InProgress) ||
-                                                 tournament.State.Equals(ChainTypes.TournamentState.AwaitingStart) && (tournament.StartTime.Value-DateTime.UtcNow).TotalMinutes <= 2);
-
-
-        TournamentManager.Instance.GetDetailsTournamentsObject( Array.ConvertAll( result, detail => detail.Id.Id ) )
-            .Then( details
-                      => {
-                      var myDetails =
-                          Array.FindAll( details,
-                                        detail => detail.RegisteredPlayers.Contains( AuthorizationManager.Instance
-                                                                                      .UserData.FullAccount.Account
-                                                                                      .Id ) );
-
-                      
-                      var myTournaments = new List<TournamentObject>();
-                      foreach ( var detail in myDetails ) {
-                          foreach ( var tournament in result ) {
-                              if ( detail.Tournament.Equals( tournament.Id ) ) {
-                                  myTournaments.Add( tournament );
-                              }
-                          }
-                      }
-
-                      for ( int i = 0; i < myTournaments.Count; i++ ) {
-                          var item = ( dashboardPreviews.Count <= i ) ? GetItem() : dashboardPreviews[i];
-                          item.gameObject.SetActive( true );
-                          item.SetUp( myTournaments[i],
-                                     myTournaments[i].State.Equals( ChainTypes.TournamentState.AwaitingStart ) );
-                      }
-                      for ( int i = dashboardPreviews.Count - 1; i >= myTournaments.Count; i-- ) {
-                          Destroy( dashboardPreviews[i].gameObject );
-                          dashboardPreviews.RemoveAt( i );
-                      }
-
-                  } );
-    }
-
-    GameDashboardPreview GetItem() {
-        var item = Instantiate( gameDashboardPreviewPrefab );
-        item.transform.SetParent( dashboardPreviewContainer, false );
-        item.transform.SetAsFirstSibling();
-        dashboardPreviews.Add( item );
-        return item;
-    }
 
 }

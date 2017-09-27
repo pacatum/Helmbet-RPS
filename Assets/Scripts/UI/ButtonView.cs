@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,11 +18,22 @@ public class ButtonView : MonoBehaviour, IPointerClickHandler {
     [SerializeField] protected Color activeColor;
     [SerializeField] protected Color pressedColor;
     [SerializeField] protected Text targetGraphic;
+    [SerializeField] protected TextMeshProUGUI targetTextMeshProUgui;
 
     [SerializeField] protected GameObject selectLine;
 
     ButtonState currentstate;
 
+    private Color TargetGraphicColor {
+        get { return targetGraphic == null ? targetTextMeshProUgui.color : targetGraphic.color; }
+        set {
+            if ( targetGraphic != null ) {
+                targetGraphic.color = value;
+            } else {
+                targetTextMeshProUgui.color = value;
+            }
+        }
+    }
 
     public void UpdateState( ButtonState state ) {
         switch ( state ) {
@@ -33,16 +45,15 @@ public class ButtonView : MonoBehaviour, IPointerClickHandler {
                 break;
         }
     }
-
-
+    
 
     protected virtual void SetPressedState() {
-        targetGraphic.color = pressedColor;
+        TargetGraphicColor = pressedColor;
         selectLine.gameObject.SetActive(true);
     }
 
     protected virtual void SetNormalState() {
-        targetGraphic.color = activeColor;
+        TargetGraphicColor = activeColor;
         selectLine.gameObject.SetActive(false);
     }
 

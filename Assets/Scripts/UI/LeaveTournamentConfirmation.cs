@@ -9,7 +9,6 @@ using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class LeaveTournamentConfirmation : BaseCanvasView {
 
     public event Action OnOperationSuccess;

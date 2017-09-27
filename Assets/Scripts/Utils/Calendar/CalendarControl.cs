@@ -14,18 +14,16 @@ public class CalendarControl : MonoBehaviour, ISelectHandler {
     [SerializeField] Text selectYear;
 
     [SerializeField] MonthController monthController;
-
     [SerializeField] DayItemView dayItemViewPrefab;
     [SerializeField] Transform daysContainer;
-    
 
     [Header( "Month" )]
     [SerializeField] Button reduceButton;
     [SerializeField] Button increaseButton;
-
-
+    
     DateTime selectDate;
     List<DayItemView> dayItems = new List<DayItemView>();
+    SetItemToDefaultByEscape setItemToDefaultByEscape;
 
     public DateTime ValidateDateTime { get; set; }
 
@@ -41,11 +39,16 @@ public class CalendarControl : MonoBehaviour, ISelectHandler {
         get { return selectYear.text; }
     }
 
+    private SetItemToDefaultByEscape SetItemToDefaultComponent {
+        get { return setItemToDefaultByEscape == null ? setItemToDefaultByEscape = GetComponent<SetItemToDefaultByEscape>() : setItemToDefaultByEscape; }
+    }
+
     void Awake() {
         selectDate = DateTime.UtcNow;
         UpdateDatetime();
         reduceButton.onClick.AddListener(ReduceMonth);
         increaseButton.onClick.AddListener(IncreaseMonth);
+        SetItemToDefaultComponent.OnEscapeClick += CloseCalendar;
     }
 
     public void DrawCalendar() {
@@ -86,7 +89,6 @@ public class CalendarControl : MonoBehaviour, ISelectHandler {
 
         DrawCalendar();
     }
-    
 
     void DateOnChanged() {
         if ( OnDateChanged != null ) {
@@ -95,6 +97,10 @@ public class CalendarControl : MonoBehaviour, ISelectHandler {
     }
 
     public void OnSelect( BaseEventData eventData ) {
+        CloseCalendar();
+    }
+
+    void CloseCalendar() {
         if ( OnCloseCalendar != null ) {
             OnCloseCalendar( false );
         }

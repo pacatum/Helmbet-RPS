@@ -4,8 +4,8 @@ timeCreated: 1498739788
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4
-  fontSize: 16
-  forceTextureCase: -2
+  fontSize: 22
+  forceTextureCase: -1
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
@@ -14,8 +14,8 @@ TrueTypeFontImporter:
   - Proxima Nova
   fallbackFontReferences:
   - {fileID: 12800000, guid: 49510ca5c5aecb245ab63e68172bb881, type: 3}
-  customCharacters: 
-  fontRenderingMode: 0
+  customCharacters: A
+  fontRenderingMode: 1
   ascentCalculationMode: 1
   userData: 
   assetBundleName: 

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Base.Data.Tournaments;
 using UnityEngine;
 using UnityEngine.UI;
-using Base.Config;
 
 public class FindTournamentItemView : BaseTournamentItemView {
 

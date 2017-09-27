@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 7aee8e7c365031e4bbd1ac92ea91dda1
-timeCreated: 1504708449
+timeCreated: 1505978856
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -10,10 +10,13 @@ TextureImporter:
     21300006: game_info_button_icons_3
     21300008: game_info_button_icons_4
     21300010: game_info_button_icons_5
+    21300012: game_info_button_icons_6
+    21300014: game_info_button_icons_7
+    21300016: game_info_button_icons_8
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -34,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: -1
+    aniso: 16
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
@@ -59,7 +62,7 @@ TextureImporter:
   - buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -67,7 +70,7 @@ TextureImporter:
   - buildTarget: Standalone
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -75,7 +78,7 @@ TextureImporter:
   - buildTarget: iPhone
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -83,7 +86,7 @@ TextureImporter:
   - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -95,12 +98,12 @@ TextureImporter:
       name: game_info_button_icons_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 297
-        width: 25
-        height: 26
+        x: 5
+        y: 594
+        width: 50
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -108,12 +111,12 @@ TextureImporter:
       name: game_info_button_icons_1
       rect:
         serializedVersion: 2
-        x: 3
-        y: 236
-        width: 25
-        height: 30
+        x: 5
+        y: 470
+        width: 50
+        height: 61
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -121,12 +124,12 @@ TextureImporter:
       name: game_info_button_icons_2
       rect:
         serializedVersion: 2
-        x: 3
-        y: 166
-        width: 25
-        height: 26
+        x: 5
+        y: 331
+        width: 50
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -134,12 +137,12 @@ TextureImporter:
       name: game_info_button_icons_3
       rect:
         serializedVersion: 2
-        x: 3
-        y: 101
-        width: 25
-        height: 29
+        x: 5
+        y: 202
+        width: 50
+        height: 57
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -148,29 +151,29 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 49
-        width: 31
-        height: 26
+        y: 0
+        width: 61
+        height: 61
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: game_info_button_icons_5
+      name: game_info_button_icons_6
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 30
-        height: 30
+        y: 90
+        width: 61
+        height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     outline: []
-  spritePackingTag: 
+  spritePackingTag: ui
   userData: 
   assetBundleName: 
   assetBundleVariant: 

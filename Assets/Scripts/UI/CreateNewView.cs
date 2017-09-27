@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Base.Data;
-using Base.Data.Operations;
-using Base.Data.Tournaments;
 using Base.Transactions.Tournaments;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +11,8 @@ public class CreateNewView : BaseCanvasView {
     public event Action OnGameInfoClick;
 
     [SerializeField] Button cancelButton;
-    [SerializeField] Button gameInfoButton;
+    [SerializeField] Button gameMinInfoButton;
+    [SerializeField] Button gameMaxInfoButton;
     [SerializeField] LoginButtonView createAndJoinButton;
     [SerializeField] LoginButtonView createButton;
 
@@ -102,7 +101,8 @@ public class CreateNewView : BaseCanvasView {
         numberOfPlayers.OnStateChanged += SwitchSettingState;
         buyInSetting.OnStateChanged += SwitchSettingState;
 
-        gameInfoButton.onClick.AddListener( OpenGameInfoView );
+        gameMaxInfoButton.onClick.AddListener( OpenGameInfoView );
+        gameMinInfoButton.onClick.AddListener(OpenGameInfoView);
 
         foreach ( var setting in settingsView ) {
             setting.OnValidateChange += SettingsViewValidate_OnChange;
@@ -221,7 +221,7 @@ public class CreateNewView : BaseCanvasView {
 			roundDelay = 10,
 			insuranceEnabled = false,
 			timePerCommitMove = 15,
-			timePerRevealMove = 9
+			timePerRevealMove = 6
 		};
 	}
 

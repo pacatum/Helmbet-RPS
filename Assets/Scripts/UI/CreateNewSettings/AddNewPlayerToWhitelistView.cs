@@ -18,10 +18,15 @@ public class AddNewPlayerToWhitelistView : MonoBehaviour {
 
 
     List<WhiteListUserView> userGameObjects = new List<WhiteListUserView>();
+    SetItemToDefaultByEscape setItemToDefaultByEscape;
 
+    private SetItemToDefaultByEscape SetItemToDefaultComponent {
+        get { return setItemToDefaultByEscape == null ? setItemToDefaultByEscape = GetComponent<SetItemToDefaultByEscape>() : setItemToDefaultByEscape; }
+    }
 
     void Awake() {
         input.onValueChanged.AddListener( delegate {OnValue_Changed();});
+        SetItemToDefaultComponent.OnEscapeClick += Hide;
         Hide();
     }
 

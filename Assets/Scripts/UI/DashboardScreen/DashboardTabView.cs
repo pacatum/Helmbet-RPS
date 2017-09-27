@@ -23,16 +23,19 @@ public class DashboardTabView : BaseCanvasView {
     [SerializeField] protected SearchInput search;
     [SerializeField] protected Button showMoreButton;
 
-   protected SortOrder currentSortOrder = SortOrder.Ascending;
-   protected SortType currentSortingType = SortType.RegisterDeadline;
-    
+    [SerializeField] protected DynamicGrid grid;
+
+    protected SortOrder currentSortOrder = SortOrder.Ascending;
+    protected SortType currentSortingType = SortType.RegisterDeadline;
     protected ButtonView currentSortButtonView;
 
     public override void Awake() {
         base.Awake();
         tournamentColumn.OnSortChange += SortingChange;
         currentSortOrder = SortOrder.Descending;
+        currentSortingType = SortType.RegisterDeadline;
     }
+
     public void Clear() {
         filterSettings.Restore();
         search.ClearInput();
@@ -40,16 +43,16 @@ public class DashboardTabView : BaseCanvasView {
 
     public override void Show() {
         base.Show();
-        if ( gameObject.activeSelf && gameObject.activeInHierarchy) {
+        if ( gameObject.activeSelf && gameObject.activeInHierarchy ) {
             ShowTournaments();
         }
     }
-    
+
     public virtual void ShowTournaments() {
     }
 
     protected virtual void AddPage() {
-       
+
     }
 
     #region Sorting
@@ -58,10 +61,10 @@ public class DashboardTabView : BaseCanvasView {
         get { return currentSortingType; }
         set {
             if ( currentSortingType == value ) {
-                currentSortOrder = currentSortOrder.Equals(SortOrder.Ascending) ? SortOrder.Descending : currentSortOrder = SortOrder.Ascending;
+                currentSortOrder = currentSortOrder.Equals( SortOrder.Ascending ) ? SortOrder.Descending : currentSortOrder = SortOrder.Ascending;
             }
             currentSortingType = value;
-            currentSortButtonView.GetComponent<SortingArrow>().SetArrowSprite(currentSortOrder);
+            currentSortButtonView.GetComponent<SortingArrow>().SetArrowSprite( currentSortOrder );
             ShowTournaments();
         }
     }
@@ -76,7 +79,7 @@ public class DashboardTabView : BaseCanvasView {
         List<TournamentObject> result = new List<TournamentObject>();
         if ( type.Equals( SortType.Result ) || type.Equals( SortType.Winner ) ) {
             return new Promise<List<TournamentObject>>( ( action, exeption ) => {
-               TournamentManager.Instance.GetDetailsTournamentsObject( Array.ConvertAll( tournamentList.ToArray(), detail => detail.Id.Id ) )
+                TournamentManager.Instance.GetDetailsTournamentsObject( Array.ConvertAll( tournamentList.ToArray(), detail => detail.Id.Id ) )
                     .Then( tournamentDetails => {
                         ApiManager.Instance.Database.GetMatches( Array.ConvertAll( tournamentDetails, matche => matche.Matches[matche.Matches.Length - 1].Id ) )
                             .Then( lastMatches => {

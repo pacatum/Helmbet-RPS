@@ -107,7 +107,7 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
                     .Then( operation => {
                         TournamentTransactionService.JoinToTournament( operation )
                             .Then( () => {
-                                JoinOperationOnDone( "Your tournament was successfully created&joined!", true );
+                                JoinOperationOnDone( "Your tournament was successfully created & joined!", true );
                             } )
                             .Catch( exception => {
                                 JoinOperationOnDone( "Your tournament was successfully created, but not joined!",

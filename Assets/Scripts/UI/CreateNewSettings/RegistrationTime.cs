@@ -9,12 +9,11 @@ public class RegistrationTime : SettingView {
     [SerializeField] SettingsFieldsView minuteFiledView;
     [SerializeField] SettingsFieldsView secondFiledView;
 
-    private CreateNewView createNewView;
+    [SerializeField] CreateNewView createNewView;
 
 
     protected override void Awake() {
         base.Awake();
-        createNewView = FindObjectOfType<CreateNewView>();
         settingsFieldsViews.Add( hourFiledView );
         settingsFieldsViews.Add( minuteFiledView );
         settingsFieldsViews.Add( secondFiledView );

@@ -1,14 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Base;
 using Base.Config;
-using Base.Data;
-using Base.Data.Operations.Fee;
-using Base.Data.Properties;
 using Base.Data.Tournaments;
-using Base.Transactions.Tournaments;
-using Tools;
 using UnityEngine;
 
 public class CurrentTournamentsListTabView : DashboardTabView {
@@ -23,10 +17,8 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     [SerializeField] LeaveTournamentConfirmation leaveTournamentConfirmation;
     [SerializeField] JoinTournamentConfirmation joinTournamentConfirmation;
 
-
     List<SceduleTournamentItemView> sceduleItemsList = new List<SceduleTournamentItemView>();
     List<TournamentObject> tournamentsOnPages = new List<TournamentObject>();
-
 
     protected int maxItemsOnPage;
     protected int numberOfPages;
@@ -43,15 +35,28 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     }
 
-    protected void Start() {
-        maxItemsOnPage = Convert.ToInt32( maxSizeContainer.rect.height /
-                                          tournamentItem.GetComponent<RectTransform>().rect.height );
+    void OnRectTransformDimensionsChange() {
+        if ( !CalculateMaxItemOnPage() ) {
+            LoadTournaments();
+        }
     }
 
+    protected void Start() {
+       CalculateMaxItemOnPage();
+    }
+
+    bool CalculateMaxItemOnPage() {
+        grid.ResizeGrid();
+        var newMaxitems = grid.ColumnCount * grid.RowCount;
+        if ( newMaxitems != maxItemsOnPage ) {
+            maxItemsOnPage = newMaxitems-1;
+            return false;
+        }
+        return true;
+    }
 
     public override void Hide() {
         loader.IsLoading = false;
-        ClearTournamentsItemViewList();
         base.Hide();
     }
 
@@ -88,8 +93,11 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     }
 
     private SceduleTournamentItemView currentJoinItem;
-    
+
     void LoadTournaments() {
+        if ( !gameObject.activeInHierarchy || !gameObject.activeSelf ) {
+            return;
+        }
         loader.IsLoading = true;
         itemContainer.anchoredPosition = new Vector2( itemContainer.anchoredPosition.x, 0f );
         TournamentManager.Instance.LoadTournamentsInState( ChainTypes.TournamentState.AcceptingRegistrations, 50 )
@@ -139,13 +147,11 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                                              numberOfPages > 1 ) {
                                                             numberOfPages--;
                                                         }
+
+                                                        showMoreButton.gameObject.SetActive( resultTpurnamentList.Count > maxItemsOnPage * numberOfPages );
                                                         tournamentsOnPages.Clear();
-                                                        tournamentsOnPages.AddRange( resultTpurnamentList
-                                                                                        .GetRange( 0,
-                                                                                                  Math
-                                                                                                      .Min( maxItemsOnPage * numberOfPages,
-                                                                                                           resultTpurnamentList
-                                                                                                               .Count ) ) );
+
+                                                        tournamentsOnPages.AddRange( resultTpurnamentList.GetRange( 0, Mathf.Min( resultTpurnamentList.Count, maxItemsOnPage * numberOfPages ) ) );
                                                         StartCoroutine( UpdateTable( tournamentsOnPages ) );
                                                     } else {
                                                         ClearTournamentsItemViewList();
@@ -154,7 +160,6 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                                 } )
                                                 .Catch( exception => loader.IsLoading = false );
                                         } );
-
                                 }
                             } )
                             .Catch( exception => loader.IsLoading = false );
@@ -199,28 +204,24 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     }
 
     IEnumerator UpdateTable( List<TournamentObject> tournamentsList ) {
-        if ( !gameObject.activeInHierarchy || tournamentsList.Count == 0 ) {
+        if ( !gameObject.activeInHierarchy || tournamentsList.Count == 0 || !gameObject.activeSelf) {
             loader.IsLoading = false;
             yield break;
-        }
-
-        if ( numberOfPages > 1 && addPage ) {
-            itemContainer.anchoredPosition = new Vector2(
-                                                         itemContainer.anchoredPosition.x,
-                                                         maxItemsOnPage * ( numberOfPages - 1 ) *
-                                                         tournamentItem.GetComponent<RectTransform>().sizeDelta.y
-                                                        );
-            addPage = false;
         }
         
 
         for ( int i = 0; i < tournamentsList.Count; i++ ) {
             var item = ( sceduleItemsList.Count <= i ) ? GetItem() : sceduleItemsList[i];
             item.gameObject.SetActive( true );
-            yield return item.UpdateItem( tournamentsList[i]);
+            yield return item.UpdateItem( tournamentsList[i] );
         }
 
-        for ( int i = sceduleItemsList.Count - 1; i > tournamentsList.Count; i-- ) {
+        if ( numberOfPages > 1 && addPage ) {
+            itemContainer.anchoredPosition = new Vector2(itemContainer.anchoredPosition.x,sceduleItemsList.Count*tournamentItem.GetComponent<RectTransform>().sizeDelta.y);
+            addPage = false;
+        }
+
+        for ( int i = sceduleItemsList.Count - 1; i >= tournamentsList.Count; i-- ) {
             sceduleItemsList[i].OnJoinClick -= Item_OnJoinClick;
             Destroy( sceduleItemsList[i].gameObject );
             sceduleItemsList.RemoveAt( i );

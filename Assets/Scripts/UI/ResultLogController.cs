@@ -5,11 +5,11 @@ using Gesture = Base.Config.ChainTypes.RockPaperScissorsGesture;
 
 public class ResultLogController : MonoBehaviour {
 
-	[SerializeField] Transform thisPlayerStepsContainer;
-	[SerializeField] Transform anotherPlayerStepsContainer;
-	[SerializeField] GameButtonView stepPrefab;
-	[SerializeField] GameButtonView opponentStepPrefab;
-	[SerializeField] RoundItemView roundIreItemViewPrefab;
+    [SerializeField] Transform thisPlayerStepsContainer;
+    [SerializeField] Transform anotherPlayerStepsContainer;
+    [SerializeField] GameButtonView stepPrefab;
+    [SerializeField] GameButtonView opponentStepPrefab;
+    [SerializeField] RoundItemView roundIreItemViewPrefab;
 
     List<GameButtonView> steps = new List<GameButtonView>();
     List<RoundItemView> roundItemViews = new List<RoundItemView>();
@@ -25,7 +25,7 @@ public class ResultLogController : MonoBehaviour {
         thisPlayerStep.SetStep( roundNumber, thisPlayerChoise );
         thisPlayerStep.transform.SetParent( thisPlayerStepsContainer, false );
 
-		var anotherPlayerStep = Instantiate( opponentStepPrefab );
+        var anotherPlayerStep = Instantiate(opponentStepPrefab);
         anotherPlayerStep.SetStep( roundNumber, anotherPlayerChoise );
         anotherPlayerStep.transform.SetParent( anotherPlayerStepsContainer, false );
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Base.Config;
-using Base.Data;
 using Base.Data.Tournaments;
 using UnityEngine;
 
@@ -33,6 +31,7 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     [SerializeField] AccountView accountView;
     [SerializeField] TournamentDetailsView tournamentDetailsView;
     [SerializeField] GameInfoView gameInfoView;
+    [SerializeField] NoticesView noticesView;
 
     private TournamentObject currenTournamentObject;
     [Header( "Popups" ), SerializeField] private MessagePopupView messagePopupView;
@@ -50,6 +49,7 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         allCanvases.Add( tournamentDetailsView );
         allCanvases.Add( gameInfoView );
         allCanvases.Add( accountView );
+        allCanvases.Add( noticesView );
 
         createNewView.OnGameInfoClick += GameInfo_OnClick;
 
@@ -57,6 +57,7 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         headerView.OnGamesClick += GameInfo_OnClick;
         headerView.OnSettingsClick += Header_OnSettingsClick;
         headerView.OnAccountClick += Header_OnAccountClick;
+        headerView.OnNoticeClick += Header_OnNoticesClick;
 
         loginView.OnLoginClick += Header_OnDashboardClick;
         loginView.OnLoginDone += headerView.OnSetLoginUsername;
@@ -117,6 +118,9 @@ public class UIController : SingletonMonoBehaviour<UIController> {
             case UIManager.ScreenState.GameInfo:
                 ShowGameInfoView();
                 break;
+            case UIManager.ScreenState.Notices:
+                ShowNoticesView();
+                break;
         }
     }
 
@@ -141,6 +145,10 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         } else {
             accountView.Show();
         }
+    }
+
+    void Header_OnNoticesClick() {
+        UIManager.Instance.CurrentState = UIManager.ScreenState.Notices;
     }
 
     void Header_OnSettingsClick() {
@@ -175,11 +183,24 @@ public class UIController : SingletonMonoBehaviour<UIController> {
 
     void ShowGameInfoView() {
         SwitchCanvas( gameInfoView );
+        if ( OnGamesButton != null ) {
+            OnGamesButton();
+        }
     }
 
     void ShowSettingsView() {
         settingsView.Show();
+        if ( accountView.IsActive ) {
+            accountView.Hide();
+        }
         settingsView.CurrentState = SettingsView.SettingsState.General;
+    }
+
+    void ShowNoticesView() {
+        noticesView.Show();
+        if ( accountView.IsActive ) {
+            accountView.Hide();
+        }
     }
 
     void ShowCreateNewView() {

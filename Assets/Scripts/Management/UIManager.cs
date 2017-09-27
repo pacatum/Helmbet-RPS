@@ -16,7 +16,8 @@ public class UIManager : SingletonMonoBehaviour<UIManager> {
         Account /*             */ = 7,
         TournamentDetails /*   */ = 8,
         GameStartPreview /*    */ = 9,
-        GameInfo = 10
+        GameInfo/*             */ = 10,
+        Notices/*              */ = 11
 
     }
 

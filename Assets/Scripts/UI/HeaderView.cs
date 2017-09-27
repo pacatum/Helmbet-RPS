@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ public class HeaderView : BaseCanvasView {
     public event Action OnSettingsClick;
 
     public event Action OnAccountClick;
-    //public event Action OnNoticeClick;
+    public event Action OnNoticeClick;
 
     [SerializeField] ButtonView settingsBtn;
     [SerializeField] ButtonView dashboardBtn;
@@ -19,6 +20,7 @@ public class HeaderView : BaseCanvasView {
     [SerializeField] ButtonView helpButton;
     [SerializeField] ButtonView noticeButton;
     [SerializeField] Button accountButton;
+
 
     List<ButtonView> allHeaderButtons = new List<ButtonView>();
 
@@ -28,11 +30,12 @@ public class HeaderView : BaseCanvasView {
         gamesBtn.GetComponent<Button>().onClick.AddListener( GamesBtn_Click );
         settingsBtn.GetComponent<Button>().onClick.AddListener( SettingsBtn_Click );
         accountButton.onClick.AddListener( AccountBtn_Click );
+        noticeButton.GetComponent<Button>().onClick.AddListener( NoticesBtn_Click );
 
         allHeaderButtons.Add( gamesBtn );
         allHeaderButtons.Add( dashboardBtn );
         allHeaderButtons.Add( settingsBtn );
-        allHeaderButtons.Add( helpButton );
+       // allHeaderButtons.Add( helpButton );
         allHeaderButtons.Add( noticeButton );
 
         UIController.Instance.OnDashboardButton += ShowDashboardBtn;
@@ -77,6 +80,12 @@ public class HeaderView : BaseCanvasView {
     void GamesBtn_Click() {
         if ( OnGamesClick != null ) {
             OnGamesClick();
+        }
+    }
+
+    void NoticesBtn_Click() {
+        if ( OnNoticeClick != null ) {
+            OnNoticeClick();
         }
     }
 

@@ -25,7 +25,7 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
     protected override void UpdateStartTime() {
         if ( currentTournament.StartTime.HasValue ) {
             DateTime time = currentTournament.StartTime.Value.ToLocalTime();
-            StartTime = time.ToString( "ddMMM, yyyy. HH:mm tt" );
+            //StartTime = time.ToString( "ddMMM, yyyy. HH:mm tt" );
         }
     }
 
@@ -36,21 +36,23 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
 
         yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( info.Id.Id, winnerAccounts );
 
-        resultText.ResultText = "-" + buyInText.text;
-        resultText.CurrentResultState = TournamentResultState.Negative;
-        winnerText.font = anotherPlayerWinnerFont;
+        //resultText.ResultText = "-" + buyInText.text;
+        //resultText.CurrentResultState = TournamentResultState.Negative;
+        //winnerText.font = anotherPlayerWinnerFont;
 
-        Winner = Utils.GetFormatedString(winnerAccounts[0].Name, 7);
+        //Winner = Utils.GetFormatedString(winnerAccounts[0].Name, 7);
 
-        if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
-            winnerText.font = thisPlayerWinnerFont;
-            resultText.ResultText =
-                Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount ) /
-                                                 Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
-            resultText.CurrentResultState = TournamentResultState.Positive;
-        }
-
+        //if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
+        //    winnerText.font = thisPlayerWinnerFont;
+        //    resultText.ResultText =
+        //        Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount ) /
+        //                                         Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
+        //    resultText.CurrentResultState = TournamentResultState.Positive;
+        //}
     }
 
+    protected override void UpdateActions() {
+        footerView.SetUp( currentTournament, tournamentDetailsObject );
+    }
 
 }

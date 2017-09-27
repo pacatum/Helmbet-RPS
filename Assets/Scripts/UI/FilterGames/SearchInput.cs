@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
 public class SearchInput : MonoBehaviour, ISelectHandler {
 
     public event Action OnValueChange;
@@ -13,8 +12,8 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
 
     [SerializeField] SearchView searchInput;
 
-
     void Awake() {
+
         input = GetComponent<InputField>();
         searchInput.OnValueChange += Value_OnChange;
     }

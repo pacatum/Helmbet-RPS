@@ -22,10 +22,6 @@ public class GlobalManager : SingletonMonoBehaviour<GlobalManager> {
     }
 
     void Update() {
-        if ( Input.GetKeyUp( KeyCode.Escape ) ) {
-            Application.Quit();
-        }
-
         if ( Input.GetMouseButtonUp( 0 ) ) {
             copypasteController.Hide();
         }

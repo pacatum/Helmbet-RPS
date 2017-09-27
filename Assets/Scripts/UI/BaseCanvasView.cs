@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Base.Data.Tournaments;
+﻿using System.Collections;
 using UnityEngine;
 
 public enum FilterType {
