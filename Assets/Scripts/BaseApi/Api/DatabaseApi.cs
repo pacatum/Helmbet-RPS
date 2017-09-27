@@ -92,7 +92,7 @@ namespace Base.Api.Database {
 			return Init().Then( api => api.GetBlock( blockNumber ) );
 		}
 
-		public IPromise<TournamentObject[]> GetTournaments( uint fromId, int maxCount, uint toId ) {
+		public IPromise<TournamentObject[]> GetTournaments( uint fromId, uint maxCount, uint toId ) {
 			if ( IsInitialized ) {
 				return new Promise<TournamentObject[]>( ( resolve, reject ) => {
 					var debug = true;
@@ -107,7 +107,7 @@ namespace Base.Api.Database {
 			return Init().Then( api => api.GetTournaments( fromId, maxCount, toId ) );
 		}
 
-		public IPromise<TournamentObject[]> GetTournamentsInState( ChainTypes.TournamentState state, int maxCount ) {
+		public IPromise<TournamentObject[]> GetTournamentsInState( ChainTypes.TournamentState state, uint maxCount ) {
 			if ( IsInitialized ) {
 				return new Promise<TournamentObject[]>( ( resolve, reject ) => {
 					var debug = true;
@@ -136,7 +136,7 @@ namespace Base.Api.Database {
 		}
 
 		public IPromise<T> GetObject<T>( SpaceTypeId objectId ) {
-			return GetObjects<T>( new SpaceTypeId[] { objectId } ).Then( objects => objects.IsNullOrEmpty() ? default( T ) : objects[ 0 ] );
+			return GetObjects<T>( new [] { objectId } ).Then( objects => objects.IsNullOrEmpty() ? default( T ) : objects[ 0 ] );
 		}
 
 		public IPromise<TournamentObject> GetTournament( uint id ) {
@@ -198,10 +198,10 @@ namespace Base.Api.Database {
 		}
 
 		public IPromise<UserNameFullAccountDataPair> GetFullAccount( string userNameOrId, bool subscribe ) {
-			return GetFullAccounts( new string[] { userNameOrId }, subscribe ).Then( accounts => accounts.IsNullOrEmpty() ? null : accounts[ 0 ] );
+			return GetFullAccounts( new [] { userNameOrId }, subscribe ).Then( accounts => accounts.IsNullOrEmpty() ? null : accounts[ 0 ] );
 		}
 
-		public IPromise<UserNameAccountIdPair[]> LookupAccounts( string prefixName, int maxCount ) {
+		public IPromise<UserNameAccountIdPair[]> LookupAccounts( string prefixName, uint maxCount ) {
 			if ( IsInitialized ) {
 				return new Promise<UserNameAccountIdPair[]>( ( resolve, reject ) => {
 					var debug = true;
@@ -230,7 +230,7 @@ namespace Base.Api.Database {
 		}
 
 		public IPromise<AssetData> GetRequiredFee( OperationData operation, uint assetId ) {
-			return GetRequiredFees( new OperationData[] { operation }, assetId ).Then( fees => fees.IsNullOrEmpty() ? null : fees[ 0 ] );
+			return GetRequiredFees( new [] { operation }, assetId ).Then( fees => fees.IsNullOrEmpty() ? null : fees[ 0 ] );
 		}
 
 		public IPromise<PublicKey[]> GetRequiredSignatures( SignedTransactionData transaction, PublicKey[] existKeys ) {
@@ -307,7 +307,7 @@ namespace Base.Api.Database {
 		}
 
 		public IPromise<AssetData> GetAccountBalance( uint accountId, uint assetId = 0 ) {
-			return GetAccountBalances( accountId, new uint[] { assetId } ).Then( balances => balances.IsNullOrEmpty() ? null : balances[ 0 ] );
+			return GetAccountBalances( accountId, new [] { assetId } ).Then( balances => balances.IsNullOrEmpty() ? null : balances[ 0 ] );
 		}
 	}
 }

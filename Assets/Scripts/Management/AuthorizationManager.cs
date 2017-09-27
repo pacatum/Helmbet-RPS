@@ -14,7 +14,7 @@ using Tools;
 
 public sealed class AuthorizationManager : SingletonMonoBehaviour<AuthorizationManager> {
 
-	public class AuthorizationData {
+	public sealed class AuthorizationData {
 
 		public Keys Keys { get; private set; }
 		public UserNameFullAccountDataPair UserNameData { get; private set; }
@@ -70,7 +70,7 @@ public sealed class AuthorizationManager : SingletonMonoBehaviour<AuthorizationM
 	}
 
 	void ApiManager_OnDatabaseApiInitialized( DatabaseApi api ) {
-
+		// TODO: check saved authorization
 	}
 
 	public IPromise<bool> AuthorizationBy( string userName, string password ) {

@@ -95,7 +95,7 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
         return ApiManager.Instance.Database.GetTournament( id );
 	}
 
-    public IPromise<TournamentObject[]> LoadTournamentsInState( ChainTypes.TournamentState state, int maxCount ) {
+    public IPromise<TournamentObject[]> LoadTournamentsInState( ChainTypes.TournamentState state, uint maxCount ) {
         return ApiManager.Instance.Database.GetTournamentsInState( state, maxCount );
     }
 

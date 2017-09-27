@@ -54,7 +54,7 @@ namespace Base.Data {
 
 
 	[JsonConverter( typeof( SpaceTypeIdConverter ) )]
-	public sealed class SpaceTypeId : NullableObject, ISerializeToBuffer, IEquatable<SpaceTypeId> , IComparable<SpaceTypeId> {
+	public sealed class SpaceTypeId : NullableObject, ISerializeToBuffer, IEquatable<SpaceTypeId>, IComparable<SpaceTypeId> {
 
 		public readonly static SpaceTypeId EMPTY = new SpaceTypeId();
 
@@ -141,7 +141,7 @@ namespace Base.Data {
 			return string.Compare( ToString(), other.ToString(), StringComparison.Ordinal );
 		}
 
-		public static int CompareTo( SpaceTypeId a, SpaceTypeId b ) {
+		public static int Compare( SpaceTypeId a, SpaceTypeId b ) {
 			return a.CompareTo( b );
 		}
 

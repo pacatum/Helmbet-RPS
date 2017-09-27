@@ -68,7 +68,7 @@ namespace Base.Data.Tournaments {
 				if ( !item.IsNull() ) {
 					item.ToBuffer( b );
 				}
-			}, SpaceTypeId.CompareTo );
+			}, SpaceTypeId.Compare );
 			buffer.WriteOptionalStruct( StartTime, ( b, value ) => b.WriteDateTime( value ) );
 			buffer.WriteOptionalStruct( StartDelay, ( b, value ) => b.WriteUInt32( value ) );
 			buffer.WriteUInt32( RoundDelay );
