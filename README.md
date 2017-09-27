@@ -14,7 +14,7 @@ Note: there is know issue with wss connection to the testnet, please use ws as o
 Testnet details
 Chain id: be6b79295e728406cbb7494bcb626e62ad278fa4018699cf8f75739f4c1a81fd
 
-Node: ws://node.ppytest.com
+Node: wss://node.ppytest.com
 
 - Register Account: http://paperwallet.ppytest.com 
 
