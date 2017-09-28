@@ -29,6 +29,8 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     [SerializeField] protected UnityEngine.GameObject numberOfPlayersTextTitle;
     [SerializeField] protected UnityEngine.GameObject buyInTextTitle;
     [SerializeField] protected UnityEngine.GameObject jackpotTextTitle;
+    [SerializeField] protected UnityEngine.GameObject winnerTextTitle;
+    [SerializeField] protected UnityEngine.GameObject resultTextTitle;
 
 
     protected Image itemBackground;
@@ -64,6 +66,19 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         hoverWidth = normalWidth + increaseWidth;
         itemRectTransform.sizeDelta = new Vector2(normalWidth, itemRectTransform.rect.height);
         SwitchState( ItemState.Normal );
+    }
+
+    public bool IsHover {
+        get { return isHover; }
+        set {
+            isHover = value;
+            if ( !isHover ) {
+                UpdateView(false);
+                GetComponent<Canvas>().sortingOrder = 3;
+                footerView.UpdateFooter(currentTournament, tournamentDetailsObject, false);
+                stopUpdating = false;
+            }
+        }
     }
 
 
@@ -140,8 +155,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
             BuyIn = buyIn + currentAsset.Symbol;
             Jackpot = buyIn * info.Options.NumberOfPlayers + currentAsset.Symbol;
-
-            UpdateActions();
+            
             UpdateStartTime();
         }
     }
@@ -201,7 +215,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
     public void OnPointerExit( PointerEventData eventData ) {
         UpdateView(false);
-       GetComponent<Canvas>().sortingOrder = 10;
+        GetComponent<Canvas>().sortingOrder = 3;
         isHover = false;
         footerView.UpdateFooter(currentTournament, tournamentDetailsObject, false);
         stopUpdating = false;
@@ -209,13 +223,13 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
     public void OnPointerEnter( PointerEventData eventData ) {
         UpdateView(true);
-        GetComponent<Canvas>().sortingOrder = 100;
+        GetComponent<Canvas>().sortingOrder = 6;
         isHover = true;
         footerView.UpdateFooter(currentTournament, tournamentDetailsObject, true );
         stopUpdating = false;
     }
 
-    void UpdateView(bool isHover) {
+    protected virtual void UpdateView(bool isHover) {
         idTextTitle.SetActive(isHover); 
         numberOfPlayersTextTitle.SetActive(isHover);
         buyInTextTitle.SetActive(isHover);

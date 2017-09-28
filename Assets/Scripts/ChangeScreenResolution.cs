@@ -19,7 +19,7 @@ public class ChangeScreenResolution : MonoBehaviour {
     [SerializeField] float maxScreenSettingsLeft;
 
     void OnRectTransformDimensionsChange() {
-        if ( Screen.height <= 800 && Screen.width <= 1100 ) {
+        if ( Screen.height <= 800 || Screen.width <= 1100 ) {
             SetMinScreenView();
         } else {
             SetMaxScreenView();

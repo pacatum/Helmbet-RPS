@@ -41,11 +41,12 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
     
 
     protected override void UpdateActions() {
-        footerView.SetUp( currentTournament, tournamentDetailsObject );
+       // footerView.SetUp( currentTournament, tournamentDetailsObject );
     }
 
     public override IEnumerator UpdateItem( TournamentObject info) {
         yield return StartCoroutine( base.UpdateItem( info) );
+        yield return footerView.SetUp( currentTournament, tournamentDetailsObject );
     }
 
     public override void UpdateTournament( TournamentObject tournament ) {

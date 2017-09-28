@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Base.Config;
 using Base.Data.Tournaments;
 using TMPro;
@@ -8,8 +10,7 @@ using UnityEngine.UI;
 
 public class TournamentItemFooterView : MonoBehaviour {
 
-
-
+    
     [SerializeField] Color playerInTournamentColor;
     [SerializeField] Color otherTournamentsColor;
     [SerializeField] Color hoverColor;
@@ -51,9 +52,11 @@ public class TournamentItemFooterView : MonoBehaviour {
     public Button CancelButton {
         get { return cancelButton; }
     }
-
+    
     void Awake() {
-        activePlayButton.onClick.AddListener( OpenGameScreen );
+        if ( activePlayButton != null ) {
+            activePlayButton.onClick.AddListener( OpenGameScreen );
+        }
     }
 
     public void UpdateFooter( TournamentObject tournament, TournamentDetailsObject details, bool isHover ) {
@@ -62,10 +65,22 @@ public class TournamentItemFooterView : MonoBehaviour {
             footerTargetImage.color = hoverColor;
             itemBgColor.color = myTournamentsItemBgColor;
             startTimeText.color = myTournamentsItemBgColor;
+            if ( joinButton != null) {
+                joinButton.GetComponent<UIButtonView>().SetAlternativeState();
+            }
+            if ( activePlayButton != null ) {
+                activePlayButton.GetComponent<UIButtonView>().SetAlternativeState();
+            }
         } else {
             footerTargetImage.color = currentColor;
             itemBgColor.color = currentItemBgColor;
             startTimeText.color = currentTextColor;
+            if ( joinButton != null ) {
+                joinButton.GetComponent<UIButtonView>().SetNormalState();
+            }
+            if ( activePlayButton != null ) {
+                activePlayButton.GetComponent<UIButtonView>().SetNormalState();
+            }
         }
 
         switch ( tournament.State ) {
@@ -84,7 +99,7 @@ public class TournamentItemFooterView : MonoBehaviour {
     }
 
     bool IsPlayerJoined( TournamentDetailsObject details ) {
-        return details.RegisteredPlayers.Contains( AuthorizationManager.Instance.Authorization.UserNameData.FullAccount.Account.Id );
+        return  details.RegisteredPlayers.Contains( AuthorizationManager.Instance.Authorization.UserNameData.FullAccount.Account.Id );
     }
 
     void SaveColors() {
@@ -93,14 +108,14 @@ public class TournamentItemFooterView : MonoBehaviour {
         currentTextColor = startTimeText.color;
     }
 
-    public void SetUp( TournamentObject tournament, TournamentDetailsObject details ) {
+    public IEnumerator SetUp( TournamentObject tournament, TournamentDetailsObject details ) {
 
         currenTournamentObject = tournament;
         currenTournamentDetailsObject = details;
-        SaveColors();
 
-        if ( tournament.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
-            return;
+        if ( tournament.State == ChainTypes.TournamentState.Concluded ) {
+            SaveColors();
+            yield break;
         }
         var me = AuthorizationManager.Instance.UserData;
 
@@ -113,7 +128,7 @@ public class TournamentItemFooterView : MonoBehaviour {
         opponentText.gameObject.SetActive( false );
         liveMessage.gameObject.SetActive( false );
         headerItemView.gameObject.SetActive( false );
-        
+
         if ( IsPlayerJoined( details ) ) {
             footerTargetImage.color = playerInTournamentColor;
             itemBgColor.color = myTournamentsItemBgColor;
@@ -122,29 +137,33 @@ public class TournamentItemFooterView : MonoBehaviour {
             itemBgColor.color = otherTournamentsItemBgColor;
         }
 
+
         switch ( tournament.State ) {
             case ChainTypes.TournamentState.InProgress:
                 if ( !IsPlayerJoined( details ) ) {
                     liveMessage.SetActive( true );
                 } else {
-                    ApiManager.Instance.Database.GetMatches( Array.ConvertAll( details.Matches, matche => matche.Id ) )
-                        .Then( matches => {
-                            var matchesInProgress = Array.FindAll( matches, match => match.State == ChainTypes.MatchState.InProgress );
-                            var playerInMatches = Array.FindAll( matchesInProgress, match => match.Players.Contains( me.FullAccount.Account.Id ) );
+                    var matchesList = new List<MatchObject>();
+                    yield return TournamentManager.Instance.GetMatcheObjects( Array.ConvertAll( details.Matches, matche => matche.Id ), matchesList );
 
-                            if ( playerInMatches.Length == 0 ) {
-                                inActivePlayButton.gameObject.SetActive( true );
-                                headerItemView.gameObject.SetActive( true );
-                                headerItemView.color = awaitingColor;
-                            } else {
-                                opponentText.gameObject.SetActive( true );
-                                opponentText.text = Utils.GetFormatedString( GameManager.Instance.CurrentMatch.Opponent.Name );
-                                activePlayButton.gameObject.SetActive( true );
-                                headerItemView.gameObject.SetActive( true );
-                                headerItemView.color = playColor;
-                            }
+                    var matchesInProgress = Array.FindAll( matchesList.ToArray(), match => match.State.Equals( ChainTypes.MatchState.InProgress ) );
+                    var playerInMatches = Array.FindAll( matchesInProgress, match => match.Players.Contains( me.FullAccount.Account.Id ) );
 
-                        } );
+                    if ( playerInMatches.Length == 0 ) {
+                        inActivePlayButton.gameObject.SetActive( true );
+                        headerItemView.gameObject.SetActive( true );
+                        headerItemView.color = awaitingColor;
+                    } else {
+                        opponentText.gameObject.SetActive( true );
+                        activePlayButton.gameObject.SetActive( true );
+                        headerItemView.gameObject.SetActive( true );
+                        headerItemView.color = playColor;
+                        opponentText.text = Utils.GetFormatedString( GameManager.Instance.CurrentMatch.Opponent.Name );
+                    }
+
+                    SaveColors();
+
+
                 }
                 break;
             case ChainTypes.TournamentState.AcceptingRegistrations:
@@ -160,6 +179,8 @@ public class TournamentItemFooterView : MonoBehaviour {
                     registerTimeText.gameObject.SetActive( true );
                     UpdateRegisterTime( tournament.Options.RegistrationDeadline );
                 }
+
+                SaveColors();
                 break;
 
             case ChainTypes.TournamentState.AwaitingStart:
@@ -175,13 +196,15 @@ public class TournamentItemFooterView : MonoBehaviour {
                 } else {
                     footerTargetImage.color = otherTournamentsColor;
                 }
+
+                SaveColors();
                 break;
         }
     }
 
     void UpdateRegisterTime( DateTime registerTime ) {
         var time = registerTime - DateTime.UtcNow;
-        if ( time.TotalMinutes < 30 ) {
+        if ( time.TotalMinutes < 60 ) {
             registerTimeText.text = "Register: <" + (int) time.TotalMinutes + "m";
         } else if ( time.TotalHours > 0 ) {
             registerTimeText.text = "Register: ~" + (int) time.TotalHours + "h";
@@ -195,7 +218,11 @@ public class TournamentItemFooterView : MonoBehaviour {
 
     public void OpenGameScreen() {
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
-        if ( currenTournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
+        if ( currenTournamentObject.State.Equals( ChainTypes.TournamentState.AwaitingStart ) && IsPlayerJoined( currenTournamentDetailsObject ) ) {
+            UIController.Instance.UpdateStartGamePreview( currenTournamentObject );
+            return;
+        }
+        if (currenTournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
             ApiManager.Instance.Database.GetMatches( Array.ConvertAll( currenTournamentDetailsObject.Matches, match => match.Id ) )
                 .Then( matches
                           => {

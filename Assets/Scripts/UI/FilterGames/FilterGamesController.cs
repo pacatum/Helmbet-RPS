@@ -23,8 +23,6 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
     [SerializeField] Button applyButton;
     [SerializeField] Button restoreButton;
-
-    [SerializeField] UnityEngine.GameObject buttonsContainer;
     
 
     private List<FilterItemView> items = new List<FilterItemView>();
@@ -257,7 +255,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
     }
 
     public void SetApplyButton( bool active ) {
-        buttonsContainer.SetActive(active);
+        applyButton.interactable = active;
     }
 
 }

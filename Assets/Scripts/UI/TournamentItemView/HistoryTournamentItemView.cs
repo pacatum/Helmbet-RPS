@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using Base.Data.Accounts;
 using Base.Data.Tournaments;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HistoryTournamentItemView : BaseTournamentItemView {
 
-    [SerializeField] Text winnerText;
-    [SerializeField] TournamentResultView resultText;
-    [SerializeField] Font anotherPlayerWinnerFont;
-    [SerializeField] Font thisPlayerWinnerFont;
+    [SerializeField] TextMeshProUGUI winnerText;
+    [SerializeField] TextMeshProUGUI resultText;
+    [SerializeField] TMP_FontAsset anotherPlayerWinnerFont;
+    [SerializeField] TMP_FontAsset thisPlayerWinnerFont;
+
 
     public string Winner {
         get { return winnerText ? string.Empty : winnerText.text; }
@@ -22,37 +23,53 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
         }
     }
 
-    protected override void UpdateStartTime() {
-        if ( currentTournament.StartTime.HasValue ) {
-            DateTime time = currentTournament.StartTime.Value.ToLocalTime();
-            //StartTime = time.ToString( "ddMMM, yyyy. HH:mm tt" );
-        }
-    }
-
-    public override IEnumerator UpdateItem( TournamentObject info) {
+    public override IEnumerator UpdateItem( TournamentObject info ) {
 
         var winnerAccounts = new List<AccountObject>();
-        yield return StartCoroutine( base.UpdateItem( info) );
+        yield return StartCoroutine( base.UpdateItem( info ) );
 
         yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( info.Id.Id, winnerAccounts );
+        if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
+            winnerText.font = thisPlayerWinnerFont;
+            resultText.text = Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount )
+                                                               / Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
+        } else {
+            winnerText.font = anotherPlayerWinnerFont;
+            resultText.text = "-" + buyInText.text;
+        }
+        Winner = Utils.GetFormatedString( winnerAccounts[0].Name, 7 );
+        yield return footerView.SetUp( currentTournament, tournamentDetailsObject );
 
-        //resultText.ResultText = "-" + buyInText.text;
-        //resultText.CurrentResultState = TournamentResultState.Negative;
-        //winnerText.font = anotherPlayerWinnerFont;
-
-        //Winner = Utils.GetFormatedString(winnerAccounts[0].Name, 7);
-
-        //if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
-        //    winnerText.font = thisPlayerWinnerFont;
-        //    resultText.ResultText =
-        //        Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount ) /
-        //                                         Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
-        //    resultText.CurrentResultState = TournamentResultState.Positive;
-        //}
     }
 
     protected override void UpdateActions() {
-        footerView.SetUp( currentTournament, tournamentDetailsObject );
+
+    }
+
+    protected override void UpdateView( bool isHover ) {
+        base.UpdateView( isHover );
+
+        winnerTextTitle.SetActive( isHover );
+        resultTextTitle.SetActive( isHover );
+
+        if ( isHover ) {
+            winnerText.GetComponent<RectTransform>().pivot = resultText.GetComponent<RectTransform>().pivot = new Vector2( 1f, 0.5f );
+
+            winnerText.GetComponent<RectTransform>().anchorMax = resultText.GetComponent<RectTransform>().anchorMax =
+                winnerText.GetComponent<RectTransform>().anchorMin = resultText.GetComponent<RectTransform>().anchorMin = new Vector2( 1f, 1f );
+
+            winnerText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, winnerText.GetComponent<RectTransform>().anchoredPosition.y );
+            resultText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, resultText.GetComponent<RectTransform>().anchoredPosition.y );
+        } else {
+            winnerText.GetComponent<RectTransform>().pivot = resultText.GetComponent<RectTransform>().pivot = new Vector2( 0.5f, 0.5f );
+            winnerText.GetComponent<RectTransform>().anchorMax = resultText.GetComponent<RectTransform>().anchorMax =
+                winnerText.GetComponent<RectTransform>().anchorMin = resultText.GetComponent<RectTransform>().anchorMin = new Vector2( 0.5f, 1f );
+
+            winnerText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, winnerText.GetComponent<RectTransform>().anchoredPosition.y );
+            resultText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, resultText.GetComponent<RectTransform>().anchoredPosition.y );
+        }
+
+
     }
 
 }

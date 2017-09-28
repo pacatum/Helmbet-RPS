@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Base.Config;
-using Base.Data.Tournaments;
-using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,7 +36,6 @@ public class DashdoardView : BaseCanvasView {
     [SerializeField] DashboardTabView historyTournamentView;
     
     List<DashboardTabView> views = new List<DashboardTabView>();
-    List<GameDashboardPreview> dashboardPreviews = new List<GameDashboardPreview>();
     DashboardTabView currentActiveView;
 
 

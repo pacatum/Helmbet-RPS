@@ -35,6 +35,11 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     }
 
+    public override void Clear() {
+        base.Clear();
+        ClearTournamentsItemViewList();
+    }
+
     void OnRectTransformDimensionsChange() {
         if ( !CalculateMaxItemOnPage() ) {
             LoadTournaments();
@@ -57,6 +62,11 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     public override void Hide() {
         loader.IsLoading = false;
+        if ( AuthorizationManager.Instance.IsAuthorized ) {
+            foreach ( var items in sceduleItemsList ) {
+                items.IsHover = false;
+            }
+        }
         base.Hide();
     }
 

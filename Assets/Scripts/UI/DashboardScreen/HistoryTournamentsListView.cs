@@ -39,6 +39,11 @@ public class HistoryTournamentsListView : DashboardTabView {
         }
     }
 
+    public override void Clear() {
+        base.Clear();
+        ClearTournamentsItemViewList();
+    }
+
     bool CalculateMaxItemOnPage() {
         grid.ResizeGrid();
         var newMaxitems = grid.ColumnCount * grid.RowCount;

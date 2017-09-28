@@ -141,6 +141,19 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
         result.AddRange( tournamentDetailList );
     }
 
+    public IEnumerator GetMatcheObjects(uint[] matchesId, List<MatchObject> result)
+    {
+        List<MatchObject> matchList = null;
+        ApiManager.Instance.Database.GetMatches(matchesId)
+            .Then(matches => (matchList = new List<MatchObject>()).AddRange(matches))
+            .Catch(exeption => matchList = new List<MatchObject>());
+        while (matchList == null)
+        {
+            yield return null;
+        }
+        result.AddRange(matchList);
+    }
+
     public IEnumerator GetMatcheWinnerAccountsObjects( uint tournamentId, List<AccountObject> accountWinners ) {
 		List<AccountObject> loadedAccounts = null;
 		GetDetailsTournamentObject( tournamentId ).Then( details => {

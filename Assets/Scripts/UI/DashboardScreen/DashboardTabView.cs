@@ -36,7 +36,7 @@ public class DashboardTabView : BaseCanvasView {
         currentSortingType = SortType.RegisterDeadline;
     }
 
-    public void Clear() {
+    public virtual void Clear() {
         filterSettings.Restore();
         search.ClearInput();
     }

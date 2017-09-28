@@ -20,4 +20,9 @@ public class NoticesView : BaseCanvasView {
         UIManager.Instance.CurrentState = UIManager.Instance.PreviousState;
     }
 
+    public override void Show() {
+        base.Show();
+        noticeReleasesView.Show();
+    }
+
 }
