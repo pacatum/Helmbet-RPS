@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DynamicGrid : MonoBehaviour {
 
     [SerializeField] int maxColumnCount = 6;
-    [SerializeField] int minColumnCount = 3;
 
     [SerializeField] float maxCellWidth;
     [SerializeField] float minCellWidth;

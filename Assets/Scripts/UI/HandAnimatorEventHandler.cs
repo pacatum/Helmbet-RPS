@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class HandAnimatorEventHandler : MonoBehaviour {
 
@@ -25,11 +23,7 @@ public class HandAnimatorEventHandler : MonoBehaviour {
 
     public void SetTrigger( string value ) {
         HandAnimator.SetTrigger( value );
-        if ( value.Equals( "idle" ) ) {
-            HandAnimator.speed = 0;
-        } else {
-            HandAnimator.speed = Speed;
-        }
+        HandAnimator.speed = value.Equals( "idle" ) ? 0 : Speed;
     }
 
 }

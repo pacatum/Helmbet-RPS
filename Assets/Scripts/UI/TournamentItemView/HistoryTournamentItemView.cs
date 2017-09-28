@@ -39,13 +39,8 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
         }
         Winner = Utils.GetFormatedString( winnerAccounts[0].Name, 7 );
         yield return footerView.SetUp( currentTournament, tournamentDetailsObject );
-
     }
-
-    protected override void UpdateActions() {
-
-    }
-
+    
     protected override void UpdateView( bool isHover ) {
         base.UpdateView( isHover );
 
@@ -54,7 +49,6 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
 
         if ( isHover ) {
             winnerText.GetComponent<RectTransform>().pivot = resultText.GetComponent<RectTransform>().pivot = new Vector2( 1f, 0.5f );
-
             winnerText.GetComponent<RectTransform>().anchorMax = resultText.GetComponent<RectTransform>().anchorMax =
                 winnerText.GetComponent<RectTransform>().anchorMin = resultText.GetComponent<RectTransform>().anchorMin = new Vector2( 1f, 1f );
 
@@ -68,8 +62,6 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
             winnerText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, winnerText.GetComponent<RectTransform>().anchoredPosition.y );
             resultText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, resultText.GetComponent<RectTransform>().anchoredPosition.y );
         }
-
-
     }
 
 }

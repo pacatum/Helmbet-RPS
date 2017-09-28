@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,8 +10,8 @@ public class FilterItemExpandView : MonoBehaviour {
     public event Action<string, string> OnSelectChoiseChange;
     protected string currentChoise;
 
-    [SerializeField] protected Text selectChoiseText;
-    [SerializeField] protected Text endRangeSelectChoise;
+    [SerializeField] protected TextMeshProUGUI selectChoiseText;
+    [SerializeField] protected TextMeshProUGUI endRangeSelectChoise;
     [SerializeField] protected List<FilterChoiseItemView> items = new List<FilterChoiseItemView>();
     [SerializeField] protected FilterChoiseInputView firstInput;
     [SerializeField] protected FilterChoiseInputView secondInput;

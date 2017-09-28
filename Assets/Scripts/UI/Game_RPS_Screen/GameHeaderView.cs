@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class GameHeaderView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
 	public event Action OnSettingsButton;
-	public event Action OnVolumeButton;
 	public event Action OnMinimazeButton;
 
 	[SerializeField] Color headerHoverColor;

@@ -16,9 +16,9 @@ public class TournamentItemFooterView : MonoBehaviour {
     [SerializeField] Color hoverColor;
     [SerializeField] Image footerTargetImage;
 
-    [SerializeField] private Color myTournamentsItemBgColor;
-    [SerializeField] private Color otherTournamentsItemBgColor;
-    [SerializeField] private Image itemBgColor;
+    [SerializeField] Color myTournamentsItemBgColor;
+    [SerializeField] Color otherTournamentsItemBgColor;
+    [SerializeField] Image itemBgColor;
 
     [SerializeField] Button activePlayButton;
     [SerializeField] Button inActivePlayButton;
@@ -168,14 +168,11 @@ public class TournamentItemFooterView : MonoBehaviour {
                 break;
             case ChainTypes.TournamentState.AcceptingRegistrations:
                 startTimeText.gameObject.SetActive( true );
-                UpdateStartTime( tournament.StartTime.HasValue ? tournament.StartTime.Value : DateTime.UtcNow.AddMinutes( 2 ) );
-                //startTimeText.text = tournament.Options.StartTime.Value.ToString( "hh:mm" );
+                UpdateStartTime( tournament.StartTime);
 
                 if ( IsPlayerJoined( details ) ) {
-                    footerTargetImage.color = playerInTournamentColor;
                     cancelButton.gameObject.SetActive( true );
                 } else {
-                    footerTargetImage.color = otherTournamentsColor;
                     registerTimeText.gameObject.SetActive( true );
                     UpdateRegisterTime( tournament.Options.RegistrationDeadline );
                 }
@@ -184,17 +181,15 @@ public class TournamentItemFooterView : MonoBehaviour {
                 break;
 
             case ChainTypes.TournamentState.AwaitingStart:
-                if ( details.RegisteredPlayers.Contains( me.FullAccount.Account.Id ) ) {
-                    footerTargetImage.color = playerInTournamentColor;
+                if ( IsPlayerJoined( details ) ) {
                     headerItemView.gameObject.SetActive( true );
                     headerItemView.color = awaitingColor;
                     if ( ( tournament.StartTime.Value - DateTime.UtcNow ).TotalMinutes <= 2 ) {
                         activePlayButton.gameObject.SetActive( true );
                     } else {
+                        inActivePlayButton.gameObject.SetActive( true );
                         TournamentManager.Instance.AddAwaitingStartTournaments( tournament );
                     }
-                } else {
-                    footerTargetImage.color = otherTournamentsColor;
                 }
 
                 SaveColors();
@@ -211,9 +206,13 @@ public class TournamentItemFooterView : MonoBehaviour {
         }
     }
 
-    void UpdateStartTime( DateTime startTime ) {
-        var time = startTime - DateTime.UtcNow;
-        startTimeText.text = "Start: " + Convert.ToDateTime( time.ToString() ).ToString( "hh:mm:ss" );
+    void UpdateStartTime( DateTime? startTime ) {
+        if ( startTime.HasValue ) {
+            var time = startTime - DateTime.UtcNow;
+            startTimeText.text = "Start: " + Convert.ToDateTime( time.ToString() ).ToString( "hh:mm:ss" );
+        } else {
+            startTimeText.text = "2 minutes after full";
+        }
     }
 
     public void OpenGameScreen() {

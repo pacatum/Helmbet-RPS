@@ -180,49 +180,31 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
         var search = searchText.ToLower();
         var tournamentId = tournament.Id.ToString().ToLower().Contains( search );
-        var buyIn = ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) ) + asset.Symbol ).ToLower()
-            .Contains( search );
-        var jackpot =
-            ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) *
-                tournament.Options.NumberOfPlayers ) + asset.Symbol ).ToLower()
-            .Contains( search );
-        var registerDeadline = tournament.Options.RegistrationDeadline.ToLocalTime()
-            .ToString( "ddMMM, yyyy. HH:mm tt" )
-            .ToLower()
-            .Contains( search );
-        var startTime = tournament.Options.StartTime.HasValue
-            ? tournament.Options.StartTime.Value.ToLocalTime()
-                .ToString( "ddMMM, yyyy. HH:mm tt" )
-                .ToLower()
-                .Contains( search )
-            : string.Empty.Contains( search );
-        var startDelay = "2 minutes after full".Contains( search );
+        var buyIn = ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) ) + asset.Symbol ).ToLower().Contains( search );
+        var jackpot = ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) * tournament.Options.NumberOfPlayers ) + asset.Symbol ).ToLower().Contains( search );
+        var time = tournament.Options.RegistrationDeadline - DateTime.UtcNow;
+        var registerDeadline = false;
+        if (time.TotalMinutes < 60)
+        {
+            registerDeadline = ("Register: <" + (int)time.TotalMinutes + "m").Contains(searchText);
+        }
+        else if ( time.TotalHours > 0 ) {
+            registerDeadline = ( "Register: ~" + (int) time.TotalHours + "h" ).Contains( searchText );
+        }
+        //var startTime = ( "Start: " + Convert.ToDateTime( time.ToString() ).ToString( "hh:mm:ss" ) ).Contains( searchText );
+        var startDelay = "2 minutes after full".Contains(search);
         var gameName = "rps".Contains( search );
-
         if ( tournament.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
-
             var result = account.Id.Equals( AuthorizationManager.Instance.UserData.FullAccount.Account.Id )
                 ? ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) *
                       ( tournament.Options.NumberOfPlayers - 1 ) ) + asset.Symbol ).ToLower()
                 .Contains( search )
-                : ( "-" + ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) ) + asset.Symbol )
-                .ToLower()
-                .Contains( search );
-
-            startTime = tournament.StartTime.HasValue
-                ? tournament.StartTime.Value.ToLocalTime()
-                    .ToString( "ddMMM, yyyy. HH:mm tt" )
-                    .ToLower()
-                    .Contains( search )
-                : string.Empty.Contains( search );
+                : ( "-" + ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) ) + asset.Symbol ).ToLower().Contains( search );
 
             var winner = account.Name.ToLower().Contains( search );
-
-            return buyIn || startTime || startDelay || gameName || tournamentId ||
-                   winner || result;
+            return buyIn || gameName || tournamentId || winner || result;
         }
-
-        return buyIn || jackpot || registerDeadline || startTime || startDelay || gameName || tournamentId;
+        return buyIn || jackpot || registerDeadline  || gameName || tournamentId || startDelay;
     }
 
 

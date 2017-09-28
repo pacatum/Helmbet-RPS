@@ -22,10 +22,7 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
     }
 
     protected virtual void PlayBtn_Click() {
-        if ( currentTournament.State == ChainTypes.TournamentState.InProgress ) {
-            ToGame();
-        }
-    }
+     }
 
     protected virtual void CancelBtn_Click() {
         if ( OnCancelClick != null ) {
@@ -37,11 +34,6 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         if ( OnJoinClick != null ) {
             OnJoinClick( this );
         }
-    }
-    
-
-    protected override void UpdateActions() {
-       // footerView.SetUp( currentTournament, tournamentDetailsObject );
     }
 
     public override IEnumerator UpdateItem( TournamentObject info) {

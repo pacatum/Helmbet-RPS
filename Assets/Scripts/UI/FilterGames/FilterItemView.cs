@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class FilterItemView : MonoBehaviour, IPointerClickHandler {
 
@@ -11,8 +9,8 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
 
     public event Action OnFilterItemChanged;
 
-    [SerializeField] Text selectChoiseText;
-    [SerializeField] Text endRangeSelectChoise;
+    [SerializeField] TextMeshProUGUI selectChoiseText;
+    [SerializeField] TextMeshProUGUI endRangeSelectChoise;
     [SerializeField] FilterItemExpandView expandFilterItemview;
 
 

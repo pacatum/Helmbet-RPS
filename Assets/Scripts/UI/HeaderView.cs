@@ -62,7 +62,7 @@ public class HeaderView : BaseCanvasView {
     }
 
     public void OnSetLoginUsername( string username ) {
-        accountButton.GetComponentInChildren<Text>().text = Utils.GetFormatedString( username );
+        accountButton.GetComponentInChildren<TextMeshProUGUI>().text = Utils.GetFormatedString( username );
     }
 
     void SettingsBtn_Click() {

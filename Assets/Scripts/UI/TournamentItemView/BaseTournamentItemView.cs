@@ -11,10 +11,8 @@ using UnityEngine.EventSystems;
 using TMPro;
 using Tools;
 
-public enum ItemState { Normal, Hover}
-
 public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
-    
+
     [SerializeField] RectTransform itemRectTransform;
 
     [SerializeField] protected TextMeshProUGUI idText;
@@ -38,21 +36,16 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     protected TournamentDetailsObject tournamentDetailsObject;
     protected AssetObject currentAsset;
 
-    [Header("Item width")]
-    [SerializeField] private float increaseWidth = 140;
+    [Header( "Item width" )] [SerializeField] private float increaseWidth = 140;
     [SerializeField] float animationTimer;
     [SerializeField] Image itemShadowImage;
-
+    
     protected bool isHover;
     protected bool stopUpdating;
     float hoverWidth;
     float normalWidth;
 
-
-    protected void SwitchState( ItemState state ) {
-       
-    }
-
+   
     public virtual TournamentObject CurrentTournament {
         get { return currentTournament; }
         set { currentTournament = value; }
@@ -64,8 +57,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         itemBackground = GetComponent<Image>();
         normalWidth = 0;
         hoverWidth = normalWidth + increaseWidth;
-        itemRectTransform.sizeDelta = new Vector2(normalWidth, itemRectTransform.rect.height);
-        SwitchState( ItemState.Normal );
+        itemRectTransform.sizeDelta = new Vector2( normalWidth, itemRectTransform.rect.height );
     }
 
     public bool IsHover {
@@ -73,9 +65,9 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         set {
             isHover = value;
             if ( !isHover ) {
-                UpdateView(false);
+                UpdateView( false );
                 GetComponent<Canvas>().sortingOrder = 3;
-                footerView.UpdateFooter(currentTournament, tournamentDetailsObject, false);
+                footerView.UpdateFooter( currentTournament, tournamentDetailsObject, false );
                 stopUpdating = false;
             }
         }
@@ -130,7 +122,6 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     public virtual IEnumerator UpdateItem( TournamentObject info ) {
         if ( gameObject.activeSelf && gameObject.activeInHierarchy ) {
             CurrentTournament = info;
-            
 
             var detailsObject = new List<TournamentDetailsObject>();
             yield return TournamentManager.Instance.GetTournamentDetailsObject( info.Id.Id, detailsObject );
@@ -139,8 +130,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             ID = "#RPS" + info.Id;
             PlayerRegistered = info.RegisteredPlayers.ToString();
             MaxPlayers = info.Options.NumberOfPlayers.ToString();
-
-
+            
             if ( currentAsset.IsNull() || !currentAsset.Id.Equals( currentTournament.Options.BuyIn.Asset ) ) {
                 AssetObject asset = null;
                 TournamentManager.Instance.GetAssetObject( currentTournament.Options.BuyIn.Asset.Id )
@@ -155,7 +145,6 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
             BuyIn = buyIn + currentAsset.Symbol;
             Jackpot = buyIn * info.Options.NumberOfPlayers + currentAsset.Symbol;
-            
             UpdateStartTime();
         }
     }
@@ -168,12 +157,10 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
 
     protected virtual string SetDateTime( string dateTime ) {
         var time = DateTime.MinValue;
-        if (DateTime.TryParse(dateTime, out time))
-        {
-            return time.ToLocalTime().ToString("ddMMM, yyyy. HH:mm tt");
+        if ( DateTime.TryParse( dateTime, out time ) ) {
+            return time.ToLocalTime().ToString( "ddMMM, yyyy. HH:mm tt" );
         }
-
-        return time.ToString("ddMMM, yyyy. HH:mm tt");
+        return time.ToString( "ddMMM, yyyy. HH:mm tt" );
     }
 
 
@@ -181,7 +168,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     public void UpdateDetails( TournamentObject tournament ) {
-        StartCoroutine( UpdateItem( tournament) );
+        StartCoroutine( UpdateItem( tournament ) );
     }
 
     protected void Update() {
@@ -207,116 +194,64 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
                 color.a -= animationTimer;
                 itemShadowImage.color = color;
             } else {
-                itemRectTransform.sizeDelta = new Vector2(normalWidth, itemRectTransform.sizeDelta.y);
+                itemRectTransform.sizeDelta = new Vector2( normalWidth, itemRectTransform.sizeDelta.y );
                 stopUpdating = true;
             }
         }
     }
 
     public void OnPointerExit( PointerEventData eventData ) {
-        UpdateView(false);
+        UpdateView( false );
         GetComponent<Canvas>().sortingOrder = 3;
         isHover = false;
-        footerView.UpdateFooter(currentTournament, tournamentDetailsObject, false);
+        footerView.UpdateFooter( currentTournament, tournamentDetailsObject, false );
         stopUpdating = false;
     }
 
     public void OnPointerEnter( PointerEventData eventData ) {
-        UpdateView(true);
+        UpdateView( true );
         GetComponent<Canvas>().sortingOrder = 6;
         isHover = true;
-        footerView.UpdateFooter(currentTournament, tournamentDetailsObject, true );
+        footerView.UpdateFooter( currentTournament, tournamentDetailsObject, true );
         stopUpdating = false;
     }
 
-    protected virtual void UpdateView(bool isHover) {
-        idTextTitle.SetActive(isHover); 
-        numberOfPlayersTextTitle.SetActive(isHover);
-        buyInTextTitle.SetActive(isHover);
-        jackpotTextTitle.SetActive(isHover);
+    protected virtual void UpdateView( bool isHover ) {
+        idTextTitle.SetActive( isHover );
+        numberOfPlayersTextTitle.SetActive( isHover );
+        buyInTextTitle.SetActive( isHover );
+        jackpotTextTitle.SetActive( isHover );
         if ( isHover ) {
-            idText.GetComponent<RectTransform>().pivot =  buyInText.GetComponent<RectTransform>().pivot =
+            idText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
                 jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 1f, 0.5f );
-
-            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax =
-                jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax= 
-            idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin =
-                jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2(1f, 1f);
-
-            idText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-27, idText.GetComponent<RectTransform>().anchoredPosition.y);
-            buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-27, buyInText.GetComponent<RectTransform>().anchoredPosition.y);
-            jackpotText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-27, jackpotText.GetComponent<RectTransform>().anchoredPosition.y);
-            numberOfPlayersObject.anchoredPosition = new Vector2(-27, numberOfPlayersObject.GetComponent<RectTransform>().anchoredPosition.y);
-
-        }
-        else {
-            idText.GetComponent<RectTransform>().pivot = playerRegisteredText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
-                jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2(0.5f, 0.5f);
 
             idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax =
                 jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
                     idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin =
-                        jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2(0.5f, 1f);
+                        jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 1f, 1f );
 
-            idText.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, idText.GetComponent<RectTransform>().anchoredPosition.y);
-            buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, buyInText.GetComponent<RectTransform>().anchoredPosition.y);
-            jackpotText.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, jackpotText.GetComponent<RectTransform>().anchoredPosition.y);
-            numberOfPlayersObject.anchoredPosition = new Vector2(0, numberOfPlayersObject.GetComponent<RectTransform>().anchoredPosition.y);
+            idText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, idText.GetComponent<RectTransform>().anchoredPosition.y );
+            buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, buyInText.GetComponent<RectTransform>().anchoredPosition.y );
+            jackpotText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, jackpotText.GetComponent<RectTransform>().anchoredPosition.y );
+            numberOfPlayersObject.anchoredPosition = new Vector2( -27, numberOfPlayersObject.GetComponent<RectTransform>().anchoredPosition.y );
+
+        } else {
+            idText.GetComponent<RectTransform>().pivot = playerRegisteredText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
+                jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 0.5f, 0.5f );
+
+            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax =
+                jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
+                    idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin =
+                        jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 0.5f, 1f );
+
+            idText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, idText.GetComponent<RectTransform>().anchoredPosition.y );
+            buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, buyInText.GetComponent<RectTransform>().anchoredPosition.y );
+            jackpotText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, jackpotText.GetComponent<RectTransform>().anchoredPosition.y );
+            numberOfPlayersObject.anchoredPosition = new Vector2( 0, numberOfPlayersObject.GetComponent<RectTransform>().anchoredPosition.y );
         }
     }
 
     public void OnPointerClick( PointerEventData eventData ) {
-
-        //if ( currentTournament.IsNull() ) {
-        //    return;
-        //}
-        //switch ( currentTournament.State ) {
-        //    case ChainTypes.TournamentState.InProgress:
-        //        ToGame();
-        //        break;
-
-        //    case ChainTypes.TournamentState.Concluded:
-        //        UIController.Instance.UpdateTournamentDetails( currentTournament);
-        //        UIManager.Instance.CurrentState = UIManager.ScreenState.TournamentDetails;
-        //        break;
-
-        //    case ChainTypes.TournamentState.AwaitingStart:
-        //        var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
-
-        //        if ( tournamentDetailsObject.RegisteredPlayers.Contains( me ) && (currentTournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2) {
-        //            UIController.Instance.UpdateStartGamePreview(currentTournament);
-        //        }
-        //        break;
-        //}
-    }
-
-    protected void ToGame() {
-        //var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
-
-        
-        //if ( tournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
-        //    ApiManager.Instance.Database.GetMatches( Array.ConvertAll( tournamentDetailsObject.Matches, match => match.Id ) )
-        //        .Then( matches
-        //                  => {
-        //                  var matchesInProgress =
-        //                      Array.FindAll( matches,
-        //                                    match => match.State == ChainTypes.MatchState.InProgress);
-        //                  var playerInMatches =
-        //                      Array.FindAll( matchesInProgress, player => player.Players.Contains( me ) );
-
-        //                  if ( playerInMatches.Length == 0 ) {
-        //                      UIController.Instance.UpdateTournamentDetails( currentTournament );
-        //                      UIManager.Instance.CurrentState = UIManager.ScreenState.TournamentDetails;
-        //                  } else {
-        //                      UIController.Instance.UpdateTournamentInProgress( currentTournament );
-        //                  }
-
-        //              } );
-
-        //} else {
-        //    UIController.Instance.UpdateTournamentDetails( currentTournament);
-        //    UIManager.Instance.CurrentState = UIManager.ScreenState.TournamentDetails;
-        //}
     }
 
 }
