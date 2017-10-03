@@ -48,7 +48,7 @@ public class BuyInSetting : SettingView {
 
         ApiManager.Instance.Database
             .GetAccountBalance( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, selectAssetObject.Id.Id )
-            .Then( result => SetAvailableBalanceText( ( result.Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + selectAssetObject.Symbol ) );
+            .Then( result => SetAvailableBalanceText( ( result.Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + " " + selectAssetObject.Symbol ) );
     }
 
     void SetAvailableBalanceText( string amount ) {
@@ -74,7 +74,7 @@ public class BuyInSetting : SettingView {
             TournamentManager.Instance.GetAssetObject()
                 .Then( asset => {
                     selectAssetObject = asset;
-                    SetAvailableBalanceText( 0 + selectAssetObject.Symbol );
+                    SetAvailableBalanceText( 0 + " " + selectAssetObject.Symbol );
                     assetsData.Add( asset );
                 } );
         } else {
@@ -87,7 +87,7 @@ public class BuyInSetting : SettingView {
                     }
                     balanceDropdown.AddOptions( options );
                     selectAssetObject = objects[0];
-                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + selectAssetObject.Symbol );
+                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) +" " + selectAssetObject.Symbol );
                 } );
         }
     }

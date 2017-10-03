@@ -79,12 +79,12 @@ public class GameScreenView : BaseCanvasView {
     }
 
     public override void Show() {
-        base.Show();
+        
         gameRoundOverView.Hide();
         gameStartPreview.gameObject.SetActive( false );
         
         MatcheStart( GameManager.Instance.CurrentMatch );
-
+        
         GameManager.Instance.OnGameComplete += GameComplete;
         GameManager.Instance.OnMatchComplete += MatcheComplete;
         GameManager.Instance.OnNewMatch += MatcheStart;
@@ -138,7 +138,10 @@ public class GameScreenView : BaseCanvasView {
                             UpdateUsernameText( me.UserName, "UNDEFINED" );
                             winsToWinTournament = (int) Math.Log( tournament.Options.NumberOfPlayers, 2 ) * 5 -(5 - winsToWinGame );
                         }
-                    } );
+                        base.Show();
+                        UIController.Instance.CloseNotGamingPanels();
+
+                    });
                 
                 winsToWinGame = 5;
                 gamesToWinRoundText.text = winsToWinGame.ToString();
@@ -246,9 +249,6 @@ public class GameScreenView : BaseCanvasView {
         foreach ( var game in match.CompletedGames ) {
             history.Add( GetNewStep( game.Value ) );
         }
-        var lastStep = history[history.Count - 1];
-        lastRoundChoiseView.SetLastStep( lastStep.roundNumber, lastStep.playerGesture, lastStep.opponentGesture, lastStep.result );
-        history.Remove( lastStep );
         gameRoundOverView.Show( history );
     }
 
@@ -259,6 +259,7 @@ public class GameScreenView : BaseCanvasView {
 
         if ( !match.Winner.Equals( match.Me ) ) {
             gameRoundOverView.CurrentGameRoundOverState = GameRoundOverState.Lose;
+            gameRoundOverView.UpdateOpponentUsername(match.Opponent.Name);
             AudioManager.Instance.PlayTotalLooseSound();
             
             winsToWinTournament = 0;
@@ -291,6 +292,7 @@ public class GameScreenView : BaseCanvasView {
                             gamesToWinTournamentText.text = winsToWinTournament < 0 ? 0.ToString() : winsToWinTournament.ToString();
                         }
                         UpdateBattleLog( match );
+                       gameRoundOverView.UpdateOpponentUsername( match.Opponent.Name );
                     } );
 
             } );
@@ -331,11 +333,11 @@ public class GameScreenView : BaseCanvasView {
         if ( TournamentManager.Instance.CurrentTournament == null ) {
             return;
         }
-        if ( match.IsNull() || !match.Tournament.Equals( TournamentManager.Instance.CurrentTournament.Id )) {
+        if ( match.IsNull() || !match.Tournament.Equals( TournamentManager.Instance.CurrentTournament.Id ) ) {
             return;
         }
-        
-        
+
+
         GameManager.Instance.SetCurrentTournament( match.Tournament );
 
         GameManager.Instance.OnGameExpectedMove -= ExpectingMove;
@@ -344,59 +346,39 @@ public class GameScreenView : BaseCanvasView {
         gameRoundOverView.gameObject.SetActive( false );
         gameStartPreview.gameObject.SetActive( false );
 
-        if ( match.CompletedGames.Count == 0 ) {
-            ApiManager.Instance.Database.GetTournament( GameManager.Instance.CurrentTournament.Id.Id )
-                .Then( tournament => {
+        GameManager.Instance.UpdateMetches( TournamentManager.Instance.CurrentTournament )
+            .Then( () => {
+                if ( !match.CurrentGame.IsNull() ) {
+                    nextTimeout = match.CurrentGame.NextTimeout == null
+                        ? DateTime.UtcNow.AddSeconds( 15 )
+                        : match.CurrentGame.NextTimeout.Value;
 
-                    GameManager.Instance.UpdateMetches( tournament );
-
-                    if ( !match.CurrentGame.IsNull() ) {
-                        nextTimeout = match.CurrentGame.NextTimeout == null
-                            ? DateTime.UtcNow.AddSeconds( 15 )
-                            : match.CurrentGame.NextTimeout.Value;
-
-                        if ( match.CurrentGame.GameState == ChainTypes.GameState.ExpectingCommitMoves ||
-                             match.CurrentGame.GameState == ChainTypes.GameState.ExpectingRevealMoves ) {
-                            AudioManager.Instance.PlayWaitingSound();
-                        }
-                        if ( PlayerPrefs.GetInt( match.Id.ToString() ) == 0 ) {
-                            AudioManager.Instance.PlayNoticeSound();
-                            PlayerPrefs.SetInt( match.Id.ToString(), (int) match.Id.Id );
-                        }
-
-                        UpdateMoveButtons();
+                    if ( match.CurrentGame.GameState == ChainTypes.GameState.ExpectingCommitMoves ||
+                         match.CurrentGame.GameState == ChainTypes.GameState.ExpectingRevealMoves ) {
+                        AudioManager.Instance.PlayWaitingSound();
                     }
-                    UpdateGameUi( match );
+                    if ( PlayerPrefs.GetInt( match.Id.ToString() ) == 0 ) {
+                        AudioManager.Instance.PlayNoticeSound();
+                        PlayerPrefs.SetInt( match.Id.ToString(), (int) match.Id.Id );
+                    }
 
-                } );
-        }
-
-        if ( !match.CurrentGame.IsNull() ) {
-            nextTimeout = match.CurrentGame.NextTimeout == null
-                ? DateTime.UtcNow.AddSeconds( 15 )
-                : match.CurrentGame.NextTimeout.Value;
-
-            if ( match.CurrentGame.GameState == ChainTypes.GameState.ExpectingCommitMoves ||
-                 match.CurrentGame.GameState == ChainTypes.GameState.ExpectingRevealMoves ) {
-                AudioManager.Instance.PlayWaitingSound();
-            }
-            if ( PlayerPrefs.GetInt( match.Id.ToString() ) == 0 ) {
-                AudioManager.Instance.PlayNoticeSound();
-                PlayerPrefs.SetInt( match.Id.ToString(), (int) match.Id.Id );
-            }
-
-            UpdateMoveButtons();
-        }
+                    UpdateMoveButtons();
+                }
 
 
-        UpdateGameUi(GameManager.Instance.CurrentMatch);
-        playerHand.enabled = true;
-        opponentHand.enabled = true;
-        StopTimer();
-        UpdateTimer();
+                UpdateGameUi( GameManager.Instance.CurrentMatch );
+                playerHand.enabled = true;
+                opponentHand.enabled = true;
+                StopTimer();
+                UpdateTimer();
 
-        UpdateJackpot(GameManager.Instance.CurrentMatch);
-        UpdateUsernameText(GameManager.Instance.CurrentMatch.Me.Name, GameManager.Instance.CurrentMatch.Opponent.Name );
+                UpdateJackpot( GameManager.Instance.CurrentMatch );
+                UpdateUsernameText( GameManager.Instance.CurrentMatch.Me.Name, GameManager.Instance.CurrentMatch.Opponent.Name );
+                base.Show();
+                UIController.Instance.CloseNotGamingPanels();
+            } );
+
+
     }
 
 
@@ -434,7 +416,7 @@ public class GameScreenView : BaseCanvasView {
                 ApiManager.Instance.Database.GetTournament( matchResult.Tournament.Id )
                     .Then( tournament => {
                         TournamentManager.Instance.GetAssetObject( tournament.Options.BuyIn.Asset.Id )
-                            .Then( asset => jackpoText.text =Utils.GetFormatedDecimaNumber( ( tournament.PrizePool /Math.Pow( 10, asset.Precision ) ).ToString() ) +asset.Symbol );
+                            .Then( asset => jackpoText.text =Utils.GetFormatedDecimaNumber( ( tournament.PrizePool /Math.Pow( 10, asset.Precision ) ).ToString() ) +" " +asset.Symbol );
                     } );
             } );
     }

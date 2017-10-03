@@ -172,5 +172,4 @@ public class HistoryTournamentsListView : DashboardTabView {
         addPage = true;
         LoadTournaments();
     }
-
 }

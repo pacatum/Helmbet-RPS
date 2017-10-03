@@ -5,6 +5,7 @@ using Base.Config;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Tournaments;
+using Promises;
 using Tools;
 using Gesture = Base.Config.ChainTypes.RockPaperScissorsGesture;
 
@@ -88,46 +89,55 @@ public sealed class GameManager : SingletonMonoBehaviour<GameManager> {
 		Repository.OnObjectUpdate += Repository_OnObjectUpdate;
 	}
 
-	public void UpdateMetches( TournamentObject info ) {
-	    SetCurrentTournament( info.Id );
+    public Promise UpdateMetches( TournamentObject info ) {
+        return new Promise( ( action, exeption ) => {
+            SetCurrentTournament( info.Id );
 
-        TournamentManager.Instance.GetDetailsTournamentObject( info.TournamentDetails.Id ).Then( detail => {
-			ApiManager.Instance.Database.GetMatches( Array.ConvertAll( detail.Matches, match => match.Id ) ).Then( matches => {
-				var myMatch = Array.Find( matches, match => match.State.Equals( ChainTypes.MatchState.InProgress ) && match.Players.Contains( me.Id ) );
-				ApiManager.Instance.Database.GetGames( Array.ConvertAll( myMatch.Games, game => game.Id ) ).Then( games => {
-					var existTournament = IsTournamentExist( myMatch.Tournament );
-					var existMatch = existTournament && myTournaments[ myMatch.Tournament ].StartedMatches.Contains( myMatch.Id );
-					if ( !existTournament ) {
-						myTournaments[ myMatch.Tournament ] = new TournamentContainer( match => OnNewMatch.Invoke( match ), match => OnMatchComplete.Invoke( match ) );
-					}
-					myTournaments[ myMatch.Tournament ].UpdateTournamentInfo( info, detail );
-					var opponent = Array.Find( myMatch.Players, account => !me.Id.Equals( account ) );
-					Repository.GetInPromise( opponent, () => ApiManager.Instance.Database.GetAccount( opponent.Id ) ).Then( account => {
-						if ( !existMatch ) {
-							myTournaments[ myMatch.Tournament ].NewMatch( myMatch, me, account,
-																		 ( match, game ) => OnNewGame.Invoke( match, game ),
-																		 ( match, game ) => OnGameComplete.Invoke( match, game ),
-																		 ( match, game ) => OnGameExpectedMove.Invoke( match, game ) );
-						}
-						var completedGames = myTournaments[ myMatch.Tournament ].CurrentMatch.CompletedGames;
-						foreach ( var game in games ) {
-							if ( !completedGames.ContainsKey( game.Id ) ) {
-							    if ( game.State.Equals( ChainTypes.GameState.Complete ) ) {
-							        ( completedGames[game.Id] = new GameContainer( completedGames.Count + 1, game, me, account ) )
-							            .CheckState();
-							    } else {
-							        myTournaments[myMatch.Tournament].CurrentMatch.NewGame( game ).CheckState();
+            TournamentManager.Instance.GetDetailsTournamentObject( info.TournamentDetails.Id )
+                .Then( detail => {
+                    ApiManager.Instance.Database.GetMatches( Array.ConvertAll( detail.Matches, match => match.Id ) )
+                        .Then( matches => {
+                            var myMatch = Array.Find( matches, match => match.State.Equals( ChainTypes.MatchState.InProgress ) && match.Players.Contains( me.Id ) );
+                            ApiManager.Instance.Database.GetGames( Array.ConvertAll( myMatch.Games, game => game.Id ) )
+                                .Then( games => {
+                                    var existTournament = IsTournamentExist( myMatch.Tournament );
+                                    var existMatch = existTournament && myTournaments[myMatch.Tournament].StartedMatches.Contains( myMatch.Id );
+                                    if ( !existTournament ) {
+                                        myTournaments[myMatch.Tournament] = new TournamentContainer( match => OnNewMatch.Invoke( match ), match => OnMatchComplete.Invoke( match ) );
+                                    }
+                                    myTournaments[myMatch.Tournament].UpdateTournamentInfo( info, detail );
+                                    var opponent = Array.Find( myMatch.Players, account => !me.Id.Equals( account ) );
+                                    Repository.GetInPromise( opponent, () => ApiManager.Instance.Database.GetAccount( opponent.Id ) )
+                                        .Then( account => {
+                                            if ( !existMatch ) {
+                                                myTournaments[myMatch.Tournament]
+                                                    .NewMatch( myMatch, me, account,
+                                                              ( match, game ) => OnNewGame.Invoke( match, game ),
+                                                              ( match, game ) => OnGameComplete.Invoke( match, game ),
+                                                              ( match, game ) => OnGameExpectedMove.Invoke( match, game ) );
+                                            }
+                                            var completedGames = myTournaments[myMatch.Tournament].CurrentMatch.CompletedGames;
+                                            foreach ( var game in games ) {
+                                                if ( !completedGames.ContainsKey( game.Id ) ) {
+                                                    if ( game.State.Equals( ChainTypes.GameState.Complete ) ) {
+                                                        ( completedGames[game.Id] = new GameContainer( completedGames.Count + 1, game, me, account ) )
+                                                            .CheckState();
+                                                    } else {
+                                                        myTournaments[myMatch.Tournament].CurrentMatch.NewGame( game ).CheckState();
 
-							    }
-							}
-						}
-					} );
-				} );
-			} );
-		} );
-	}
+                                                    }
+                                                }
+                                            }
+                                            action();
+                                        } );
+                                } );
+                        } );
+                } );
+        } );
 
-	void Repository_OnObjectUpdate( IdObject idObject ) {
+    }
+
+    void Repository_OnObjectUpdate( IdObject idObject ) {
 		if ( !idObject.SpaceType.Equals( SpaceType.Match ) ) {
 			return;
 		}

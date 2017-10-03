@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Base.Data.Tournaments;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameStartPreview : BaseCanvasView {
-
-    [SerializeField] Text tournamentNumberText;
+    
     [SerializeField] Text tournamentStartTimeSeconds;
     [SerializeField] Text tournamentStartTimeMinutes;
 
@@ -15,6 +12,7 @@ public class GameStartPreview : BaseCanvasView {
 
     TournamentObject currentTournament;
     DateTime currentDateTime = DateTime.Now;
+
 
     public void SetTournamentInformation( TournamentObject tournament ) {
         gameObject.SetActive( true );

@@ -55,6 +55,7 @@ public class DashboardTabView : BaseCanvasView {
 
     }
 
+
     #region Sorting
 
     public SortType CurrentSortingType {

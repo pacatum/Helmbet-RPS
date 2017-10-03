@@ -18,6 +18,8 @@ public class GameRoundOverView : MonoBehaviour {
     [SerializeField] GameObject looseRoundView;
     [SerializeField] GameObject winRoundView;
     [SerializeField] GameObject roundOverView;
+    [SerializeField] GameObject winText;
+    [SerializeField] GameObject looseText;
     [SerializeField] Button dashboardButton;
 
     [SerializeField] Sprite paperGesture;
@@ -25,11 +27,23 @@ public class GameRoundOverView : MonoBehaviour {
     [SerializeField] Sprite scissorsGesture;
     [SerializeField] Sprite undefinedGesture;
 
+    [SerializeField] Sprite paperColorGesture;
+    [SerializeField] Sprite rockColorGesture;
+    [SerializeField] Sprite scissorsColorGesture;
+
+    [SerializeField] Color loseTextColor;
+    [SerializeField] Color undefinedTextColor;
+    [SerializeField] Color paperWinTextColor;
+    [SerializeField] Color rockWinTextColor;
+    [SerializeField] Color scissorsWinTextColor;
+
     [SerializeField] RoundOver roundOverPrefab;
     [SerializeField] Transform roundLogContentHolder;
 
     [SerializeField] GameScreenView gameScreenView;
     [SerializeField] Text matchesCountText;
+
+    [SerializeField] Text opponentUsernameText;
 
 
     void Awake() {
@@ -48,12 +62,16 @@ public class GameRoundOverView : MonoBehaviour {
         looseRoundView.SetActive( false );
         winRoundView.SetActive( false );
         roundOverView.SetActive( false );
+        winText.SetActive(false);
+        looseText.SetActive(false);
         switch ( state ) {
             case GameRoundOverState.Lose:
                 looseRoundView.SetActive( true );
+                looseText.SetActive( true );
                 break;
             case GameRoundOverState.Win:
                 winRoundView.SetActive( true );
+                winText.SetActive( true );
                 break;
             case GameRoundOverState.RoundOver:
                 roundOverView.SetActive( true );
@@ -72,29 +90,47 @@ public class GameRoundOverView : MonoBehaviour {
         UpdateHistory( history );
     }
 
+    public void UpdateOpponentUsername( string opponentUsername ) {
+        opponentUsernameText.text = "ROUND AGAINST: " + opponentUsername;
+    }
+
 
     void UpdateHistory( List<GameChoiseResult> history ) {
-
-
         foreach ( var item in history ) {
+
             var gameOverView = Instantiate( roundOverPrefab );
             gameOverView.transform.SetParent( roundLogContentHolder, false );
-            gameOverView.SetUpRoundOver( GetGesture( item.playerGesture ), GetGesture( item.opponentGesture ),
-                                        item.roundNumber );
+            gameOverView.SetUpRoundOver( GetPlayerGesture( item.playerGesture, item.result ), GetOpponentGesture( item.opponentGesture, item.result ),item);
         }
     }
 
-    Sprite GetGesture( ChainTypes.RockPaperScissorsGesture? state ) {
+    Sprite GetPlayerGesture( ChainTypes.RockPaperScissorsGesture? state, GameResult result ) {
         if ( state == null ) {
             return undefinedGesture;
         }
         switch ( state ) {
             case ChainTypes.RockPaperScissorsGesture.Rock:
-                return rockGesture;
+                return result == GameResult.Win ? rockColorGesture : rockGesture;
             case ChainTypes.RockPaperScissorsGesture.Scissors:
-                return scissorsGesture;
+                return result == GameResult.Win ? scissorsColorGesture: scissorsGesture;
             case ChainTypes.RockPaperScissorsGesture.Paper:
-                return paperGesture;
+                return result == GameResult.Win ?paperColorGesture: paperGesture;
+            default:
+                return undefinedGesture;
+        }
+    }
+
+    Sprite GetOpponentGesture( ChainTypes.RockPaperScissorsGesture? state, GameResult result ) {
+        if ( state == null ) {
+            return undefinedGesture;
+        }
+        switch ( state ) {
+            case ChainTypes.RockPaperScissorsGesture.Rock:
+                return result == GameResult.Lose ? rockColorGesture : rockGesture;
+            case ChainTypes.RockPaperScissorsGesture.Scissors:
+                return result == GameResult.Lose ? scissorsColorGesture : scissorsGesture;
+            case ChainTypes.RockPaperScissorsGesture.Paper:
+                return result == GameResult.Lose ? paperColorGesture : paperGesture;
             default:
                 return undefinedGesture;
         }

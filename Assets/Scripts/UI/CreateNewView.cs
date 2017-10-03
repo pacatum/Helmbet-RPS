@@ -61,7 +61,6 @@ public class CreateNewView : BaseCanvasView {
     public double BuyIn {
         get { return buyInSetting.BuyInAmount; }
     }
-    
 
     public override void Show() {
         base.Show();

@@ -159,10 +159,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
             
 
             var search = IsTournamentContains( tournaments[i], assets[i], searchFilter, accounts[i]==null? null : accounts[i] );
-            
-
             if ( buyIn && numberOfPlayers && symbol && gameName && search ) {
-
                 if ( participate.SelectChoise.Equals( "ONLY ME" ) ) {
                     if ( IsPlayerJoined( details[i] ) ) {
                         resultList.Add( tournaments[i] );
@@ -184,15 +181,13 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         var jackpot = ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) * tournament.Options.NumberOfPlayers ) + asset.Symbol ).ToLower().Contains( search );
         var time = tournament.Options.RegistrationDeadline - DateTime.UtcNow;
         var registerDeadline = false;
-        if (time.TotalMinutes < 60)
-        {
-            registerDeadline = ("Register: <" + (int)time.TotalMinutes + "m").Contains(searchText);
-        }
-        else if ( time.TotalHours > 0 ) {
+        if ( time.TotalMinutes < 60 ) {
+            registerDeadline = ( "Register: <" + (int) time.TotalMinutes + "m" ).Contains( searchText );
+        } else if ( time.TotalHours > 0 ) {
             registerDeadline = ( "Register: ~" + (int) time.TotalHours + "h" ).Contains( searchText );
         }
         //var startTime = ( "Start: " + Convert.ToDateTime( time.ToString() ).ToString( "hh:mm:ss" ) ).Contains( searchText );
-        var startDelay = "2 minutes after full".Contains(search);
+        var startDelay = "2 minutes after full".Contains( search );
         var gameName = "rps".Contains( search );
         if ( tournament.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
             var result = account.Id.Equals( AuthorizationManager.Instance.UserData.FullAccount.Account.Id )
@@ -204,7 +199,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
             var winner = account.Name.ToLower().Contains( search );
             return buyIn || gameName || tournamentId || winner || result;
         }
-        return buyIn || jackpot || registerDeadline  || gameName || tournamentId || startDelay;
+        return buyIn || jackpot || registerDeadline || gameName || tournamentId || startDelay;
     }
 
 
@@ -216,7 +211,6 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         }
         return false;
     }
-    
 
     void FilterRestoreValuesToDefault() {
         Restore();

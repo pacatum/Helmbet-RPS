@@ -1,6 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+public enum ButtonViewState {
+
+    Normal,
+    Alternative,
+    Hover, 
+    Pressed
+
+}
+
 public class UIButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
     [SerializeField] GameObject hoverButtonItem;
@@ -10,8 +19,7 @@ public class UIButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     GameObject currentNormalState;
 
     public void OnPointerEnter( PointerEventData eventData ) {
-        hoverButtonItem.SetActive( true );
-        alternativeItem.SetActive( false );
+       UpdateColor( ButtonViewState.Hover );
     }
 
     public void OnPointerExit( PointerEventData eventData ) {
@@ -25,7 +33,27 @@ public class UIButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     }
 
     public void SetAlternativeState() {
-        normalButtonItem.SetActive(false);
-        alternativeItem.SetActive(true);
+        normalButtonItem.SetActive( false );
+        alternativeItem.SetActive( true );
     }
+
+    void SetHoverState() {
+        hoverButtonItem.SetActive(true);
+        alternativeItem.SetActive(false);
+    }
+
+    public void UpdateColor( ButtonViewState state ) {
+        switch ( state ) {
+            case ButtonViewState.Alternative:
+                SetAlternativeState();
+                break;
+            case ButtonViewState.Normal:
+                SetNormalState();
+                break;
+            case ButtonViewState.Hover:
+                SetHoverState();
+                break;
+        }
+    }
+
 }

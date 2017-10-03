@@ -252,6 +252,8 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     public void OnPointerClick( PointerEventData eventData ) {
+        IsHover = false;
+        footerView.OpenGameScreen();
     }
 
 }

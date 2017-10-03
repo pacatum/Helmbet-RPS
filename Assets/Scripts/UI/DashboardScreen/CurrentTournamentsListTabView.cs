@@ -89,9 +89,9 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     }
 
     void Item_OnOperationSuccess() {
-        StartCoroutine( currentJoinItem.UpdateItem( currentJoinItem.CurrentTournament) );
         leaveTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
         joinTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
+        LoadTournaments();
     }
 
 

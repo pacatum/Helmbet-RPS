@@ -52,12 +52,14 @@ public class SearchView : MonoBehaviour{
             startInsertIndex = input.selectionAnchorPosition;
         }
 
-        if ( Input.GetKeyUp( KeyCode.Return )) {
+        if ( Input.GetKeyUp( KeyCode.Return ) ) {
             Value_OnChange();
-
-            gameObject.SetActive(false);
         }
-        
+
+        if ( Input.GetKeyUp( KeyCode.Escape ) ) {
+            Hide();
+        }
+
     }
 
     protected void Copy( InputField target ) {

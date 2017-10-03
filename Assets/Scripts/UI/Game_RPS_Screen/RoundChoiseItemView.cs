@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Base.Data.Json;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Gesture = Base.Config.ChainTypes.RockPaperScissorsGesture;
@@ -18,7 +19,7 @@ public class RoundChoiseItemView : MonoBehaviour {
 	[SerializeField] Image thisPlayerChoiseIcon;
 	[SerializeField] Text thisPlayerChoiseText;
 
-	[SerializeField] Text equalsSymbolText;
+	[SerializeField] TextMeshProUGUI equalsSymbolText;
 
 	[SerializeField] GameObject roundTieResultIcon;
 	[SerializeField] GameObject roundWinResultIcon;
@@ -48,8 +49,9 @@ public class RoundChoiseItemView : MonoBehaviour {
 	}
 
 	public void UpdateItem( Gesture? opponentChoise, Gesture? playerChoise, GameResult state ) {
+	    UpdateResultImage( state );
 
-		if ( opponentChoise.HasValue ) {
+        if ( opponentChoise.HasValue ) {
 			switch ( opponentChoise.Value ) {
 			case Gesture.Scissors:
 				anotherPlayerChoiseIcon.sprite = ScissorsSprite;
@@ -80,8 +82,8 @@ public class RoundChoiseItemView : MonoBehaviour {
 			thisPlayerChoiseIcon.sprite = UndefinedSprite;
 		}
 		currentResultState = state;
-		anotherPlayerChoiseText.text = opponentChoise.HasValue ? RockPaperScissorsGestureEnumConverter.ConvertTo( opponentChoise.Value ) : "undefined";
-		thisPlayerChoiseText.text = playerChoise.HasValue ? RockPaperScissorsGestureEnumConverter.ConvertTo( playerChoise.Value ) : "undefined";
+		anotherPlayerChoiseText.text = opponentChoise.HasValue ? RockPaperScissorsGestureEnumConverter.ConvertTo( opponentChoise.Value ).ToUpper() : "OVERDUED";
+		thisPlayerChoiseText.text = playerChoise.HasValue ? RockPaperScissorsGestureEnumConverter.ConvertTo( playerChoise.Value ).ToUpper() : "OVERDUED";
 	}
 
 	void UpdateResultImage( GameResult state ) {
@@ -103,7 +105,8 @@ public class RoundChoiseItemView : MonoBehaviour {
 
 	void SwitchResultImage( GameObject target ) {
 		foreach ( var item in roundResultImages ) {
-			item.SetActive( item.Equals( target ) );
+			item.SetActive( false );
 		}
+        target.SetActive( true );
 	}
 }

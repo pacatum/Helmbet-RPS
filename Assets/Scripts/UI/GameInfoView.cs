@@ -42,9 +42,9 @@ public class GameInfoView : BaseCanvasView {
         aboutGameButton.GetComponent<Button>().onClick.AddListener( ScrollToAboutGameText );
         creatingTournamentButton.GetComponent<Button>().onClick.AddListener( ScrollToCreatingTournamentText );
         howToPlayButton.GetComponent<Button>().onClick.AddListener( ScrollToHowToPlayText );
-        payoutsButton.GetComponent<Button>().onClick.AddListener( ScrollToTheEnd );
-        tournamentHistoryButton.GetComponent<Button>().onClick.AddListener( ScrollToTheEnd );
-        settingButton.GetComponent<Button>().onClick.AddListener( ScrollToTheEnd );
+        payoutsButton.GetComponent<Button>().onClick.AddListener(delegate {ScrollToTheEnd( payoutsButton );});
+        tournamentHistoryButton.GetComponent<Button>().onClick.AddListener(delegate { ScrollToTheEnd(tournamentHistoryButton); });
+        settingButton.GetComponent<Button>().onClick.AddListener( delegate {ScrollToTheEnd(settingButton);} );
 
         scrollView.onValueChanged.AddListener(UpdateScrollPosition);
         Clear();
@@ -82,26 +82,27 @@ public class GameInfoView : BaseCanvasView {
         scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, thirdScrollYPosition );
     }
 
-    void ScrollToTheEnd() {
+    void ScrollToTheEnd(ButtonView button) {
         scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, fourthScrollYPosition );
+        SwitchButton( button );
     }
 
-    void UpdateScrollPosition(Vector2 position) {
+    void UpdateScrollPosition( Vector2 position ) {
         var contentPosition = scrollView.content.anchoredPosition.y;
-        if (contentPosition >= fisrtScrollYPosition && contentPosition < secondScrollYPosition ) {
+        if ( contentPosition >= fisrtScrollYPosition && contentPosition < secondScrollYPosition ) {
             SwitchButton( aboutGameButton );
-        }else if (contentPosition >= secondScrollYPosition && contentPosition < thirdScrollYPosition ) {
+        } else if ( contentPosition >= secondScrollYPosition && contentPosition < thirdScrollYPosition ) {
             SwitchButton( creatingTournamentButton );
-        } else if (contentPosition >= thirdScrollYPosition && contentPosition < fourthScrollYPosition ) {
+        } else if ( contentPosition >= thirdScrollYPosition && contentPosition < fourthScrollYPosition ) {
             SwitchButton( howToPlayButton );
         } else {
+            if(settingButton.Currentstate != ButtonState.Pressed && tournamentHistoryButton.Currentstate!= ButtonState.Pressed)
             SwitchButton( payoutsButton );
         }
     }
 
 
     void Clear() {
-
         SwitchButton(aboutGameButton);
         ScrollToAboutGameText();
     }

@@ -10,8 +10,7 @@ using Tools;
 
 public class TournamentDetailsView : BaseCanvasView {
 
-    [SerializeField] SceduleTournamentItemView tournamentItemView;
-    [SerializeField] HistoryTournamentItemView historyTournamentItem;
+    [SerializeField] TournamentDetailsItemView tournamentItemView;
     [SerializeField]  UnityEngine.GameObject infoPanel;
     [SerializeField]  Button closeButton;
     [SerializeField]  UnityEngine.GameObject detailsView;
@@ -37,10 +36,7 @@ public class TournamentDetailsView : BaseCanvasView {
         if ( idObject.SpaceType.Equals(SpaceType.Tournament) ) {
             var tournament = idObject as TournamentObject;
             if ( currenTournament.Id.Equals( tournament.Id ) && tournament.State.Equals(ChainTypes.TournamentState.Concluded)) {
-                tournamentItemView.gameObject.SetActive(false);
-                historyTournamentItem.gameObject.SetActive(true);
-                historyTournamentItem.UpdateDetails(tournament);
-                
+               UpdateTournament( tournament );
             }
         }
 
@@ -70,16 +66,7 @@ public class TournamentDetailsView : BaseCanvasView {
     }
 
     void UpdateTournament( TournamentObject info ) {
-        
-        if ( info.State.Equals(ChainTypes.TournamentState.InProgress) ) {
-            tournamentItemView.gameObject.SetActive( true );
-            historyTournamentItem.gameObject.SetActive( false );
-            tournamentItemView.UpdateDetails( info );
-        } else if ( info.State.Equals(ChainTypes.TournamentState.Concluded) ) {
-            tournamentItemView.gameObject.SetActive( false );
-            historyTournamentItem.gameObject.SetActive( true );
-            historyTournamentItem.UpdateDetails( info );
-        }
+        StartCoroutine( tournamentItemView.UpdateItemView( info ) );
     }
 
     public void ShowTournamentInfo( TournamentObject info ) {

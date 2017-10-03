@@ -154,6 +154,23 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
         result.AddRange(matchList);
     }
 
+    public IEnumerator GetAccount(SpaceTypeId accountId, List<AccountObject> accountResult) {
+        List<AccountObject> account = null;
+        ApiManager.Instance.Database.GetAccount(accountId.Id  ).Then( result => {
+            account = new List<AccountObject>();
+            account.Add( result );
+        }  ).Catch(exeption => account = new List<AccountObject>()  );
+
+        while ( account == null ) {
+            yield return null;
+        }
+
+        if ( account.Count > 0 ) {
+            accountResult.AddRange(account);
+        }
+
+    }
+
     public IEnumerator GetMatcheWinnerAccountsObjects( uint tournamentId, List<AccountObject> accountWinners ) {
 		List<AccountObject> loadedAccounts = null;
 		GetDetailsTournamentObject( tournamentId ).Then( details => {

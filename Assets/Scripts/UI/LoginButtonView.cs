@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,11 +19,11 @@ public class LoginButtonView : MonoBehaviour {
 	[SerializeField] Color inactiveTextColor;
 
 	Image targetImage;
-	Text targetText;
+	TextMeshProUGUI targetText;
 
 	void Awake() {
 		targetImage = GetComponent<Image>();
-		targetText = GetComponentInChildren<Text>();
+		targetText = GetComponentInChildren<TextMeshProUGUI>();
 		UpdateState(ButtonState.Inactive);
 	}
 

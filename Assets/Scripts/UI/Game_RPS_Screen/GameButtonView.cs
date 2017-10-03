@@ -79,7 +79,7 @@ public class GameButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         } else {
             normalState.sprite = undefinedSprite;
             hoverState.sprite = undefinedSprite;
-            stepNameText.text = "UNDEFINED";
+            stepNameText.text = "OVERDUED";
             hoverBg.color = undefinedColor;
         }
     }

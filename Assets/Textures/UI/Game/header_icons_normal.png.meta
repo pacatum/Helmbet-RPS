@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: c5061c8dce9833c4dadf06c2d72af1e7
-timeCreated: 1499322068
+timeCreated: 1506933261
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -8,6 +8,10 @@ TextureImporter:
     21300002: game_icons_1
     21300004: game_icons_2
     21300006: game_icons_3
+    21300008: header_icons_normal_0
+    21300010: header_icons_normal_1
+    21300012: header_icons_normal_2
+    21300014: header_icons_normal_3
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -90,52 +94,39 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: game_icons_0
+      name: header_icons_normal_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 30
-        height: 25
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: game_icons_1
+      name: header_icons_normal_3
       rect:
         serializedVersion: 2
-        x: 181
-        y: 1
-        width: 24
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: game_icons_2
-      rect:
-        serializedVersion: 2
-        x: 233
+        x: 219
         y: 0
-        width: 32
-        height: 25
+        width: 47
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: game_icons_3
+      name: header_icons_normal_1
       rect:
         serializedVersion: 2
-        x: 285
+        x: 105
         y: 0
-        width: 29
-        height: 25
+        width: 55
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

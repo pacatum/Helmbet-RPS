@@ -34,7 +34,7 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     [SerializeField] NoticesView noticesView;
 
     private TournamentObject currenTournamentObject;
-    [Header( "Popups" ), SerializeField] private MessagePopupView messagePopupView;
+    [Header( "Popups" ), SerializeField] MessagePopupView messagePopupView;
     public string bufferString;
 
 
@@ -216,7 +216,8 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     }
 
     void ShowGameScreenView() {
-        SwitchCanvas( gameScreenView );
+        //SwitchCanvas( gameScreenView );
+        gameScreenView.Show();
     }
 
     public void SwitchCursorState( CursorState state ) {
@@ -247,6 +248,15 @@ public class UIController : SingletonMonoBehaviour<UIController> {
 
     public void HidePopups() {
         messagePopupView.HideAll();
+    }
+
+    public void CloseNotGamingPanels() {
+        foreach ( var canvas in allCanvases ) {
+            if ( !canvas.Equals( gameScreenView ) ) {
+                canvas.Hide();
+            }
+        }
+        ScreenLoader_OnLoad( false );
     }
 
 }
