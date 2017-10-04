@@ -3,16 +3,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ToggleGroupView : MonoBehaviour {
-    
-
-
-	bool extactTimeAndDate;
 
     [SerializeField] ToggleView twoMinutesToggle;
     [SerializeField] ToggleView exactTimeAndDateToggle;
     [SerializeField] StartTimePanelView startTimeView;
 
-    private CreateNewView createNewView;
+    bool extactTimeAndDate;
+    CreateNewView createNewView;
 
 
     void Awake() {
@@ -42,7 +39,7 @@ public class ToggleGroupView : MonoBehaviour {
             exactTimeAndDateToggle.UpdateToggle( true );
             ExtactTimeAndDate = true;
         } else {
-            twoMinutesToggle.SetInteructable(true);
+            twoMinutesToggle.SetInteructable( true );
         }
     }
 
@@ -56,13 +53,11 @@ public class ToggleGroupView : MonoBehaviour {
 
     void SetStartTimePanel( bool active ) {
         startTimeView.gameObject.SetActive( active );
-        startTimeView.IsActive = active ;
+        startTimeView.IsActive = active;
     }
 
     public DateTime? StartDateTime {
-        get {
-            return extactTimeAndDate? startTimeView.StartDateTime : null;
-        }
+        get { return extactTimeAndDate ? startTimeView.StartDateTime : null; }
     }
 
     public uint? StartDelay {

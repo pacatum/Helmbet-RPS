@@ -9,7 +9,7 @@ public class AccountView : BaseCanvasView {
 
 
     public event Action OnLogoutButton;
-    
+
     [SerializeField] GameObject accountPanel;
     [SerializeField] Button logoutButton;
     [SerializeField] BalanceItemView balanceItemViewPrefab;
@@ -23,7 +23,6 @@ public class AccountView : BaseCanvasView {
     public override void Awake() {
         base.Awake();
         logoutButton.onClick.AddListener( OnLogout_Click );
-        UpdateAccountBalances();
         closeButton.onClick.AddListener( Hide );
         AuthorizationController.Instance.OnBalanceUpdate += UpdateAccountBalances;
         Hide();
@@ -34,45 +33,43 @@ public class AccountView : BaseCanvasView {
         set {
             isActive = value;
             if ( isActive ) {
-                 UpdateAccountBalances() ;
+                UpdateAccountBalances();
             }
         }
     }
 
+    void ClearItemList() {
+        foreach ( var item in items ) {
+            Destroy( item.gameObject );
+        }
+        items.Clear();
+    }
 
     void UpdateAccountBalances() {
         if ( AuthorizationManager.Instance.UserData.IsNull() ) {
             return;
         }
-
-        foreach ( var item in items ) {
-            Destroy( item.gameObject );
-        }
-        items.Clear();
-
         if ( AuthorizationController.Instance.accountBalances.Count == 0 ) {
             ApiManager.Instance.Database.GetAsset()
                 .Then( asset => {
+                    ClearItemList();
                     var item = Instantiate( balanceItemViewPrefab );
                     item.transform.SetParent( balanceItemsPivot, false );
-                    item.BalanceAmount = 0 + " " +
-                                         asset.Symbol;
+                    item.BalanceAmount = 0 + " " + asset.Symbol;
                     item.BalanceDescription = SetBalanceDecsription( asset.Symbol );
-                    items.Add(item);
+                    items.Add( item );
                     balanceText.text = item.BalanceAmount;
                 } );
         } else {
             ApiManager.Instance.Database
-                .GetAssets( Array.ConvertAll( AuthorizationController.Instance.accountBalances.ToArray(),
-                                             asset => asset.Asset.Id ) )
+                .GetAssets( Array.ConvertAll( AuthorizationController.Instance.accountBalances.ToArray(), asset => asset.Asset.Id ) )
                 .Then( objects => {
+                    ClearItemList();
                     for ( int i = 0; i < objects.Length; i++ ) {
                         var item = Instantiate( balanceItemViewPrefab );
                         items.Add( item );
                         item.transform.SetParent( balanceItemsPivot, false );
-                        item.BalanceAmount = AuthorizationController.Instance.accountBalances[i].Amount /
-                                             Mathf.Pow( 10, objects[i].Precision ) + " " +
-                                             objects[i].Symbol;
+                        item.BalanceAmount = AuthorizationController.Instance.accountBalances[i].Amount / Mathf.Pow( 10, objects[i].Precision ) + " " + objects[i].Symbol;
                         item.BalanceDescription = SetBalanceDecsription( objects[i].Symbol );
                     }
                     balanceText.text = items[0].BalanceAmount;
@@ -80,11 +77,10 @@ public class AccountView : BaseCanvasView {
         }
     }
 
-    string SetBalanceDecsription(string symbol) {
+    string SetBalanceDecsription( string symbol ) {
         switch ( symbol ) {
             case "PPY":
                 return "Peerplays Core Tokens".ToUpper();
-
         }
         return string.Empty;
     }
@@ -96,6 +92,12 @@ public class AccountView : BaseCanvasView {
         }
     }
 
+    void Update() {
+        if ( Input.GetKeyUp( KeyCode.Escape ) ) {
+            Hide();
+        }
+    }
+
     public override void Show() {
         base.Show();
         closeButton.gameObject.SetActive( true );
@@ -104,9 +106,9 @@ public class AccountView : BaseCanvasView {
 
     public override void Hide() {
         base.Hide();
-        closeButton.gameObject.SetActive(false);
+        closeButton.gameObject.SetActive( false );
         IsActive = false;
-        
+
     }
 
 }

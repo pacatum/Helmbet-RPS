@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Base.Data.Tournaments;
-using Base.Config;
 
 public class SceduleTournamentItemView : BaseTournamentItemView {
 
@@ -13,16 +12,16 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         if ( footerView.JoinButton != null ) {
             footerView.JoinButton.onClick.AddListener( JoinBtn_Click );
         }
-        if (footerView.CancelButton != null ) {
+        if ( footerView.CancelButton != null ) {
             footerView.CancelButton.onClick.AddListener( CancelBtn_Click );
         }
-        if (footerView.PlayButton != null ) {
+        if ( footerView.PlayButton != null ) {
             footerView.PlayButton.onClick.AddListener( PlayBtn_Click );
         }
     }
 
     protected virtual void PlayBtn_Click() {
-     }
+    }
 
     protected virtual void CancelBtn_Click() {
         if ( OnCancelClick != null ) {
@@ -36,8 +35,8 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         }
     }
 
-    public override IEnumerator UpdateItem( TournamentObject info) {
-        yield return StartCoroutine( base.UpdateItem( info) );
+    public override IEnumerator UpdateItem( TournamentObject info ) {
+        yield return StartCoroutine( base.UpdateItem( info ) );
         yield return footerView.SetUp( currentTournament, tournamentDetailsObject );
     }
 
@@ -45,8 +44,7 @@ public class SceduleTournamentItemView : BaseTournamentItemView {
         if ( !gameObject.activeInHierarchy || !gameObject.activeSelf ) {
             return;
         }
-        StartCoroutine( UpdateItem( tournament) );
+        StartCoroutine( UpdateItem( tournament ) );
     }
-
 
 }

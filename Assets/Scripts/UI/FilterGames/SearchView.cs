@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SearchView : MonoBehaviour{
+public class SearchView : MonoBehaviour {
 
     public event Action<string> OnValueChange;
 
@@ -22,7 +22,6 @@ public class SearchView : MonoBehaviour{
         endEditSearchButton.onClick.AddListener( Value_OnChange );
         GlobalManager.Instance.OnCopyClick += Copy;
         GlobalManager.Instance.OnPasteClick += Paste;
-
         Hide();
     }
 
@@ -41,12 +40,8 @@ public class SearchView : MonoBehaviour{
 
     void Update() {
         if ( Input.GetMouseButtonUp( 1 ) ) {
-            var startIndex = input.selectionAnchorPosition < input.selectionFocusPosition
-                ? input.selectionAnchorPosition
-                : input.selectionFocusPosition;
-            var length = input.selectionAnchorPosition < input.selectionFocusPosition
-                ? input.selectionFocusPosition - input.selectionAnchorPosition
-                : input.selectionAnchorPosition - input.selectionFocusPosition;
+            var startIndex = input.selectionAnchorPosition < input.selectionFocusPosition ? input.selectionAnchorPosition : input.selectionFocusPosition;
+            var length = input.selectionAnchorPosition < input.selectionFocusPosition ? input.selectionFocusPosition - input.selectionAnchorPosition : input.selectionAnchorPosition - input.selectionFocusPosition;
             selectedText = input.text.Substring( startIndex, length );
             GlobalManager.Instance.ShowCopypastePanel( input );
             startInsertIndex = input.selectionAnchorPosition;
@@ -59,7 +54,6 @@ public class SearchView : MonoBehaviour{
         if ( Input.GetKeyUp( KeyCode.Escape ) ) {
             Hide();
         }
-
     }
 
     protected void Copy( InputField target ) {
@@ -73,7 +67,6 @@ public class SearchView : MonoBehaviour{
         if ( !input.Equals( target ) ) {
             return;
         }
-
         if ( input.text == "" ) {
             input.text = GlobalManager.BufferString;
         } else {
@@ -84,20 +77,19 @@ public class SearchView : MonoBehaviour{
 
     public void Show() {
         gameObject.SetActive( true );
-        endEditSearchButton.gameObject.SetActive(true);
+        endEditSearchButton.gameObject.SetActive( true );
         input.OnSelect( new PointerEventData( EventSystem.current ) );
     }
 
     void Hide() {
-        gameObject.SetActive(false);
-        endEditSearchButton.gameObject.SetActive(false);
+        gameObject.SetActive( false );
+        endEditSearchButton.gameObject.SetActive( false );
     }
 
     public void Clear() {
         if ( input != null ) {
             input.text = searchFilterText = string.Empty;
         }
-
     }
 
 }

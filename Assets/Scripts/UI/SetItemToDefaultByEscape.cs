@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class SetItemToDefaultByEscape : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
     public event Action OnEscapeClick;
-
     bool isHover;
 
     void Update() {

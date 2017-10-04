@@ -23,18 +23,16 @@ public class JoinTournamentConfirmation : BaseCanvasView {
     [SerializeField] Text registrationDeadlineText;
     [SerializeField] Text buyinText;
     [SerializeField] Text feeText;
-
     [SerializeField] Button joinButton;
     [SerializeField] Button cancelButton;
-
     [SerializeField] ScreenLoader loader;
-
     [SerializeField] MessagePopupView messagePopupView;
 
-    private JoinToTournamentData currentData;
-    private long currentFee;
-    private TournamentLeaveOperationData currentOperation;
-    private AssetData currentAccountBalanceObject;
+     JoinToTournamentData currentData;
+     long currentFee;
+     TournamentLeaveOperationData currentOperation;
+     AssetData currentAccountBalanceObject;
+
 
     public override void Awake() {
         base.Awake();
@@ -44,55 +42,50 @@ public class JoinTournamentConfirmation : BaseCanvasView {
 
     public void SetUp( TournamentObject tournament ) {
         ApiManager.Instance.Database
-            .GetAccountBalances( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id,
-                                Array.ConvertAll( AuthorizationManager.Instance.UserData.FullAccount.Balances,
-                                                 balance => balance.AssetType.Id ) )
-            .Then( accountBalances
-                      => {
-                      AssetData asset = null;
-                      foreach ( var balance in accountBalances ) {
-                          if ( balance.Asset.Equals( tournament.Options.BuyIn.Asset ) ) {
-                              asset = balance;
-                          }
-                      }
+            .GetAccountBalances( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, Array.ConvertAll( AuthorizationManager.Instance.UserData.FullAccount.Balances,
+                                                                                                                    balance => balance.AssetType.Id ) )
+            .Then( accountBalances => {
+                AssetData asset = null;
+                foreach ( var balance in accountBalances ) {
+                    if ( balance.Asset.Equals( tournament.Options.BuyIn.Asset ) ) {
+                        asset = balance;
+                    }
+                }
+                var feeAsset = SpaceTypeId.CreateOne( SpaceType.GlobalProperties );
 
-                      var feeAsset = SpaceTypeId.CreateOne( SpaceType.GlobalProperties );
+                Repository.GetInPromise<GlobalPropertiesObject>( feeAsset )
+                    .Then( result => {
+                        TournamentJoinOperationFeeParametersData myFee = null;
+                        foreach ( var fee in result.Parameters.CurrentFees.Parameters ) {
+                            if ( fee != null && fee.Type == ChainTypes.FeeParameters.TournamentJoinOperation ) {
+                                myFee = fee as TournamentJoinOperationFeeParametersData;
+                            }
+                        }
+                        currentAccountBalanceObject = asset;
+                        currentFee = (long) myFee.Fee;
 
-                      Repository.GetInPromise<GlobalPropertiesObject>( feeAsset )
-                          .Then( result => {
+                        Repository.GetInPromise<AssetObject>( asset.Asset )
+                            .Then( assetObject => {
+                                buyinText.text = tournament.Options.BuyIn.Amount / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
+                                feeText.text = myFee.Fee / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
 
-                              TournamentJoinOperationFeeParametersData myFee = null;
+                                ApiManager.Instance.Database.GetAccount( tournament.Creator.Id )
+                                    .Then( creator => {
+                                        creatorNameText.text = Utils.GetFormatedString( creator.Name );
+                                        var data = new JoinToTournamentData();
+                                        data.tournament = tournament;
+                                        data.account = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
+                                        currentData = data;
+                                        gameTitleText.text = "ROCK, PAPER, SCISSORS";
+                                        numberOfPlayersText.text = data.tournament.Options.NumberOfPlayers.ToString();
+                                        winsAmountText.text = data.tournament.Options.NumberOfWins.ToString();
+                                        registrationDeadlineText.text = data.tournament.Options.RegistrationDeadline.ToString( "MMMM dd, yyyy hh:mmtt (z)" ).ToUpper();
+                                        Show();
+                                    } );
+                            } );
 
-                              foreach ( var fee in result.Parameters.CurrentFees.Parameters ) {
-                                  if ( fee != null && fee.Type == ChainTypes.FeeParameters.TournamentJoinOperation ) {
-                                      myFee = fee as TournamentJoinOperationFeeParametersData;
-                                  }
-                              }
-
-                              currentAccountBalanceObject = asset;
-                              currentFee = (long) myFee.Fee;
-                              Repository.GetInPromise<AssetObject>( asset.Asset )
-                                  .Then( assetObject => {
-                                      buyinText.text = tournament.Options.BuyIn.Amount / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
-                                      feeText.text = myFee.Fee / Math.Pow( 10, assetObject.Precision ) + assetObject.Symbol;
-
-                                      ApiManager.Instance.Database.GetAccount( tournament.Creator.Id )
-                                          .Then( creator => {
-                                              creatorNameText.text = Utils.GetFormatedString( creator.Name );
-                                              var data = new JoinToTournamentData();
-                                              data.tournament = tournament;
-                                              data.account = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
-                                              currentData = data;
-                                              gameTitleText.text = "ROCK, PAPER, SCISSORS";
-                                              numberOfPlayersText.text = data.tournament.Options.NumberOfPlayers.ToString();
-                                              winsAmountText.text = data.tournament.Options.NumberOfWins.ToString();
-                                              registrationDeadlineText.text = data.tournament.Options.RegistrationDeadline.ToString( "MMMM dd, yyyy hh:mmtt (z)" ).ToUpper();
-                                              Show();
-                                          } );
-                                  } );
-
-                          } );
-                  } );
+                    } );
+            } );
     }
 
 
@@ -101,11 +94,9 @@ public class JoinTournamentConfirmation : BaseCanvasView {
 
         if ( !IsPlayerInWhitelist( currentData.tournament.Options.Whitelist ) ) {
             OperationOnDone( "You cant join to the tournament, because you arent in whitelist!", false );
-        } else if ( !currentAccountBalanceObject.IsNull() && currentAccountBalanceObject.Amount <
-                    currentData.tournament.Options.BuyIn.Amount + currentFee ) {
+        } else if ( !currentAccountBalanceObject.IsNull() && currentAccountBalanceObject.Amount < currentData.tournament.Options.BuyIn.Amount + currentFee ) {
             OperationOnDone( "Failed\r\nInsufficient Funds available", false );
         } else {
-
             TournamentTransactionService.GenerateJoinToTournamentOperation( currentData )
                 .Then( operaion => {
                     TournamentTransactionService.JoinToTournament( operaion )
@@ -114,15 +105,11 @@ public class JoinTournamentConfirmation : BaseCanvasView {
                             if ( OnOperationSuccess != null ) {
                                 OnOperationSuccess();
                             }
-                            OperationOnDone( "You successfully joined to tournament №" + currentData.tournament.Id.Id,
-                                            true );
+                            OperationOnDone( "You successfully joined to tournament №" + currentData.tournament.Id.Id, true );
                         } )
-                        .Catch( exception => OperationOnDone( "There was a mistake during joining of a tournament!",
-                                                             false ) );
+                        .Catch( exception => OperationOnDone( "There was a mistake during joining of a tournament!", false ) );
                 } )
-                .Catch( exception => OperationOnDone( "There was a mistake during joining of a tournament!",
-                                                     false ) );
-
+                .Catch( exception => OperationOnDone( "There was a mistake during joining of a tournament!", false ) );
         }
     }
 
@@ -137,7 +124,6 @@ public class JoinTournamentConfirmation : BaseCanvasView {
 
     public override void Hide() {
         gameObject.SetActive( false );
-
     }
 
     bool IsPlayerInWhitelist( SpaceTypeId[] whitelist ) {

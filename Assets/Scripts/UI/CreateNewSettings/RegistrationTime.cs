@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RegistrationTime : SettingView {
@@ -8,7 +6,6 @@ public class RegistrationTime : SettingView {
     [SerializeField] SettingsFieldsView hourFiledView;
     [SerializeField] SettingsFieldsView minuteFiledView;
     [SerializeField] SettingsFieldsView secondFiledView;
-
     [SerializeField] CreateNewView createNewView;
 
 
@@ -29,8 +26,6 @@ public class RegistrationTime : SettingView {
         hourFiledView.OnSettingFieldValidate += SetErrorIcon;
         minuteFiledView.OnSettingFieldValidate += SetErrorIcon;
         secondFiledView.OnSettingFieldValidate += SetErrorIcon;
-
-
     }
 
     void Start() {
@@ -73,9 +68,8 @@ public class RegistrationTime : SettingView {
 
     public override bool IsFilledIn {
         get {
-            return ( new DateTime( createNewView.RegistrationDeadline.Year, createNewView.RegistrationDeadline.Month,
-                                  createNewView.RegistrationDeadline.Day ) -
-                     new DateTime( DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day ) ).TotalDays >=0;
+            return ( new DateTime( createNewView.RegistrationDeadline.Year, createNewView.RegistrationDeadline.Month, createNewView.RegistrationDeadline.Day ) -
+                     new DateTime( DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day ) ).TotalDays >= 0;
         }
     }
 

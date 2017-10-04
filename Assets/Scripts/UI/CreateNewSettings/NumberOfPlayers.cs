@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +6,7 @@ public class NumberOfPlayers : SettingView {
 
 	[SerializeField] SettingsFieldsView numberOfPlayersSettingsFieldView;
     [SerializeField] Dropdown numberOfPlayersDropdown;
+
 
     protected override void Awake() {
         base.Awake();
@@ -29,8 +28,7 @@ public class NumberOfPlayers : SettingView {
 	protected override void FieldView_OnStateChange( SettingsFieldsView.SettingsFieldState state ) {
 		numberOfPlayersSettingsFieldView.CurrentState = state;
 	}
-
-
+    
     public uint CurrentValue {
         get { return Convert.ToUInt32(numberOfPlayersDropdown.options[numberOfPlayersDropdown.value].text); }
     }

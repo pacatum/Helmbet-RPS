@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Base.Config;
@@ -13,21 +12,19 @@ using UnityEngine.UI;
 public class DashboardTabView : BaseCanvasView {
 
     [SerializeField] protected ScreenLoader loader;
-
     [SerializeField] protected RectTransform itemContainer;
     [SerializeField] protected RectTransform maxSizeContainer;
     [SerializeField] protected TournamentColumTitleView tournamentColumn;
     [SerializeField] protected BaseTournamentItemView tournamentItem;
-
     [SerializeField] protected FilterGamesController filterSettings;
     [SerializeField] protected SearchInput search;
     [SerializeField] protected Button showMoreButton;
-
     [SerializeField] protected DynamicGrid grid;
 
     protected SortOrder currentSortOrder = SortOrder.Ascending;
     protected SortType currentSortingType = SortType.RegisterDeadline;
     protected ButtonView currentSortButtonView;
+
 
     public override void Awake() {
         base.Awake();

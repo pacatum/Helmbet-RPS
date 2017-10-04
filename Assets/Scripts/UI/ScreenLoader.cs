@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 
 public class ScreenLoader : MonoBehaviour {
@@ -15,13 +16,13 @@ public class ScreenLoader : MonoBehaviour {
 		    currentTimeoutTimer = timeoutTimer;
             if ( isLoading ) {
                 ShowLoader();
-			} else {
+                StartCoroutine( StopLoader() );
+            } else {
                 HideLoader();
 			}
 		}
 	}
-
-
+    
 
     void Update() {
         if ( isLoading ) {
@@ -33,6 +34,11 @@ public class ScreenLoader : MonoBehaviour {
         }
     }
 
+    IEnumerator StopLoader() {
+        yield return new WaitForSecondsRealtime( timeoutTimer );
+        IsLoading = false;
+    }
+
 	public void LoadScreen(bool isLoad) {
 		IsLoading = isLoad;
 	}
@@ -42,6 +48,7 @@ public class ScreenLoader : MonoBehaviour {
 	}
 
 	 void HideLoader() {
-		 loader.SetActive(false);
+        StopCoroutine( StopLoader() );
+		loader.SetActive(false);
 	}
 }

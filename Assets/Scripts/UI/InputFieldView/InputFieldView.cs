@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
-    ISelectHandler, IDeselectHandler {
-
-
+public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,ISelectHandler, IDeselectHandler {
+    
     public enum InputState {
 
         Normal,
@@ -18,8 +13,7 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
         Error
 
     }
-
-
+    
     public event Action<InputFieldView> OnInputClick;
     public event Action OnValueChange;
 
@@ -45,6 +39,7 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
     private float lastClickTime;
     public float catchTime = 0.25f;
 
+
     public string InputText {
         get { return inputText; }
     }
@@ -54,11 +49,8 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
         image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
         CurrentState = InputState.Normal;
-
-
         GlobalManager.Instance.OnCopyClick += Copy;
         GlobalManager.Instance.OnPasteClick += Paste;
-
     }
 
     protected bool InputPressedEffect {
@@ -68,18 +60,11 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
             }
         }
     }
-
-    protected virtual void Start() {
-    }
-
+    
     protected virtual void Update() {
         if (Input.GetMouseButtonUp( 1 )&& isSelect ) {
-            var startIndex = input.selectionAnchorPosition < input.selectionFocusPosition
-                ? input.selectionAnchorPosition
-                : input.selectionFocusPosition;
-            var length = input.selectionAnchorPosition < input.selectionFocusPosition
-                ? input.selectionFocusPosition - input.selectionAnchorPosition
-                : input.selectionAnchorPosition - input.selectionFocusPosition;
+            var startIndex = input.selectionAnchorPosition < input.selectionFocusPosition ? input.selectionAnchorPosition: input.selectionFocusPosition;
+            var length = input.selectionAnchorPosition < input.selectionFocusPosition ? input.selectionFocusPosition - input.selectionAnchorPosition: input.selectionAnchorPosition - input.selectionFocusPosition;
             selectedText = input.text.Substring( startIndex, length );
             GlobalManager.Instance.ShowCopypastePanel( input );
             startInsertIndex = input.selectionAnchorPosition;
@@ -87,11 +72,7 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
         }
 
         if ( Input.GetMouseButtonUp( 0 ) ) {
-            if ( Time.time - lastClickTime < catchTime ) {
-                doubleClick = true;
-            } else {
-                doubleClick = false;
-            }
+            doubleClick = Time.time - lastClickTime < catchTime;
             lastClickTime = Time.time;
         }
     }
@@ -104,11 +85,10 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
         GlobalManager.BufferString = selectedText;
     }
 
-    protected void Paste(InputField target) {
+    protected void Paste( InputField target ) {
         if ( !input.Equals( target ) ) {
             return;
         }
-
         if ( input.text == "" ) {
             input.text = GlobalManager.BufferString;
         } else {
@@ -116,7 +96,7 @@ public class InputFieldView : MonoBehaviour, IPointerClickHandler, IPointerEnter
             input.text = pasteString;
             inputText = input.text;
         }
-       CurrentState = InputState.Normal;
+        CurrentState = InputState.Normal;
     }
 
     public InputState CurrentState {

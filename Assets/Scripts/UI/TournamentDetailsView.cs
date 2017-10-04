@@ -14,8 +14,8 @@ public class TournamentDetailsView : BaseCanvasView {
     [SerializeField]  UnityEngine.GameObject infoPanel;
     [SerializeField]  Button closeButton;
     [SerializeField]  UnityEngine.GameObject detailsView;
-
     [SerializeField] List<TournamentRoundView> roundItemViews = new List<TournamentRoundView>();
+
     List<TournamentMatcheView> tournamentMatcheViews = new List<TournamentMatcheView>();
     TournamentObject currenTournament;
 
@@ -101,10 +101,7 @@ public class TournamentDetailsView : BaseCanvasView {
                         }
                     } );
             } );
-
-
     }
-
 
     void UpdateRoundsView( int rounds, int players ) {
         var playersCount = players;

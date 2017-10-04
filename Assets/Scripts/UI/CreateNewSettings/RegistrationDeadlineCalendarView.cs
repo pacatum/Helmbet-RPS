@@ -1,21 +1,18 @@
-﻿
-using System;
+﻿using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using Random = UnityEngine.Random;
 
 public class RegistrationDeadlineCalendarView : SettingView {
 
     public event Action OnChangedValue;
 
     [SerializeField] CalendarButtonView calendar;
+    DateTime selectDate;
+
 
     public CalendarButtonView CalendarButtonView {
         get { return calendar; }
     }
-
-    DateTime selectDate;
-
+    
     protected override void Awake() {
         base.Awake();
         calendar.OnSettingStateChange += State_OnChanged;
@@ -26,18 +23,18 @@ public class RegistrationDeadlineCalendarView : SettingView {
     protected override void FieldView_OnStateChange( SettingsFieldsView.SettingsFieldState state ) {
     }
 
-    void Calendar_OnStateChange( CalendarButtonView.CalendarState state ) {
+    void Calendar_OnStateChange( CalendarState state ) {
         calendar.CurrentState = state;
     }
 
     protected override void SetNormalView() {
         base.SetNormalView();
-        Calendar_OnStateChange( CalendarButtonView.CalendarState.Inactive );
+        Calendar_OnStateChange(CalendarState.Inactive );
     }
 
     protected override void SetPressedView() {
         base.SetPressedView();
-        Calendar_OnStateChange( CalendarButtonView.CalendarState.Hover );
+        Calendar_OnStateChange(CalendarState.Hover );
     }
 
     public DateTime CurrentValue {

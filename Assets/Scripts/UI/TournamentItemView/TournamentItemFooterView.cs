@@ -46,7 +46,6 @@ public class TournamentItemFooterView : MonoBehaviour{
     Color currentColor;
     Color currentItemBgColor;
     Color currentTextColor;
-
     TournamentObject currenTournamentObject;
     TournamentDetailsObject currenTournamentDetailsObject;
     TournamentViewState currenTournamentViewState;
@@ -71,7 +70,7 @@ public class TournamentItemFooterView : MonoBehaviour{
     }
 
     void UpdateButtonColor( Button target, ButtonViewState state ) {
-        if ( currenTournamentObject.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
+        if (currenTournamentObject.IsNull() || currenTournamentObject.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
             return;
         }
         if ( target != null && target.GetComponent<UIButtonView>()!=null) {
@@ -115,10 +114,8 @@ public class TournamentItemFooterView : MonoBehaviour{
     }
     
     public IEnumerator SetUp( TournamentObject tournament, TournamentDetailsObject details ) {
-
         currenTournamentObject = tournament;
         currenTournamentDetailsObject = details;
-        
         var me = AuthorizationManager.Instance.UserData;
 
         activePlayButton.gameObject.SetActive( false );
@@ -140,8 +137,6 @@ public class TournamentItemFooterView : MonoBehaviour{
             itemBgColor.color = otherTournamentsItemBgColor;
             currenTournamentViewState = TournamentViewState.OtherTournament;
         }
-
-
         switch ( tournament.State ) {
             case ChainTypes.TournamentState.Concluded:
                 break;

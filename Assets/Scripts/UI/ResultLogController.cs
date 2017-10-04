@@ -25,10 +25,9 @@ public class ResultLogController : MonoBehaviour {
         thisPlayerStep.SetStep( roundNumber, thisPlayerChoise );
         thisPlayerStep.transform.SetParent( thisPlayerStepsContainer, false );
 
-        var anotherPlayerStep = Instantiate(opponentStepPrefab);
+        var anotherPlayerStep = Instantiate( opponentStepPrefab );
         anotherPlayerStep.SetStep( roundNumber, anotherPlayerChoise );
         anotherPlayerStep.transform.SetParent( anotherPlayerStepsContainer, false );
-
 
         steps.Add( thisPlayerStep );
         steps.Add( anotherPlayerStep );
@@ -36,7 +35,6 @@ public class ResultLogController : MonoBehaviour {
     }
 
     public void ClearLog() {
-
         foreach ( var step in steps ) {
             Destroy( step.gameObject );
         }
@@ -45,7 +43,6 @@ public class ResultLogController : MonoBehaviour {
         foreach ( var roundItem in roundItemViews ) {
             Destroy( roundItem.gameObject );
         }
-
         roundItemViews.Clear();
     }
 

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public enum PlayerState {
@@ -16,14 +14,13 @@ public class TournamentMatchePlayerView : MonoBehaviour {
 
     [SerializeField] Sprite winnerSprite;
     [SerializeField] Sprite looserSprite;
+    [SerializeField] Color winnerUsernameColor;
+    [SerializeField] Color looserUsernameColor;
+    [SerializeField] Color notDefinedUsernameColor;
 
 	PlayerState currentPlayerState;
     Text usernameText;
     Image playerViewImage;
-
-    [SerializeField] Color winnerUsernameColor;
-    [SerializeField] Color looserUsernameColor;
-    [SerializeField] Color notDefinedUsernameColor;
 
 
     void Awake() {
@@ -57,8 +54,7 @@ public class TournamentMatchePlayerView : MonoBehaviour {
                 break;
         }
     }
-
-
+    
     public void SetUsername( string username ) {
         usernameText.text = Utils.GetFormatedString(username);  
     }

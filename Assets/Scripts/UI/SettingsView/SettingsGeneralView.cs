@@ -8,13 +8,10 @@ public class SettingsGeneralView : BaseCanvasView {
 
 	public event Action OnCancelClick;
 	public event Action OnApplyClick;
-	//public event Action OnSoundClick;
 
 	[SerializeField] SwitcherView soundBtn;
-
 	[SerializeField] Dropdown languageDropdown;
 	[SerializeField] Dropdown handOptionDropdown;
-
 	[SerializeField] Button cancelBtn; 
 	[SerializeField] Button applyBtn;
 
@@ -28,7 +25,6 @@ public class SettingsGeneralView : BaseCanvasView {
 	}
 
 	void ApplySettingsChahges() {
-		return;
 	}
 
 	void Settings_OnApplyClick() {

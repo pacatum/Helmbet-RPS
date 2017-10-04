@@ -1,17 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class MessagePopupView : MonoBehaviour {
 
     [SerializeField] Text messageText;
     [SerializeField] Text errorMessageText;
-
     [SerializeField] GameObject successPopup;
     [SerializeField] GameObject errorPopup;
-
     [SerializeField] Button succesButton;
+
 
     void Awake() {
         succesButton.onClick.AddListener( GoToDashboardScreen );
@@ -27,7 +24,6 @@ public class MessagePopupView : MonoBehaviour {
         errorMessageText.text = message;
         errorPopup.SetActive( true );
     }
-
 
     public void HideAll() {
         successPopup.SetActive(false);

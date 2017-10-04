@@ -8,6 +8,7 @@ public class FindTournamentItemView : BaseTournamentItemView {
 
 	[SerializeField] Button joinButton;
 
+
 	void Awake() {
 		if( joinButton != null ) {
 			joinButton.onClick.AddListener( JoinBtn_Click );
@@ -19,15 +20,5 @@ public class FindTournamentItemView : BaseTournamentItemView {
 			OnJoinClick( this );
 		}
 	}
-
-	//protected override void UpdateActions( ) {
-	//	//base.UpdateActions( state );
-	//	//if( state.Equals( ChainTypes.TournamentState.AcceptingRegistrations ) && currentTournament.RegisteredPlayers <
-	//	//    currentTournament.Options.NumberOfPlayers ) {
-	//	//	joinButton.gameObject.SetActive( true );
-	//	//} else {
-	//	//	joinButton.gameObject.SetActive(false);
-	//	//}
-	//}
 
 }

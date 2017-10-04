@@ -23,8 +23,7 @@ public class TournamentResultView : MonoBehaviour {
     void Awake() {
         bgImage = GetComponent<Image>();
     }
-
-
+    
     public TournamentResultState CurrentResultState {
         get { return currentResultState; }
         set {

@@ -11,8 +11,8 @@ public class StartTimePanelView : MonoBehaviour {
 
     [SerializeField] private RegistrationDeadlineCalendarView registration;
 
-    private bool isActive;
-    private CreateNewView view;
+     bool isActive;
+     CreateNewView view;
 
 
     void Awake() {

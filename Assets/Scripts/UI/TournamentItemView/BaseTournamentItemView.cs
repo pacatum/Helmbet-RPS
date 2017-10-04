@@ -5,17 +5,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Globalization;
-using Base.Config;
 using Base.Data.Assets;
 using UnityEngine.EventSystems;
-
 using TMPro;
 using Tools;
 
 public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
 
     [SerializeField] RectTransform itemRectTransform;
-
     [SerializeField] protected TextMeshProUGUI idText;
     [SerializeField] protected TextMeshProUGUI playerRegisteredText;
     [SerializeField] protected TextMeshProUGUI maxPlayersText;
@@ -31,16 +28,14 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     [SerializeField] protected UnityEngine.GameObject winnerTextTitle;
     [SerializeField] protected UnityEngine.GameObject resultTextTitle;
 
+    [Header( "Item width" )] [SerializeField] private float increaseWidth = 140;
+    [SerializeField] float animationTimer;
+    [SerializeField] Image itemShadowImage;
 
     protected Image itemBackground;
     protected TournamentObject currentTournament;
     protected TournamentDetailsObject tournamentDetailsObject;
     protected AssetObject currentAsset;
-
-    [Header( "Item width" )] [SerializeField] private float increaseWidth = 140;
-    [SerializeField] float animationTimer;
-    [SerializeField] Image itemShadowImage;
-
     protected bool isHover;
     protected bool stopUpdating;
     float hoverWidth;
@@ -73,7 +68,6 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             }
         }
     }
-
 
     public string ID {
         get { return ( idText == null ) ? string.Empty : idText.text; }
@@ -164,7 +158,6 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         return time.ToString( "ddMMM, yyyy. HH:mm tt" );
     }
 
-
     public virtual void UpdateTournament( TournamentObject tournament ) {
     }
 
@@ -173,11 +166,9 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     protected void Update() {
-
         if ( stopUpdating ) {
             return;
         }
-
         if ( isHover ) {
             if ( itemRectTransform.sizeDelta.x < hoverWidth ) {
                 itemRectTransform.sizeDelta = new Vector2( itemRectTransform.sizeDelta.x + animationTimer, itemRectTransform.sizeDelta.y );
@@ -227,8 +218,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         buyInTextTitle.SetActive( isHover );
         jackpotTextTitle.SetActive( isHover );
         if ( isHover ) {
-            idText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
-                jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 1f, 0.5f );
+            idText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot = jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 1f, 0.5f );
 
             idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax = jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
                 idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin = jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 1f, 1f );
@@ -251,6 +241,5 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             numberOfPlayersObject.anchoredPosition = new Vector2( 0, numberOfPlayersObject.GetComponent<RectTransform>().anchoredPosition.y );
         }
     }
-
 
 }

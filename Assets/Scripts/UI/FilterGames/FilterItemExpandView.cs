@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,7 +15,6 @@ public class FilterItemExpandView : MonoBehaviour {
     [SerializeField] protected FilterChoiseInputView firstInput;
     [SerializeField] protected FilterChoiseInputView secondInput;
     [SerializeField] protected Button closeItemViewButton;
-
     [SerializeField] protected int firstInputDefaultValue;
     [SerializeField] protected int secondInputDefaultValue;
     [SerializeField] protected int indexDefaultValue;
@@ -75,24 +73,21 @@ public class FilterItemExpandView : MonoBehaviour {
         string firstValue = "";
         string secondValue = "";
 
-        if (firstInput != null && secondInput != null && Int32.Parse( firstInput.InputText ) > Int32.Parse( secondInput.InputText ) ) {
+        if ( firstInput != null && secondInput != null && Int32.Parse( firstInput.InputText ) > Int32.Parse( secondInput.InputText ) ) {
             firstInput.SetError();
             secondInput.SetError();
             FilterGamesController.Instance.SetApplyButton( false );
             return;
         }
-
         FilterGamesController.Instance.SetApplyButton( true );
-
         if ( firstInput != null ) {
             firstValue = firstInput.InputText;
-        firstInput.SetNormal();
+            firstInput.SetNormal();
         }
         if ( secondInput != null ) {
             secondValue = secondInput.InputText;
-        secondInput.SetNormal();
+            secondInput.SetNormal();
         }
-
         Choise_OnChanged( firstValue, secondValue );
     }
 
@@ -114,11 +109,8 @@ public class FilterItemExpandView : MonoBehaviour {
         }
     }
 
-
     public void RestoreItemValuesToDefault() {
         FilterGamesController.Instance.SetApplyButton( true );
-
-
         if ( items.Count > 0 ) {
             items[indexDefaultValue].OnChoosen();
         } else {

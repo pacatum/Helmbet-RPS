@@ -31,7 +31,6 @@ public class DashdoardView : BaseCanvasView {
     [SerializeField] Button currentTournamentsButton;
     [SerializeField] Button historyTournamentsButton;
     [SerializeField] Button createNewButton;
-
     [SerializeField] DashboardTabView currentTournamentView;
     [SerializeField] DashboardTabView historyTournamentView;
     
@@ -79,8 +78,7 @@ public class DashdoardView : BaseCanvasView {
     private DashboardTabView CurrentActiveView {
         get { return currentActiveView ? currentActiveView : currentTournamentView; }
     }
-
-
+    
     public override void Show() {
         base.Show();
         SwitchTabs( CurrentActiveView );

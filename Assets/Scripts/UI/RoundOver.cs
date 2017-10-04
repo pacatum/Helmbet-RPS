@@ -17,11 +17,11 @@ public class RoundOver : MonoBehaviour {
     [SerializeField] Color rockWinTextColor;
     [SerializeField] Color scissorsWinTextColor;
 
+
     public void SetUpRoundOver( Sprite playerGestureSprite, Sprite opponentGestureSprite, GameChoiseResult choiseResult ) {
         playerGestureImage.sprite = playerGestureSprite;
         opponentGestureImage.sprite = opponentGestureSprite;
         roundNumberText.text = choiseResult.roundNumber.ToString();
-
         UpdateStepText( choiseResult );
 
         switch ( choiseResult.result ) {

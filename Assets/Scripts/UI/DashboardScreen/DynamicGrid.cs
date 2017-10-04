@@ -4,12 +4,9 @@ using UnityEngine.UI;
 public class DynamicGrid : MonoBehaviour {
 
     [SerializeField] int maxColumnCount = 6;
-
     [SerializeField] float maxCellWidth;
     [SerializeField] float minCellWidth;
-
     [SerializeField] float cellSpacing;
-
     [SerializeField] RectTransform tournamentItemViewPrefab;
     [SerializeField] RectTransform gridRectTransform;
     [SerializeField] GridLayoutGroup gridLayoutGroup;
@@ -17,7 +14,6 @@ public class DynamicGrid : MonoBehaviour {
 
     int maxItemsOnPage;
     int numberOfPages;
-
     int currentColums;
     int currentRows;
 

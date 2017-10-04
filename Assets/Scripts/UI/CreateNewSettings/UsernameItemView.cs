@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Base.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +11,7 @@ public class UsernameItemView : MonoBehaviour {
     [SerializeField] Text usernameText;
 
     SpaceTypeId currentSpaceTypeId;
+
 
     public SpaceTypeId CurrentSpaceTypeId {
         get { return currentSpaceTypeId; }

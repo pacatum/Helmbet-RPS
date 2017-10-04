@@ -15,7 +15,6 @@ public class FilterCurrencyExpandView : FilterItemExpandView {
     void UpdateCurrencies() {
         TournamentManager.Instance.GetAssetsObject( Array.ConvertAll( AuthorizationController.Instance.accountBalances.ToArray(), assetId => assetId.Asset.Id ) )
             .Then( objects => {
-
                 foreach ( var item in items ) {
                     Destroy( item.gameObject );
                 }
@@ -34,7 +33,6 @@ public class FilterCurrencyExpandView : FilterItemExpandView {
             UpdateCurrencies();
             firstUpdate = false;
         }
-
         base.ShowExpandView();
     }
 

@@ -20,7 +20,6 @@ public class BuyInSetting : SettingView {
         get { return selectAssetObject.Id.Id; }
     }
 
-
     protected override void Awake() {
         base.Awake();
         buyinSettingsFieldView.OnSettingStateChange += State_OnChanged;
@@ -35,8 +34,6 @@ public class BuyInSetting : SettingView {
         AuthorizationController.Instance.OnBalanceUpdate += ChangeBalance;
 
         balanceDropdown.onValueChanged.AddListener( SelectDropdownValue );
-
-
     }
 
     private void SelectDropdownValue( int value ) {
@@ -46,15 +43,13 @@ public class BuyInSetting : SettingView {
             }
         }
 
-        ApiManager.Instance.Database
-            .GetAccountBalance( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, selectAssetObject.Id.Id )
+        ApiManager.Instance.Database.GetAccountBalance( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, selectAssetObject.Id.Id )
             .Then( result => SetAvailableBalanceText( ( result.Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + " " + selectAssetObject.Symbol ) );
     }
 
     void SetAvailableBalanceText( string amount ) {
         availableAmounText.text = "Available: " + amount;
     }
-
 
     void ChangeBalance() {
         UpdateBalances( AuthorizationManager.Instance.Authorization );
@@ -87,7 +82,7 @@ public class BuyInSetting : SettingView {
                     }
                     balanceDropdown.AddOptions( options );
                     selectAssetObject = objects[0];
-                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) +" " + selectAssetObject.Symbol );
+                    SetAvailableBalanceText( ( AuthorizationController.Instance.accountBalances[0].Amount / Mathf.Pow( 10, selectAssetObject.Precision ) ) + " " + selectAssetObject.Symbol );
                 } );
         }
     }

@@ -14,11 +14,12 @@ public class TournamentMatcheView : MonoBehaviour {
     [SerializeField] Sprite lastPassSprite;
     [SerializeField] GameObject passToNextMatche;
 
+
     public void SetLast() {
         passToNextMatche.GetComponent<Image>().sprite = lastPassSprite;
     }
 
-    public IEnumerator UpdatePlayers( MatchObject info, MatchObject [] matches ) {
+    public IEnumerator UpdatePlayers( MatchObject info, MatchObject[] matches ) {
         secondPlayer.CurrentPlayerState = PlayerState.Looser;
         firstPlayer.CurrentPlayerState = PlayerState.Looser;
         if ( info == null ) {
@@ -30,22 +31,21 @@ public class TournamentMatcheView : MonoBehaviour {
             accountIds.Add( account.Id );
         }
 
-
-        if ( info.State.Equals(ChainTypes.MatchState.WaitingOnPreviousMatches) && info.Players.Length > 0) {
+        if ( info.State.Equals( ChainTypes.MatchState.WaitingOnPreviousMatches ) && info.Players.Length > 0 ) {
             var previousMatch = new MatchObject();
             var indexOfPreviousMatch = 1;
             for ( int i = 0; i < matches.Length; i++ ) {
                 if ( matches[i].State == ChainTypes.MatchState.Complete &&
-                    info.Players.Contains( matches[i].MatchWinners[0] ) ) {
+                     info.Players.Contains( matches[i].MatchWinners[0] ) ) {
                     previousMatch = matches[i];
-                    indexOfPreviousMatch = i+1;
+                    indexOfPreviousMatch = i + 1;
                 }
             }
 
             ApiManager.Instance.Database.GetAccount( previousMatch.MatchWinners[0].Id )
                 .Then( winner => {
                     SetPlayersUndefined();
-                    if ( ( indexOfPreviousMatch) % 2 == 0 ) {
+                    if ( ( indexOfPreviousMatch ) % 2 == 0 ) {
                         secondPlayer.SetUsername( winner.Name );
                         secondPlayer.CurrentPlayerState = PlayerState.Winner;
                     } else {
@@ -54,7 +54,6 @@ public class TournamentMatcheView : MonoBehaviour {
                     }
                 } );
         } else {
-
             ApiManager.Instance.Database.GetAccounts( accountIds.ToArray() )
                 .Then( accountResult => {
                     if ( accountResult.Length > 0 ) {

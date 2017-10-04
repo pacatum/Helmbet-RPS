@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,6 +21,7 @@ public class FilterChoiseItemView : MonoBehaviour, IPointerClickHandler {
 
     FilterItemState currentState;
 
+
     void Awake() {
         if ( OnValueChange != null ) {
             OnValueChange( this );
@@ -38,8 +37,7 @@ public class FilterChoiseItemView : MonoBehaviour, IPointerClickHandler {
             }
         }
     }
-
-
+    
     public string SelectChoise {
         get { return targetText == null ? string.Empty : targetText.text; }
         set {

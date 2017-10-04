@@ -5,27 +5,24 @@ using UnityEngine.UI;
 
 public class GameInfoView : BaseCanvasView {
 
-    [SerializeField] private ButtonView aboutGameButton;
-    [SerializeField] private ButtonView creatingTournamentButton;
-    [SerializeField] private ButtonView howToPlayButton;
-    [SerializeField] private ButtonView payoutsButton;
-    [SerializeField] private ButtonView tournamentHistoryButton;
-    [SerializeField] private ButtonView settingButton;
+    [SerializeField] ButtonView aboutGameButton;
+    [SerializeField] ButtonView creatingTournamentButton;
+    [SerializeField] ButtonView howToPlayButton;
+    [SerializeField] ButtonView payoutsButton;
+    [SerializeField] ButtonView tournamentHistoryButton;
+    [SerializeField] ButtonView settingButton;
 
-    [SerializeField] private ScrollRect scrollView;
-    [SerializeField] private float fisrtScrollYPosition;
-    [SerializeField] private float secondScrollYPosition;
-    [SerializeField] private float thirdScrollYPosition;
-    [SerializeField] private float fourthScrollYPosition;
-
+    [SerializeField] ScrollRect scrollView;
+    [SerializeField] float fisrtScrollYPosition;
+    [SerializeField] float secondScrollYPosition;
+    [SerializeField] float thirdScrollYPosition;
+    [SerializeField] float fourthScrollYPosition;
     [SerializeField] Button backButton;
-
 
     List<ButtonView> buttons = new List<ButtonView>();
 
 
     public override void Awake() {
-
         backButton.onClick.AddListener( OpenPreviousView );
 
         buttons.Add( aboutGameButton );
@@ -42,13 +39,11 @@ public class GameInfoView : BaseCanvasView {
         aboutGameButton.GetComponent<Button>().onClick.AddListener( ScrollToAboutGameText );
         creatingTournamentButton.GetComponent<Button>().onClick.AddListener( ScrollToCreatingTournamentText );
         howToPlayButton.GetComponent<Button>().onClick.AddListener( ScrollToHowToPlayText );
-        payoutsButton.GetComponent<Button>().onClick.AddListener(delegate {ScrollToTheEnd( payoutsButton );});
-        tournamentHistoryButton.GetComponent<Button>().onClick.AddListener(delegate { ScrollToTheEnd(tournamentHistoryButton); });
-        settingButton.GetComponent<Button>().onClick.AddListener( delegate {ScrollToTheEnd(settingButton);} );
-
-        scrollView.onValueChanged.AddListener(UpdateScrollPosition);
+        payoutsButton.GetComponent<Button>().onClick.AddListener( delegate { ScrollToTheEnd( payoutsButton ); } );
+        tournamentHistoryButton.GetComponent<Button>().onClick.AddListener( delegate { ScrollToTheEnd( tournamentHistoryButton ); } );
+        settingButton.GetComponent<Button>().onClick.AddListener( delegate { ScrollToTheEnd( settingButton ); } );
+        scrollView.onValueChanged.AddListener( UpdateScrollPosition );
         Clear();
-
     }
 
     void OpenPreviousView() {
@@ -71,39 +66,39 @@ public class GameInfoView : BaseCanvasView {
     }
 
     void ScrollToAboutGameText() {
-        scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, fisrtScrollYPosition );
+        scrollView.content.anchoredPosition = new Vector2( scrollView.content.anchoredPosition.x, fisrtScrollYPosition );
     }
 
     void ScrollToCreatingTournamentText() {
-        scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, secondScrollYPosition );
+        scrollView.content.anchoredPosition = new Vector2( scrollView.content.anchoredPosition.x, secondScrollYPosition );
     }
 
     void ScrollToHowToPlayText() {
-        scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, thirdScrollYPosition );
+        scrollView.content.anchoredPosition = new Vector2( scrollView.content.anchoredPosition.x, thirdScrollYPosition );
     }
 
-    void ScrollToTheEnd(ButtonView button) {
-        scrollView.content.anchoredPosition = new Vector2(scrollView.content.anchoredPosition.x, fourthScrollYPosition );
+    void ScrollToTheEnd( ButtonView button ) {
+        scrollView.content.anchoredPosition = new Vector2( scrollView.content.anchoredPosition.x, fourthScrollYPosition );
         SwitchButton( button );
     }
 
     void UpdateScrollPosition( Vector2 position ) {
         var contentPosition = scrollView.content.anchoredPosition.y;
-        if ( contentPosition >= fisrtScrollYPosition && contentPosition < secondScrollYPosition ) {
+        if ( contentPosition < secondScrollYPosition ) {
             SwitchButton( aboutGameButton );
         } else if ( contentPosition >= secondScrollYPosition && contentPosition < thirdScrollYPosition ) {
             SwitchButton( creatingTournamentButton );
         } else if ( contentPosition >= thirdScrollYPosition && contentPosition < fourthScrollYPosition ) {
             SwitchButton( howToPlayButton );
-        } else {
-            if(settingButton.Currentstate != ButtonState.Pressed && tournamentHistoryButton.Currentstate!= ButtonState.Pressed)
-            SwitchButton( payoutsButton );
+        } else if(contentPosition>= fourthScrollYPosition) {
+            if ( settingButton.Currentstate != ButtonState.Pressed && tournamentHistoryButton.Currentstate != ButtonState.Pressed )
+                SwitchButton( payoutsButton );
         }
     }
 
-
     void Clear() {
-        SwitchButton(aboutGameButton);
+        SwitchButton( aboutGameButton );
         ScrollToAboutGameText();
     }
+
 }

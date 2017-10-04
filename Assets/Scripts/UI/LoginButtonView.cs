@@ -1,25 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginButtonView : MonoBehaviour {
 
-	public enum ButtonState {
+    public enum ButtonState {
 
-		Active,
-		Inactive
+        Active,
+        Inactive
 
-	}
+    }
 
-	[SerializeField] Sprite activeSprite;
+    [SerializeField] Sprite activeSprite;
 	[SerializeField] Sprite inactiveSprite;
 	[SerializeField] Color activeTextColor;
 	[SerializeField] Color inactiveTextColor;
 
 	Image targetImage;
 	TextMeshProUGUI targetText;
+
 
 	void Awake() {
 		targetImage = GetComponent<Image>();

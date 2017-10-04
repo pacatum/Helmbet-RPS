@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 public class WhitelistController : SettingView {
 
-	List<SpaceTypeId> whitelistIds = new List<SpaceTypeId>();
-    private List<UsernameItemView> usernameItemViews = new List<UsernameItemView>();
-    
     [SerializeField] Button addWhitelistButton;
     [SerializeField] AddNewPlayerToWhitelistView whitelistView;
 
@@ -16,8 +13,10 @@ public class WhitelistController : SettingView {
     [SerializeField] Transform whitelistUsernamesContainer;
     [SerializeField] Button addButton;
     [SerializeField] MessagePopupView messagePopupView;
- 
-    private CreateNewView createNewView;
+
+    CreateNewView createNewView;
+    List<SpaceTypeId> whitelistIds = new List<SpaceTypeId>();
+    List<UsernameItemView> usernameItemViews = new List<UsernameItemView>();
 
 
     public SpaceTypeId[] GetWhitelistIds {
@@ -34,16 +33,14 @@ public class WhitelistController : SettingView {
         whitelistView.Show();
     }
 
-
-    void AddNewUser(UserNameAccountIdPair user ) {
+    void AddNewUser( UserNameAccountIdPair user ) {
         if ( whitelistIds.Contains( user.Id ) ) {
             messagePopupView.SerErrorPopup( "This user is already added to the whitelist!" );
         } else {
-            AddUser(user);
+            AddUser( user );
             Validate_OnChange();
             whitelistView.Hide();
         }
-
     }
 
     void AddUser( UserNameAccountIdPair user ) {
@@ -52,8 +49,7 @@ public class WhitelistController : SettingView {
         addedUser.SetUsernameInfo( user.UserName, user.Id );
         usernameItemViews.Add( addedUser );
         addedUser.transform.SetParent( whitelistUsernamesContainer, false );
-        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2( whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width,
-                        addedUser.GetComponent<RectTransform>().rect.height * usernameItemViews.Count );
+        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2( whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width, addedUser.GetComponent<RectTransform>().rect.height * usernameItemViews.Count );
         addedUser.OnUserRemoved += RemoveUser;
     }
 
@@ -61,8 +57,7 @@ public class WhitelistController : SettingView {
         whitelistIds.Remove( user.CurrentSpaceTypeId );
         usernameItemViews.Remove( user );
         Destroy( user.gameObject );
-        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width,
-                                                                                          user.GetComponent<RectTransform>().rect.height * usernameItemViews.Count);
+        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2( whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width, user.GetComponent<RectTransform>().rect.height * usernameItemViews.Count );
         Validate_OnChange();
     }
 
@@ -77,12 +72,12 @@ public class WhitelistController : SettingView {
 
     public override void Clear() {
         whitelistIds.Clear();
-        foreach ( var item in usernameItemViews) {
+        foreach ( var item in usernameItemViews ) {
             Destroy( item.gameObject );
         }
         usernameItemViews.Clear();
-        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width,
-                                                                                          0f);
+        whitelistUsernamesContainer.GetComponent<RectTransform>().sizeDelta = new Vector2( whitelistUsernamesContainer.GetComponent<RectTransform>().rect.width,
+                                                                                          0f );
         whitelistView.Hide();
     }
 

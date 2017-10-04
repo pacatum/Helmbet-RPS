@@ -19,12 +19,9 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
     [SerializeField] Text registrationDeadlineText;
     [SerializeField] Text buyinText;
     [SerializeField] Text feeText;
-
     [SerializeField] Button createButton;
     [SerializeField] Button cancelButton;
-
     [SerializeField] ScreenLoader loader;
-
     [SerializeField] MessagePopupView messagePopupView;
     [SerializeField] ChooseHandController chooseHandController;
 
@@ -52,7 +49,7 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
         currentData = data;
         gameTitleText.text = "ROCK, PAPER, SCISSORS";
         var username = AuthorizationManager.Instance.Authorization.UserNameData.UserName;
-        creatorNameText.text = Utils.GetFormatedString(username); 
+        creatorNameText.text = Utils.GetFormatedString( username );
         numberOfPlayersText.text = data.numberOfPlayers.ToString();
         winsAmountText.text = data.numberOfWins.ToString();
         registrationDeadlineText.text = data.registrationDeadline.ToString( "MMMM dd, yyyy hh:mmtt (z)" ).ToUpper();
@@ -78,54 +75,36 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
                             }
                         }
 
-                        if ( isJoin ) {
-                            feeText.text = Convert.ToDouble( createFee.Fee + joinFee.Fee ) /
-                                           Convert.ToDouble( result.Parameters.CurrentFees.Scale * 10 ) + asset.Symbol;
-                        } else {
-                            feeText.text = Convert.ToDouble( createFee.Fee ) /
-                                           Convert.ToDouble( result.Parameters.CurrentFees.Scale * 10 ) + asset.Symbol;
-                        }
-
+                        var amount = isJoin ? Convert.ToDouble( createFee.Fee + joinFee.Fee ) : Convert.ToDouble( createFee.Fee );
+                        feeText.text = amount + asset.Symbol;
                         gameObject.SetActive( true );
 
-                    }) ;
+                    } );
             } );
-
     }
-
 
     void JoinTournament( SpaceTypeId tournament ) {
         if ( isJoinToTournament ) {
             Action<TournamentObject> JoinToTournament = tournamentObject => {
                 var joinTournamentData = new JoinToTournamentData();
-
                 joinTournamentData.tournament = tournamentObject;
-                joinTournamentData.account = AuthorizationManager.Instance.Authorization.UserNameData.FullAccount
-                    .Account.Id;
+                joinTournamentData.account = AuthorizationManager.Instance.Authorization.UserNameData.FullAccount.Account.Id;
 
                 TournamentTransactionService.GenerateJoinToTournamentOperation( joinTournamentData )
                     .Then( operation => {
                         TournamentTransactionService.JoinToTournament( operation )
-                            .Then( () => {
-                                JoinOperationOnDone( "Your tournament was successfully created & joined!", true );
-                            } )
-                            .Catch( exception => {
-                                JoinOperationOnDone( "Your tournament was successfully created, but not joined!",
-                                                    false );
-                            } );
+                            .Then( () => JoinOperationOnDone( "Your tournament was successfully created & joined!", true ) )
+                            .Catch( exception => JoinOperationOnDone( "Your tournament was successfully created, but not joined!", false ) );
                     } )
-                    .Catch( exception => JoinOperationOnDone( "There was a mistake during joining of a tournament!",
-                                                             false ) );
+                    .Catch( exception => JoinOperationOnDone( "There was a mistake during joining of a tournament!", false ) );
             };
-            Repository.GetInPromise( tournament, () =>TournamentManager.Instance.LoadTournament( tournament.Id ) )
-                .Then( JoinToTournament );
+            Repository.GetInPromise( tournament, () => TournamentManager.Instance.LoadTournament( tournament.Id ) ).Then( JoinToTournament );
         }
     }
 
     void JoinToTournamentAfterChoosingHand() {
         isChoosenHand = true;
         CreateTournament();
-        //chooseHandController.OnApplyClick -= JoinToTournamentAfterChoosingHand;
     }
 
     void JoinOperationOnDone( string operationMessage, bool isSuccces ) {
@@ -138,10 +117,6 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
     }
 
     void CreateTournament() {
-        //if ( isJoinToTournament && !isChoosenHand ) {
-        //	//chooseHandController.Show();
-        //	//chooseHandController.OnApplyClick += JoinToTournamentAfterChoosingHand;
-        //} else {
         loader.IsLoading = true;
         isChoosenHand = false;
         TournamentTransactionService.GenerateCreateTournamentOperation( currentData )
@@ -155,15 +130,10 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
                             CreateOperationOnDone( "Your tournament was successfully created!" );
                         }
                     } )
-                    .Catch( exception => {
-                        CreateOperationOnFailed( "There was a mistake during creation of a tournament!" );
-                    } );
+                    .Catch( exception => CreateOperationOnFailed( "There was a mistake during creation of a tournament!" ) );
             } )
-            .Catch( exception =>
-                       CreateOperationOnFailed( "There was a mistake during creation of a tournament!" ) );
-
+            .Catch( exception => CreateOperationOnFailed( "There was a mistake during creation of a tournament!" ) );
     }
-
 
     void CreateOperationOnDone( string message ) {
         messagePopupView.SetSuccessPopup( message );

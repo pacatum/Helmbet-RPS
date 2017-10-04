@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SettingsFieldsView : MonoBehaviour, ISelectHandler, IPointerEnterHandler, IPointerExitHandler {
+public class SettingsFieldsView : MonoBehaviour, ISelectHandler {
 
 	public enum SettingsFieldState {
 
@@ -26,26 +22,24 @@ public class SettingsFieldsView : MonoBehaviour, ISelectHandler, IPointerEnterHa
 
     }
 
-
 	public event Action<SettingView.SettingState> OnSettingStateChange;
 	public event Action<SettingsFieldsView> OnInputfieldStateChange;
     public event Action OnSettingFieldValidate;
 
     [SerializeField] ValidationType currentValudationType;
-
-	[SerializeField] protected Image pressedEffectImage;
+    [SerializeField] protected Image pressedEffectImage;
 	[SerializeField] protected Sprite hoverSprite;
 	[SerializeField] protected Sprite pressedSprite;
 	[SerializeField] protected GameObject line;
 	[SerializeField] protected Color inactiveColor;
 	[SerializeField] protected Color activeColor;
-
 	[SerializeField] protected Image bgImage;
 
     protected bool isFilledIn;
     protected SettingsFieldState currentState;
     protected InputField input;
     protected string inputText;
+
 
     public bool IsFilledIn {
         get { return isFilledIn; }
@@ -60,7 +54,6 @@ public class SettingsFieldsView : MonoBehaviour, ISelectHandler, IPointerEnterHa
 	}
 
     protected virtual void InputValue_OnChange() {
-       
         inputText = input.text;
         if ( input.text == "" ) {
             input.text = 0.ToString();
@@ -120,7 +113,6 @@ public class SettingsFieldsView : MonoBehaviour, ISelectHandler, IPointerEnterHa
                 }
                 break;
         }
-
     }
 
     void UpdateValidation( string text ) {
@@ -209,20 +201,7 @@ public class SettingsFieldsView : MonoBehaviour, ISelectHandler, IPointerEnterHa
             OnInputfieldStateChange( this );
         }
     }
-
-    public void OnPointerEnter( PointerEventData eventData ) {
-		//if ( currentState != SettingsFieldState.Pressed ) {
-		//	CurrentState = SettingsFieldState.Hover;
-		//}
-	}
-
-	public void OnPointerExit( PointerEventData eventData ) {
-		//if ( currentState != SettingsFieldState.Pressed ) {
-		//	CurrentState = SettingsFieldState.Inactive;
-		//}
-	}
-
-
+    
     public void ClearInput() {
         input.text = "0";
     }

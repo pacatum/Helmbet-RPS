@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StartTime : SettingView {
@@ -30,8 +28,6 @@ public class StartTime : SettingView {
         hourFiledView.OnSettingFieldValidate += SetErrorIcon;
         minuteFiledView.OnSettingFieldValidate += SetErrorIcon;
         secondFiledView.OnSettingFieldValidate += SetErrorIcon;
-
-       
     }
 
     protected override void FieldView_OnStateChange( SettingsFieldsView.SettingsFieldState state ) {
@@ -48,11 +44,7 @@ public class StartTime : SettingView {
 
     void SwitchPressedInputs( SettingsFieldsView target ) {
         foreach ( var input in settingsFieldsViews ) {
-            if ( input.Equals( target ) ) {
-                input.CurrentState = SettingsFieldsView.SettingsFieldState.Pressed;
-            } else {
-                input.CurrentState = SettingsFieldsView.SettingsFieldState.Hover;
-            }
+            input.CurrentState = input.Equals( target ) ? SettingsFieldsView.SettingsFieldState.Pressed : input.CurrentState = SettingsFieldsView.SettingsFieldState.Hover;
         }
     }
 

@@ -18,8 +18,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     List<BaseCanvasView> allCanvases = new List<BaseCanvasView>();
 
     [Header( "Cursor" ), SerializeField] Texture2D hoverCursorTexture;
-
-
     [SerializeField] HeaderView headerView;
     [SerializeField] DashdoardView dashboardView;
     [SerializeField] SettingsView settingsView;
@@ -32,15 +30,14 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     [SerializeField] TournamentDetailsView tournamentDetailsView;
     [SerializeField] GameInfoView gameInfoView;
     [SerializeField] NoticesView noticesView;
-
-    private TournamentObject currenTournamentObject;
     [Header( "Popups" ), SerializeField] MessagePopupView messagePopupView;
     public string bufferString;
+
+    TournamentObject currenTournamentObject;
 
 
     protected override void Awake() {
         base.Awake();
-
         allCanvases.Add( dashboardView );
         allCanvases.Add( settingsView );
         allCanvases.Add( loginView );
@@ -66,9 +63,8 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         createNewView.OnCancelClick += Header_OnDashboardClick;
         gameHeaderView.OnMinimazeButton += Header_OnDashboardClick;
         accountView.OnLogoutButton += Account_OnLogoutClick;
-
-
         UIManager.Instance.OnStateChanged += GlobalManager_Instance_OnStateChanged;
+        ApiManager.OnConnectionClosed += Connection_OnClosed;
     }
 
     void Start() {
@@ -87,6 +83,10 @@ public class UIController : SingletonMonoBehaviour<UIController> {
                 canvas.Show();
             }
         }
+    }
+
+    void Connection_OnClosed( string message ) {
+        messagePopupView.SerErrorPopup( message );
     }
 
     void GlobalManager_Instance_OnStateChanged( UIManager.ScreenState state ) {
@@ -124,7 +124,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         }
     }
 
-
     void Account_OnLogoutClick() {
         AuthorizationManager.Instance.ResetAuthorization();
         dashboardView.Clear();
@@ -137,7 +136,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
             UIManager.Instance.CurrentState = UIManager.ScreenState.Dashboard;
         }
     }
-
 
     void Header_OnAccountClick() {
         if ( accountView.IsActive ) {
@@ -193,7 +191,7 @@ public class UIController : SingletonMonoBehaviour<UIController> {
         if ( accountView.IsActive ) {
             accountView.Hide();
         }
-        settingsView.CurrentState = SettingsView.SettingsState.General;
+        settingsView.CurrentState = SettingsState.General;
     }
 
     void ShowNoticesView() {
@@ -216,7 +214,6 @@ public class UIController : SingletonMonoBehaviour<UIController> {
     }
 
     void ShowGameScreenView() {
-        //SwitchCanvas( gameScreenView );
         gameScreenView.Show();
     }
 

@@ -14,6 +14,8 @@ public class HistoryTournamentsListView : DashboardTabView {
     List<TournamentObject> tournamentsOnPages = new List<TournamentObject>();
     protected int maxItemsOnPage;
     protected int numberOfPages;
+    bool addPage;
+
 
     public override void Awake() {
         base.Awake();
@@ -99,8 +101,6 @@ public class HistoryTournamentsListView : DashboardTabView {
                         }
                     } )
                     .Catch( exception => loader.IsLoading = false );
-
-
             } );
     }
 
@@ -122,7 +122,6 @@ public class HistoryTournamentsListView : DashboardTabView {
                 } else {
                     loader.IsLoading = false;
                 }
-
             } );
     }
 
@@ -133,7 +132,6 @@ public class HistoryTournamentsListView : DashboardTabView {
         }
         historyItemsList.Clear();
     }
-
 
     IEnumerator UpdateTable( List<TournamentObject> tournamentsList ) {
 
@@ -168,11 +166,10 @@ public class HistoryTournamentsListView : DashboardTabView {
         return item;
     }
 
-    private bool addPage;
-
     protected override void AddPage() {
         numberOfPages++;
         addPage = true;
         LoadTournaments();
     }
+
 }

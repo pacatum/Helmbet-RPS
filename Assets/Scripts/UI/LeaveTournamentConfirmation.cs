@@ -20,18 +20,16 @@ public class LeaveTournamentConfirmation : BaseCanvasView {
     [SerializeField] Text registrationDeadlineText;
     [SerializeField] Text buyinText;
     [SerializeField] Text feeText;
-
     [SerializeField] Button leaveButton;
     [SerializeField] Button cancelButton;
-
     [SerializeField] ScreenLoader loader;
-
     [SerializeField] MessagePopupView messagePopupView;
 
-    private LeaveFromTournamentData currentData;
-    private long currentFee;
-    private TournamentLeaveOperationData currentOperation;
-    private AssetData currentAccountBalanceObject;
+    LeaveFromTournamentData currentData;
+    long currentFee;
+    TournamentLeaveOperationData currentOperation;
+    AssetData currentAccountBalanceObject;
+
 
     public override void Awake() {
         base.Awake();
@@ -40,7 +38,6 @@ public class LeaveTournamentConfirmation : BaseCanvasView {
     }
 
     public void SetUp( TournamentObject tournament ) {
-   
         ApiManager.Instance.Database
             .GetAccountBalances( AuthorizationManager.Instance.UserData.FullAccount.Account.Id.Id, Array.ConvertAll( AuthorizationManager.Instance.UserData.FullAccount.Balances, balance => balance.AssetType.Id ) )
             .Then( accountBalances => {
@@ -54,9 +51,11 @@ public class LeaveTournamentConfirmation : BaseCanvasView {
                         asset = balance;
                     }
                 }
+
                 TournamentTransactionService.GenerateLeaveFromTournamentOperation( currentData )
                     .Then( operation => {
                         var feeAsset = SpaceTypeId.CreateOne( SpaceType.Asset );
+
                         ApiManager.Instance.Database.GetRequiredFee( operation, feeAsset.Id )
                             .Then( feeResult => {
                                 Repository.GetInPromise<AssetObject>( feeResult.Asset )
@@ -84,14 +83,11 @@ public class LeaveTournamentConfirmation : BaseCanvasView {
                     } )
                     .Catch( exception => OperationOnDone( "There was a mistake during leaving of a tournament!", false ) );
             } );
-
     }
 
     void LeaveTournament() {
         loader.IsLoading = true;
-
-        if ( !currentAccountBalanceObject.IsNull() && currentAccountBalanceObject.Amount <
-             currentData.tournament.Options.BuyIn.Amount + currentFee ) {
+        if ( !currentAccountBalanceObject.IsNull() && currentAccountBalanceObject.Amount < currentData.tournament.Options.BuyIn.Amount + currentFee ) {
             OperationOnDone( "Failed\r\nInsufficient Funds available", false );
         } else {
             TournamentTransactionService.LeaveFromTournament( currentOperation )
@@ -117,7 +113,6 @@ public class LeaveTournamentConfirmation : BaseCanvasView {
 
     public override void Hide() {
         gameObject.SetActive( false );
-
     }
 
 }

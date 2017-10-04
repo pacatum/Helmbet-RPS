@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,9 +14,9 @@ public class SettingApiRemoveController : MonoBehaviour {
     [SerializeField] Dropdown dropdown;
     [SerializeField] Button hideButton;
     [SerializeField] Button openExpandPanel;
-    
 
     private MessagePopupView messagePopupView;
+
 
     void Awake() {
         messagePopupView = FindObjectOfType<MessagePopupView>();
@@ -28,13 +27,10 @@ public class SettingApiRemoveController : MonoBehaviour {
     }
 
     public void HideExpandPanel() {
-
         gameObject.SetActive(true);
-        //input.text = string.Empty;
         expandPanel.SetActive( false );
     }
-
-
+    
     void RemoveApi() {
         string selectedApi = dropdown.captionText.text;
         if ( NodeManager.Instance.IsDefault( selectedApi ) ) {
@@ -51,7 +47,6 @@ public class SettingApiRemoveController : MonoBehaviour {
     }
 
     void InitDropdown() {
-
         dropdown.ClearOptions();
         foreach ( var host in NodeManager.Instance.Hosts ) {
             Dropdown.OptionData option = new Dropdown.OptionData( ( host ) );

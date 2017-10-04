@@ -16,20 +16,16 @@ public class LoginView : BaseCanvasView {
 	[SerializeField] LoginButtonView loginBtn;
     [SerializeField] Button registrationButton;
     [SerializeField] Button linkButton;
-
     [SerializeField] ScreenLoader loader;
-
-    [SerializeField] private string connectionURL;
+    [SerializeField] string connectionURL;
 
 	List<InputFieldView> inputFields = new List<InputFieldView>();
-
-	private string username;
-	private string password;
+	 string username;
+	 string password;
     GameObject selectedGameObject;
 
+
     public override void Awake() {
-
-
 		base.Awake();
 		loginBtn.GetComponent<Button>().onClick.AddListener( Login_OnButtonClick );
 		inputFields.Add(loginInputField);
@@ -38,13 +34,10 @@ public class LoginView : BaseCanvasView {
 		passwordInputField.OnInputClick += SwitchInputFieldState;
 		loginInputField.OnValueChange += CheckInputs;
 		passwordInputField.OnValueChange += CheckInputs;
-
         registrationButton.onClick.AddListener( OpenRegistrationPageInBrowser );
         linkButton.onClick.AddListener( OpenRegistrationPageInBrowser );
-
         CheckInputs();
     }
-
 
     void OpenRegistrationPageInBrowser() {
         Application.OpenURL(connectionURL);
@@ -66,15 +59,12 @@ public class LoginView : BaseCanvasView {
     void Tabulation() {
         if ( Input.GetKeyUp( KeyCode.Tab ) ) {
             var currentSelectedObject = EventSystem.current.currentSelectedGameObject;
-            selectedGameObject = currentSelectedObject.Equals( loginInputField.gameObject )
-                ? passwordInputField.gameObject
-                : loginInputField.gameObject;
+            selectedGameObject = currentSelectedObject.Equals( loginInputField.gameObject ) ? passwordInputField.gameObject : loginInputField.gameObject;
             EventSystem.current.SetSelectedGameObject( selectedGameObject, null );
         }
     }
 
     void Initialization() {
-
         loader.IsLoading = true;
         username = loginInputField.InputText;
         password = passwordInputField.InputText;
@@ -105,26 +95,22 @@ public class LoginView : BaseCanvasView {
         }
     }
 
-   
-	void SwitchInputFieldState(InputFieldView target) {
-        GlobalManager.Instance.HideCopypastePanel();
-		foreach ( var input in inputFields) {
-			if ( input.Equals( target ) ) {
-				input.CurrentState = InputFieldView.InputState.Pressed;
-			} else {
-				input.CurrentState = InputFieldView.InputState.Normal;
-			}
-		}
-	}
 
-	void Login_OnButtonClick() {
+    void SwitchInputFieldState( InputFieldView target ) {
+        GlobalManager.Instance.HideCopypastePanel();
+        foreach ( var input in inputFields ) {
+            input.CurrentState = input.Equals( target ) ? InputFieldView.InputState.Pressed : InputFieldView.InputState.Normal;
+        }
+    }
+
+    void Login_OnButtonClick() {
 		if ( InputsIsValidates() ) {
 			Initialization();
 		}
 	}
 
 	void ShowErrorMessage() {
-                loginInputField.CurrentState = InputFieldView.InputState.Error;
+        loginInputField.CurrentState = InputFieldView.InputState.Error;
         loginMessage.SetActive( false );
 		errorMessage.SetActive( true );
 	}
@@ -134,15 +120,11 @@ public class LoginView : BaseCanvasView {
         errorMessage.SetActive( false );
 	}
 
-	void CheckInputs() {
-		if ( InputsIsValidates() ) {
-			loginBtn.UpdateState( LoginButtonView.ButtonState.Active );
-		} else {
-			loginBtn.UpdateState( LoginButtonView.ButtonState.Inactive );
-		}
-	}
+    void CheckInputs() {
+        loginBtn.UpdateState( InputsIsValidates() ? LoginButtonView.ButtonState.Active : LoginButtonView.ButtonState.Inactive );
+    }
 
-	bool InputsIsValidates() {
+    bool InputsIsValidates() {
 		foreach( var input in inputFields ) {
 			if( !input.IsValidate ) {
 				return false;

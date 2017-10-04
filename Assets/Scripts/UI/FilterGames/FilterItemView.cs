@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 public class FilterItemView : MonoBehaviour, IPointerClickHandler {
 
     public event Action<FilterItemView> OnItemClick;
-
     public event Action OnFilterItemChanged;
 
     [SerializeField] TextMeshProUGUI selectChoiseText;
@@ -21,7 +20,6 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
     void SetItemViewTitle( string firstValue, string secondValue ) {
         SelectChoise = firstValue;
         EndRangeSelectChoise = secondValue;
-
         if ( OnFilterItemChanged != null ) {
             OnFilterItemChanged();
         }
@@ -42,7 +40,6 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
             OnItemClick( this );
         }
     }
-
 
     public string SelectChoise {
         get { return selectChoiseText==null ? string.Empty : selectChoiseText.text; }

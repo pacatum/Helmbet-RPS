@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class GameSettingView : MonoBehaviour {
@@ -11,8 +9,8 @@ public class GameSettingView : MonoBehaviour {
     [SerializeField] Image CurrentChoosedHand;
     [SerializeField] ChooseHandButton ChooseHandButtonPrefab;
     [SerializeField] Transform LayoutGroup;
-    int viewIndex;
 
+    int viewIndex;
     ChooseHandController.HandSetting currentHandSetting;
     ChooseHandController.HandSetting selectedHandSetting;
 
@@ -30,7 +28,6 @@ public class GameSettingView : MonoBehaviour {
         gameObject.SetActive( false );
     }
 
-
     public void Show() {
         gameObject.SetActive( true );
         viewIndex = ChooseHandController.Instance.HandsList.IndexOf( currentHandSetting );
@@ -45,7 +42,7 @@ public class GameSettingView : MonoBehaviour {
         selectedHandSetting = ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == hand );
     }
 
-    public void UpdateHandPreview(ChooseHandController.HandSetting setting) {
+    public void UpdateHandPreview( ChooseHandController.HandSetting setting ) {
         CurrentChoosedHand.sprite = setting.HandPalmSprite;
     }
 
@@ -57,19 +54,16 @@ public class GameSettingView : MonoBehaviour {
         if ( viewIndex == ChooseHandController.Instance.HandsList.Count ) {
             viewIndex = 0;
         }
-
         var nextIndex = viewIndex + 1;
 
         if ( nextIndex == ChooseHandController.Instance.HandsList.Count ) {
             nextIndex = 0;
         }
-
         foreach ( Transform child in LayoutGroup.transform ) {
             Destroy( child.gameObject );
         }
 
         var activeHandIndex = PlayerPrefs.GetInt( "PlayerChoosedHand" );
-
         var handButton = Instantiate( ChooseHandButtonPrefab );
         var handStruct = ChooseHandController.Instance.HandsList[viewIndex];
         handButton.SetUpHandButton( handStruct.HandScissorsSprite, activeHandIndex == viewIndex, handStruct.ColourOfHand );

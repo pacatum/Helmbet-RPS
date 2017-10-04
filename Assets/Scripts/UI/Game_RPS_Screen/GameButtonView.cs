@@ -10,20 +10,19 @@ public class GameButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] Sprite paperSprite;
     [SerializeField] Sprite scissorsSprite;
     [SerializeField] Sprite undefinedSprite;
-
     [SerializeField] GameObject normal;
     [SerializeField] GameObject hover;
-
     [SerializeField] Image normalState;
     [SerializeField] Image hoverState;
     [SerializeField] Text roundNumberText;
     [SerializeField] Text stepNameText;
 
-    [SerializeField] private Image hoverBg;
-    [SerializeField] private Color paperColor;
-    [SerializeField] private Color rockColor;
-    [SerializeField] private Color scissorsColor;
-    [SerializeField] private Color undefinedColor;
+    [SerializeField] Image hoverBg;
+    [SerializeField] Color paperColor;
+    [SerializeField] Color rockColor;
+    [SerializeField] Color scissorsColor;
+    [SerializeField] Color undefinedColor;
+
 
     public bool IsSelect { get; set; }
 

@@ -81,7 +81,6 @@ public class CreateNewView : BaseCanvasView {
         }
     }
     
-
     public override void Awake() {
         base.Awake();
 
@@ -204,25 +203,23 @@ public class CreateNewView : BaseCanvasView {
         Create();
     }
 
-	public CreateTournamentData NewTournament() {
-		return new CreateTournamentData {
-			buyInAssetId = buyInSetting.BuyInAssetId,
-			buyInAmount = buyInSetting.BuyInAmount,
-			whitelist = whitelistController.GetWhitelistIds.Length > 0
-				? whitelistController.GetWhitelistIds
-				: new SpaceTypeId[ 0 ],
-			account = AuthorizationManager.Instance.Authorization.UserNameData.FullAccount.Account.Id,
-			registrationDeadline = RegistrationDeadline,
-			numberOfPlayers = numberOfPlayers.CurrentValue,
-			numberOfWins = 5,
-			startTime = StartTime,
-			startDelay = toggleGroup.StartDelay,
-			roundDelay = 10,
-			insuranceEnabled = false,
-			timePerCommitMove = 15,
-			timePerRevealMove = 9
-		};
-	}
+    public CreateTournamentData NewTournament() {
+        return new CreateTournamentData {
+            buyInAssetId = buyInSetting.BuyInAssetId,
+            buyInAmount = buyInSetting.BuyInAmount,
+            whitelist = whitelistController.GetWhitelistIds.Length > 0 ? whitelistController.GetWhitelistIds : new SpaceTypeId[0],
+            account = AuthorizationManager.Instance.Authorization.UserNameData.FullAccount.Account.Id,
+            registrationDeadline = RegistrationDeadline,
+            numberOfPlayers = numberOfPlayers.CurrentValue,
+            numberOfWins = 5,
+            startTime = StartTime,
+            startDelay = toggleGroup.StartDelay,
+            roundDelay = 10,
+            insuranceEnabled = false,
+            timePerCommitMove = 15,
+            timePerRevealMove = 9
+        };
+    }
 
     void SwitchButtonsState( LoginButtonView.ButtonState state ) {
         foreach ( var button in buttons ) {

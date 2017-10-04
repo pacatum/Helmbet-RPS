@@ -7,10 +7,10 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
 
     public event Action OnValueChange;
 
+    [SerializeField] SearchView searchInput;
     public string searchFilterText;
     InputField input;
 
-    [SerializeField] SearchView searchInput;
 
     void Awake() {
 
@@ -37,4 +37,5 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
         }
         searchInput.Clear();
     }
+
 }

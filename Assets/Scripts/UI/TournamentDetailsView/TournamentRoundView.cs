@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +8,8 @@ public class TournamentRoundView : MonoBehaviour {
     [SerializeField] TournamentMatcheView tournamentMatcheViewPrefab;
     [SerializeField] Transform tournamentMatcheContainer;
 
-    private List<TournamentMatcheView> tournamentMatcheViews = new List<TournamentMatcheView>();
+    List<TournamentMatcheView> tournamentMatcheViews = new List<TournamentMatcheView>();
+
 
     public void SetRoundTitle( int roundNumber ) {
 
@@ -49,11 +48,8 @@ public class TournamentRoundView : MonoBehaviour {
         GetComponentInChildren<VerticalLayoutGroup>().enabled = false;
     }
 
-
     public TournamentMatcheView[] UpdateMatches( int playersCount, int roundNumberCount ) {
-
         RemoveList();
-
         int matchesCount = playersCount / 2;
         for ( int i = 0; i < matchesCount; i++ ) {
             var item = Instantiate( tournamentMatcheViewPrefab );
@@ -61,7 +57,6 @@ public class TournamentRoundView : MonoBehaviour {
             tournamentMatcheViews.Add( item );
         }
         return tournamentMatcheViews.ToArray();
-
     }
 
     void RemoveList() {

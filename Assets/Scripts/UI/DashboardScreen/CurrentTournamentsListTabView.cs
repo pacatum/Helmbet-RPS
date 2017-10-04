@@ -13,7 +13,6 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     [SerializeField] SceduleTournamentItemView sceduleTournamentItemViewPrefab;
     [SerializeField] MessagePopupView messagePopupView;
     [SerializeField] ChooseHandController chooseHandController;
-
     [SerializeField] LeaveTournamentConfirmation leaveTournamentConfirmation;
     [SerializeField] JoinTournamentConfirmation joinTournamentConfirmation;
 
@@ -28,11 +27,8 @@ public class CurrentTournamentsListTabView : DashboardTabView {
         base.Awake();
         search.OnValueChange += ShowTournaments;
         showMoreButton.onClick.AddListener( AddPage );
-
         numberOfPages = 1;
-
         TournamentManager.Instance.OnTournamentChanged += UpdateNewTournament;
-
     }
 
     public override void Clear() {
@@ -190,12 +186,10 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                 Destroy( item.gameObject );
                 return;
             }
-
             item.UpdateTournament( tournament );
         }
     }
-
-
+    
     void ClearTournamentsItemViewList() {
         foreach ( var item in sceduleItemsList ) {
             item.OnJoinClick -= Item_OnJoinClick;

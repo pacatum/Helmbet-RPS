@@ -1,22 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CreateNewErrorView : MonoBehaviour {
 
     [SerializeField] int correctlyFilledInMaxCount;
-
     [SerializeField] GameObject errorPanel;
     [SerializeField] Text settingFieldErrorTitleText;
     [SerializeField] Text settingErrorText;
     [SerializeField] Text correctlyFieldsFilledInText;
     [SerializeField] Text correctlyFilledInMaxCountText;
     [SerializeField] Image bgTargetGraphics;
-
     [SerializeField] Color allCorrectColor;
     [SerializeField] Color errorColor; 
-
     [SerializeField] Color allCorrectBgColor;
     [SerializeField] Color errorBgColor;
 

@@ -10,15 +10,14 @@ public class AddNewPlayerToWhitelistView : MonoBehaviour {
 
     public event Action<UserNameAccountIdPair> OnPlayerAdded;
 
-
-    private string inputText;
     [SerializeField] InputField input;
     [SerializeField] WhiteListUserView userItemView;
     [SerializeField] Transform usersContainer;
 
-
+    string inputText;
     List<WhiteListUserView> userGameObjects = new List<WhiteListUserView>();
     SetItemToDefaultByEscape setItemToDefaultByEscape;
+
 
     private SetItemToDefaultByEscape SetItemToDefaultComponent {
         get { return setItemToDefaultByEscape == null ? setItemToDefaultByEscape = GetComponent<SetItemToDefaultByEscape>() : setItemToDefaultByEscape; }
@@ -71,9 +70,7 @@ public class AddNewPlayerToWhitelistView : MonoBehaviour {
         if ( userGameObjects.Count == 0 ) {
             return;
         }
-
         inputText = string.Empty;
-
         foreach ( var user in userGameObjects ) {
             Destroy( user.gameObject );
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +9,7 @@ public class FilterChoiseInputView : MonoBehaviour {
     public string InputText;
     InputField input;
     Image image;
+
 
     void Awake() {
         input = GetComponent<InputField>();

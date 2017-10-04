@@ -9,12 +9,12 @@ public class NoticeReleasesView : BaseCanvasView {
 
     [SerializeField] Button closeViewButton;
     [SerializeField] Button UpdateButton;
-
     [SerializeField] TextMeshProUGUI releasesText;
     [SerializeField] GameObject noticesButton;
 
     string versionURL;
     string currentVersion;
+
 
     public override void Awake() {
         closeViewButton.onClick.AddListener( Close_OnClick );

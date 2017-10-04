@@ -18,6 +18,7 @@ public class UIButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     GameObject currentNormalState;
 
+
     public void OnPointerEnter( PointerEventData eventData ) {
        UpdateColor( ButtonViewState.Hover );
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,23 +7,21 @@ public class SettingsApiView : BaseCanvasView {
 
     public event Action OnCalcelClick;
 
-	[Header("Remove Websocket Api")]
-    [SerializeField] SettingApiRemoveController settingApiRemoveController;
+    [Header( "Remove Websocket Api" )] [SerializeField] SettingApiRemoveController settingApiRemoveController;
     [SerializeField] SettingApiAddController settingApiAddController;
     [SerializeField] Dropdown apiConnectionDropDown;
     [SerializeField] ScreenLoader screenLoader;
 
-    private MessagePopupView messagePopupView;
-    private string prevoiusSelectApi = "";
+    MessagePopupView messagePopupView;
+    string prevoiusSelectApi = "";
+
 
     public override void Awake() {
         base.Awake();
         messagePopupView = FindObjectOfType<MessagePopupView>();
         settingApiAddController.OnExpandPanelOpen += ChangeState;
         settingApiRemoveController.OnExpandPanelOpen += ChangeState;
-
         apiConnectionDropDown.onValueChanged.AddListener( delegate( int value ) { ChangeApiConnection( value ); } );
-
         settingApiAddController.OnApiAdded += InitDropdown;
         settingApiRemoveController.OnApiRemoved += InitDropdown;
         InitDropdown();
@@ -36,25 +33,21 @@ public class SettingsApiView : BaseCanvasView {
     }
 
     void InitDropdown() {
-
         apiConnectionDropDown.ClearOptions();
         foreach ( var host in NodeManager.Instance.Hosts ) {
             Dropdown.OptionData option = new Dropdown.OptionData( ( host ) );
             apiConnectionDropDown.AddOptions( new List<Dropdown.OptionData>() { option } );
         }
-
         if ( prevoiusSelectApi == "" ) {
             prevoiusSelectApi = apiConnectionDropDown.captionText.text;
         }
-
         if ( !prevoiusSelectApi.Equals( apiConnectionDropDown.captionText.text ) ) {
             apiConnectionDropDown.value = 0;
             ChangeApiConnection( 0 );
         }
-
     }
 
-    void ChangeApiConnection(int value) {
+    void ChangeApiConnection( int value ) {
         var selectedApi = apiConnectionDropDown.options[value].text;
         screenLoader.IsLoading = true;
         NodeManager.Instance.ConnectTo( selectedApi, ConnectResultCallback );
@@ -80,7 +73,7 @@ public class SettingsApiView : BaseCanvasView {
         }
     }
 
-    void ChangeState(GameObject setting) {
+    void ChangeState( GameObject setting ) {
         if ( !settingApiAddController.gameObject.Equals( setting ) ) {
             settingApiAddController.HideExpandPanel();
         } else {

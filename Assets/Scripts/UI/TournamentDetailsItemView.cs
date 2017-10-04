@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Base.Config;
 using Base.Data.Assets;
 using Base.Data.Tournaments;
@@ -36,7 +35,6 @@ public class TournamentDetailsItemView : MonoBehaviour {
         tournamentRegisterDeadlineText.text = tournament.Options.RegistrationDeadline.ToString("dd MMM, yyyy. hh:mm");
         tournamentBuyinText.text = tournament.Options.BuyIn.Amount/Mathf.Pow( 10, asset.Precision ) + asset.Symbol;
         tournamentJackpotText.text = tournament.PrizePool/Mathf.Pow(10, asset.Precision) + asset.Symbol;
-
         liveMessage.SetActive( tournament.State.Equals( ChainTypes.TournamentState.InProgress ) );
     }
 

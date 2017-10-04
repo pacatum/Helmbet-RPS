@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class SettingsButtonView : ButtonView {
@@ -17,7 +15,6 @@ public class SettingsButtonView : ButtonView {
     protected override void SetPressedState() {
         base.SetPressedState();
         buttonIcon.color = pressedColor;
-
     }
 
 }

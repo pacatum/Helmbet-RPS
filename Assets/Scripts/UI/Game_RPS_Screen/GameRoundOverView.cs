@@ -93,11 +93,9 @@ public class GameRoundOverView : MonoBehaviour {
     public void UpdateOpponentUsername( string opponentUsername ) {
         opponentUsernameText.text = "ROUND AGAINST: " + opponentUsername;
     }
-
-
+    
     void UpdateHistory( List<GameChoiseResult> history ) {
         foreach ( var item in history ) {
-
             var gameOverView = Instantiate( roundOverPrefab );
             gameOverView.transform.SetParent( roundLogContentHolder, false );
             gameOverView.SetUpRoundOver( GetPlayerGesture( item.playerGesture, item.result ), GetOpponentGesture( item.opponentGesture, item.result ),item);

@@ -1,29 +1,24 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler{
+public enum CalendarState {
+
+    Pressed,
+    Hover,
+    Inactive
+
+}
+
+public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
 
     public event Action<DateTime> OnDateChanged;
-
-    [SerializeField] Text selectDateText;
-
-    public enum CalendarState {
-
-        Pressed,
-        Hover,
-        Inactive
-
-    }
-
     public event Action<SettingView.SettingState> OnSettingStateChange;
 
+    [SerializeField] Text selectDateText;
     [SerializeField] Color inactiveColor;
     [SerializeField] Color activeColor;
-
     [SerializeField] Image calendarIcon;
     [SerializeField] Image bgImage;
     [SerializeField] CalendarControl calendar;
@@ -31,6 +26,7 @@ public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerE
     bool calendarIsOpen;
     CalendarState currentState;
     DateTime selectDate;
+
 
     public CalendarControl Calendar {
         get { return calendar; }
@@ -79,9 +75,8 @@ public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerE
     }
 
     public void OnPointerClick( PointerEventData eventData ) {
-        if (OnSettingStateChange != null)
-        {
-            OnSettingStateChange(SettingView.SettingState.Pressed);
+        if ( OnSettingStateChange != null ) {
+            OnSettingStateChange( SettingView.SettingState.Pressed );
         }
         CurrentState = CalendarState.Pressed;
     }
@@ -106,10 +101,10 @@ public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerE
     }
 
     void SetCalendar( bool active ) {
-        
+
         calendarIsOpen = active;
         calendar.gameObject.SetActive( active );
-     }
+    }
 
 
     public void OnPointerEnter( PointerEventData eventData ) {
@@ -127,7 +122,7 @@ public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerE
     public void SetRegistratinDate( DateTime date ) {
         selectDate = date;
         DateOnChanged( date );
-        selectDateText.text = selectDate.Day +" " + MonthStringController.GetMonth( selectDate.Month ) + " " + selectDate.Year;
+        selectDateText.text = selectDate.Day + " " + MonthStringController.GetMonth( selectDate.Month ) + " " + selectDate.Year;
     }
 
     void DateOnChanged( DateTime date ) {
@@ -135,6 +130,5 @@ public class CalendarButtonView : MonoBehaviour, IPointerClickHandler, IPointerE
             OnDateChanged( date );
         }
     }
-
 
 }

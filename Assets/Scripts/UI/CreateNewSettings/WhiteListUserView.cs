@@ -9,10 +9,10 @@ public class WhiteListUserView : MonoBehaviour, IPointerClickHandler {
     public event Action<UserNameAccountIdPair> OnItemClick;
 
     [SerializeField] Text usernameText;
-
     UserNameAccountIdPair currentUser;
 
-    public void Init(UserNameAccountIdPair account) {
+
+    public void Init( UserNameAccountIdPair account ) {
         usernameText.text = account.UserName;
         currentUser = account;
     }

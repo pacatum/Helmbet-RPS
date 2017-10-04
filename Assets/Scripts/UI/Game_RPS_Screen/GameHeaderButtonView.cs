@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Tools;
+﻿using Tools;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,6 +20,7 @@ public class GameHeaderButtonView : MonoBehaviour, IPointerEnterHandler, IPointe
 
     GameHeaderButtonState currentState;
     Image image;
+
 
     private Image CurrentImage {
         get { return image.IsNull() ? image = GetComponent<Image>() : image; }

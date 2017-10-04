@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,7 +9,6 @@ public class HeaderView : BaseCanvasView {
     public event Action OnDashboardClick;
     public event Action OnGamesClick;
     public event Action OnSettingsClick;
-
     public event Action OnAccountClick;
     public event Action OnNoticeClick;
 
@@ -20,8 +18,7 @@ public class HeaderView : BaseCanvasView {
     [SerializeField] ButtonView helpButton;
     [SerializeField] ButtonView noticeButton;
     [SerializeField] Button accountButton;
-
-
+    
     List<ButtonView> allHeaderButtons = new List<ButtonView>();
 
 
@@ -35,7 +32,6 @@ public class HeaderView : BaseCanvasView {
         allHeaderButtons.Add( gamesBtn );
         allHeaderButtons.Add( dashboardBtn );
         allHeaderButtons.Add( settingsBtn );
-       // allHeaderButtons.Add( helpButton );
         allHeaderButtons.Add( noticeButton );
 
         UIController.Instance.OnDashboardButton += ShowDashboardBtn;
@@ -44,7 +40,6 @@ public class HeaderView : BaseCanvasView {
         OnDashboardClick += ShowDashboardBtn;
         OnSettingsClick += ShowSettingsButton;
         OnGamesClick += ShowGamesBtn;
-        
     }
 
     void Start() {

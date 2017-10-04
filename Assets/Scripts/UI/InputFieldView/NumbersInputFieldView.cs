@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public class NumbersInputFieldView : InputFieldView {
 
 	Regex expectedString = new Regex("^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$");
+
 
 	protected override void Awake() {
 		base.Awake();

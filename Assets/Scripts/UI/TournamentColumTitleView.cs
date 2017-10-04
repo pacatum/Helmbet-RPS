@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,8 +13,8 @@ public class TournamentColumTitleView : MonoBehaviour {
 
     List<ButtonView> columnButtons = new List<ButtonView>();
 
+
     protected virtual void Awake() {
-        
         AddButtonToList( playersButton );
         AddButtonToList( startTimeButton );
         AddButtonToList( buyInButton );
@@ -24,8 +23,6 @@ public class TournamentColumTitleView : MonoBehaviour {
         foreach ( var button in columnButtons ) {
             button.OnButtonClick += SwitchButtonState;
         }
-
-        
     }
 
     void Start() {
@@ -44,19 +41,15 @@ public class TournamentColumTitleView : MonoBehaviour {
     }
 
     void CheckSortingButton( ButtonView target ) {
-
         if ( target.Equals( startTimeButton ) ) {
             Sort_OnChange( SortType.StartTime, target );
         }
-
         if ( target.Equals( registerDeadlineButton ) ) {
             Sort_OnChange( SortType.RegisterDeadline, target );
         }
-
         if ( target.Equals( buyInButton ) ) {
             Sort_OnChange( SortType.BuyIn, target );
         }
-
         if ( target.Equals( playersButton ) ) {
             Sort_OnChange( SortType.Players, target );
         }

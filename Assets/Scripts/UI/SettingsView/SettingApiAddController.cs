@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,25 +16,25 @@ public class SettingApiAddController : MonoBehaviour {
 
     private MessagePopupView messagePopupView;
 
+
     void Awake() {
         messagePopupView = FindObjectOfType<MessagePopupView>();
         cancelButton.onClick.AddListener( HideExpandPanel );
         hideButton.onClick.AddListener( HideExpandPanel );
         addButton.onClick.AddListener( AddApi );
-        openExpandPanel.onClick.AddListener(OpenExpandpanel);
+        openExpandPanel.onClick.AddListener( OpenExpandpanel );
         input.text = string.Empty;
     }
 
     public void HideExpandPanel() {
-        gameObject.SetActive(true);
+        gameObject.SetActive( true );
         input.text = string.Empty;
         expandPanel.SetActive( false );
     }
 
-
     void AddApi() {
         if ( input.text == "" ) {
-            messagePopupView.SerErrorPopup("Enter the API!");
+            messagePopupView.SerErrorPopup( "Enter the API!" );
             return;
         }
 
@@ -48,14 +46,13 @@ public class SettingApiAddController : MonoBehaviour {
                 OnApiAdded();
             }
         }
-       
     }
 
     void OpenExpandpanel() {
         gameObject.SetActive( false );
         expandPanel.SetActive( true );
         if ( OnExpandPanelOpen != null ) {
-            OnExpandPanelOpen(gameObject);
+            OnExpandPanelOpen( gameObject );
         }
     }
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,12 +9,13 @@ public class CreateNewButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] float normalImageScale;
     [SerializeField] float hoverImageScale;
     [SerializeField] float animationTimer;
-    [SerializeField] private TextMeshProUGUI buttonText;
-    [SerializeField] private Color normalTextColor;
-    [SerializeField] private Color hoverTextColor;
+    [SerializeField] TextMeshProUGUI buttonText;
+    [SerializeField] Color normalTextColor;
+    [SerializeField] Color hoverTextColor;
 
-    private bool isHover;
-    private bool stopUpdating;
+    bool isHover;
+    bool stopUpdating;
+
 
     public void OnPointerEnter( PointerEventData eventData ) {
         isHover = true;
@@ -36,17 +34,16 @@ public class CreateNewButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
         if ( isHover ) {
             if ( hoverImage.transform.localScale.y < hoverImageScale ) {
-                hoverImage.transform.localScale = new Vector3( hoverImage.transform.localScale.x + animationTimer, hoverImage.transform.localScale.y + animationTimer,1 );
+                hoverImage.transform.localScale = new Vector3( hoverImage.transform.localScale.x + animationTimer, hoverImage.transform.localScale.y + animationTimer, 1 );
             } else {
-                hoverImage.transform.localScale = new Vector3( hoverImageScale, hoverImageScale,1 );
-                
+                hoverImage.transform.localScale = new Vector3( hoverImageScale, hoverImageScale, 1 );
                 stopUpdating = false;
             }
         } else {
             if ( hoverImage.transform.localScale.y > normalImageScale ) {
-                hoverImage.transform.localScale = new Vector3( hoverImage.transform.localScale.x - animationTimer, hoverImage.transform.localScale.y - animationTimer,1 );
+                hoverImage.transform.localScale = new Vector3( hoverImage.transform.localScale.x - animationTimer, hoverImage.transform.localScale.y - animationTimer, 1 );
             } else {
-                hoverImage.transform.localScale = new Vector3(normalImageScale, normalImageScale,1);
+                hoverImage.transform.localScale = new Vector3( normalImageScale, normalImageScale, 1 );
                 buttonText.color = normalTextColor;
                 stopUpdating = false;
             }

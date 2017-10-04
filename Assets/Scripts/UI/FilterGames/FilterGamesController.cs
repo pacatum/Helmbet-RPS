@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Base.Config;
 using Base.Data;
@@ -20,13 +19,12 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
     [SerializeField] FilterItemView players;
     [SerializeField] FilterItemView currency;
     [SerializeField] FilterItemView maxBuyIn;
-
     [SerializeField] Button applyButton;
     [SerializeField] Button restoreButton;
-    
 
-    private List<FilterItemView> items = new List<FilterItemView>();
+    List<FilterItemView> items = new List<FilterItemView>();
     DashdoardView dashboard;
+
 
     protected override void Awake() {
         base.Awake();
@@ -62,7 +60,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         }
     }
 
-    public IPromise<List<TournamentObject>> FilterTournaments(List<TournamentObject> tournaments, string searchFilter ) {
+    public IPromise<List<TournamentObject>> FilterTournaments( List<TournamentObject> tournaments, string searchFilter ) {
         var tournamentIds = new List<uint>();
         var tournamentAssetIds = new List<uint>();
 
@@ -73,41 +71,27 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
         return new Promise<List<TournamentObject>>( ( resolve, reject ) => {
             Promise<IdObject[]>.All(
-                                    TournamentManager.Instance.GetAssetsObject( tournamentAssetIds.ToArray() )
-                                        .Then<IdObject[]>( assets => assets ),
-                                    TournamentManager.Instance.GetDetailsTournamentsObject( tournamentIds.ToArray() )
-                                        .Then<IdObject[]>( details => details )
+                                    TournamentManager.Instance.GetAssetsObject( tournamentAssetIds.ToArray() ).Then<IdObject[]>( assets => assets ),
+                                    TournamentManager.Instance.GetDetailsTournamentsObject( tournamentIds.ToArray() ).Then<IdObject[]>( details => details )
                                    )
                 .Then( results => {
                     var list = new List<IdObject[]>( results ).ToArray();
 
                     var assets = list[0] as AssetObject[];
                     var details = list[1] as TournamentDetailsObject[];
-                    
-                    if ( tournaments[0].State == ChainTypes.TournamentState.Concluded ) {
-                        ApiManager.Instance.Database
-                            .GetMatches( Array.ConvertAll( details,
-                                                          matchId => matchId.Matches[matchId.Matches.Length - 1].Id ) )
-                            .Then( lastMatches
-                                      => {
-                                      ApiManager.Instance.Database
-                                          .GetAccounts( Array.ConvertAll( lastMatches,
-                                                                         winner => winner.MatchWinners[0].Id ) )
-                                          .Then( winnerAccounts
-                                                    => {
-                                                    var result = FilterTournaments( tournaments, assets, searchFilter,
-                                                                                   details,
-                                                                                   winnerAccounts );
-                                                    resolve(result );
-                                                } )
-                                          .Catch( exception => resolve( FilterTournaments( tournaments, assets,
-                                                                                          searchFilter,
-                                                                                          details,
-                                                                                          new AccountObject[details
-                                                                                              .Length] ) ) );
-                                  } );
-                    } else {
 
+                    if ( tournaments[0].State == ChainTypes.TournamentState.Concluded ) {
+                        ApiManager.Instance.Database.GetMatches( Array.ConvertAll( details, matchId => matchId.Matches[matchId.Matches.Length - 1].Id ) )
+                            .Then( lastMatches => {
+                                ApiManager.Instance.Database.GetAccounts( Array.ConvertAll( lastMatches, winner => winner.MatchWinners[0].Id ) )
+                                    .Then( winnerAccounts
+                                              => {
+                                              var result = FilterTournaments( tournaments, assets, searchFilter, details, winnerAccounts );
+                                              resolve( result );
+                                          } )
+                                    .Catch( exception => resolve( FilterTournaments( tournaments, assets, searchFilter, details, new AccountObject[details.Length] ) ) );
+                            } );
+                    } else {
                         var myTournaments = new List<TournamentObject>();
                         var otherTournaments = new List<TournamentObject>();
                         var me = AuthorizationManager.Instance.UserData;
@@ -122,43 +106,23 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
                         var resultList = new List<TournamentObject>();
                         resultList.AddRange( myTournaments );
-                        resultList.AddRange(otherTournaments);
+                        resultList.AddRange( otherTournaments );
 
-                        var result = FilterTournaments( resultList, assets, searchFilter,
-                                                       details,
-                                                       new AccountObject[details.Length] );
+                        var result = FilterTournaments( resultList, assets, searchFilter, details, new AccountObject[details.Length] );
                         resolve( result );
                     }
-
                 } );
         } );
     }
 
-
-    List<TournamentObject> FilterTournaments( List<TournamentObject> tournaments, AssetObject[] assets,
-                                              string searchFilter, TournamentDetailsObject[] details,
-                                              AccountObject[] accounts ) {
+    List<TournamentObject> FilterTournaments( List<TournamentObject> tournaments, AssetObject[] assets, string searchFilter, TournamentDetailsObject[] details, AccountObject[] accounts ) {
         var resultList = new List<TournamentObject>();
-
         for ( int i = 0; i < tournaments.Count; i++ ) {
-
-            var buyIn =
-                tournaments[i].Options.BuyIn.Amount / Mathf.Pow( 10, assets[i].Precision ) <=
-                Convert.ToDouble( maxBuyIn.SelectChoise );
-
-            var numberOfPlayers = tournaments[i].Options.NumberOfPlayers >=
-                                  Convert.ToUInt32( players.SelectChoise ) &&
-                                  tournaments[i].Options.NumberOfPlayers <=
-                                  Convert.ToUInt32( players.EndRangeSelectChoise );
-
-            var symbol = assets[i].Symbol.Equals( currency.SelectChoise ) ||
-                         currency.SelectChoise.Equals( "ANY" );
-
-            var gameName = game.SelectChoise.Equals( "ANY" ) ||
-                           game.SelectChoise.Equals("ROCK, PAPER, SCISSORS");
-            
-
-            var search = IsTournamentContains( tournaments[i], assets[i], searchFilter, accounts[i]==null? null : accounts[i] );
+            var buyIn = tournaments[i].Options.BuyIn.Amount / Mathf.Pow( 10, assets[i].Precision ) <= Convert.ToDouble( maxBuyIn.SelectChoise );
+            var numberOfPlayers = tournaments[i].Options.NumberOfPlayers >= Convert.ToUInt32( players.SelectChoise ) && tournaments[i].Options.NumberOfPlayers <= Convert.ToUInt32( players.EndRangeSelectChoise );
+            var symbol = assets[i].Symbol.Equals( currency.SelectChoise ) || currency.SelectChoise.Equals( "ANY" );
+            var gameName = game.SelectChoise.Equals( "ANY" ) || game.SelectChoise.Equals( "ROCK, PAPER, SCISSORS" );
+            var search = IsTournamentContains( tournaments[i], assets[i], searchFilter, accounts[i] == null ? null : accounts[i] );
             if ( buyIn && numberOfPlayers && symbol && gameName && search ) {
                 if ( participate.SelectChoise.Equals( "ONLY ME" ) ) {
                     if ( IsPlayerJoined( details[i] ) ) {
@@ -172,8 +136,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         return resultList;
     }
 
-    bool IsTournamentContains( TournamentObject tournament, AssetObject asset,
-                               string searchText, AccountObject account ) {
+    bool IsTournamentContains( TournamentObject tournament, AssetObject asset, string searchText, AccountObject account ) {
 
         var search = searchText.ToLower();
         var tournamentId = tournament.Id.ToString().ToLower().Contains( search );
@@ -181,27 +144,18 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         var jackpot = ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) * tournament.Options.NumberOfPlayers ) + asset.Symbol ).ToLower().Contains( search );
         var time = tournament.Options.RegistrationDeadline - DateTime.UtcNow;
         var registerDeadline = false;
-        if ( time.TotalMinutes < 60 ) {
-            registerDeadline = ( "Register: <" + (int) time.TotalMinutes + "m" ).Contains( searchText );
-        } else if ( time.TotalHours > 0 ) {
-            registerDeadline = ( "Register: ~" + (int) time.TotalHours + "h" ).Contains( searchText );
-        }
-        //var startTime = ( "Start: " + Convert.ToDateTime( time.ToString() ).ToString( "hh:mm:ss" ) ).Contains( searchText );
+        registerDeadline = ( "Register: <" + ( time.TotalDays < 1 ? 1 : (int) Math.Round( time.TotalDays ) ) + "d" ).Contains( searchText );
         var startDelay = "2 minutes after full".Contains( search );
         var gameName = "rps".Contains( search );
         if ( tournament.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
             var result = account.Id.Equals( AuthorizationManager.Instance.UserData.FullAccount.Account.Id )
-                ? ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) *
-                      ( tournament.Options.NumberOfPlayers - 1 ) ) + asset.Symbol ).ToLower()
-                .Contains( search )
+                ? ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) * ( tournament.Options.NumberOfPlayers - 1 ) ) + asset.Symbol ).ToLower().Contains( search )
                 : ( "-" + ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) ) + asset.Symbol ).ToLower().Contains( search );
-
             var winner = account.Name.ToLower().Contains( search );
             return buyIn || gameName || tournamentId || winner || result;
         }
         return buyIn || jackpot || registerDeadline || gameName || tournamentId || startDelay;
     }
-
 
     bool IsPlayerJoined( TournamentDetailsObject tournamentDetails ) {
         foreach ( var player in tournamentDetails.RegisteredPlayers ) {

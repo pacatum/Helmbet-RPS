@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,7 +19,6 @@ public class SettingView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     [SerializeField] protected Color activeColor;
     [SerializeField] protected Color inactiveColor;
-
     [SerializeField] protected Text inactiveText;
     [SerializeField] protected Image errorIcon;
     [SerializeField] protected string errorMessage;
@@ -110,7 +108,6 @@ public class SettingView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     protected virtual void SetPressedView() {
         bgImage.color = activeColor;
-        //animator.SetTrigger("Pressed");
     }
 
     public void OnPointerEnter( PointerEventData eventData ) {
@@ -146,8 +143,7 @@ public class SettingView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             OnValidateChange();
         }
     }
-
-
+    
     public virtual void Clear() {
     }
 }

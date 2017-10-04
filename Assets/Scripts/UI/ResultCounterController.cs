@@ -3,14 +3,13 @@ using UnityEngine.UI;
 
 public class ResultCounterController : MonoBehaviour {
 
-
-    private int tieAmount;
-    private int loseAmount;
-    private int winAmount;
-
     public Text LoseText;
     public Text TieText;
     public Text WinText;
+
+    int tieAmount;
+    int loseAmount;
+    int winAmount;
 
 
     private void Awake() {
@@ -58,5 +57,5 @@ public class ResultCounterController : MonoBehaviour {
     public void CountLose() {
         LoseAmount += 1;
     }
-    
+
 }
