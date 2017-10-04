@@ -216,6 +216,7 @@ public class TournamentItemFooterView : MonoBehaviour{
     public void OpenGameScreen() {
         UIController.Instance.ScreenLoader_OnLoad( true );
         if ( currenTournamentObject.State == ChainTypes.TournamentState.AcceptingRegistrations ) {
+            UIController.Instance.ScreenLoader_OnLoad(false);
             return;
         }
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
@@ -230,6 +231,7 @@ public class TournamentItemFooterView : MonoBehaviour{
                     var matchesInProgress = Array.FindAll( matches, match => match.State == ChainTypes.MatchState.InProgress );
                     var playerInMatches = Array.FindAll( matchesInProgress, player => player.Players.Contains( me ) );
                     if ( playerInMatches.Length == 0 ) {
+                        UIController.Instance.ScreenLoader_OnLoad(false);
                         OpenDetailsView();
                     } else {
                         UIController.Instance.UpdateTournamentInProgress( currenTournamentObject );
@@ -237,6 +239,7 @@ public class TournamentItemFooterView : MonoBehaviour{
                 } );
 
         } else {
+            UIController.Instance.ScreenLoader_OnLoad(false);
             OpenDetailsView();
         }
     }

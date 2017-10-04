@@ -24,15 +24,13 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
     }
 
     public override IEnumerator UpdateItem( TournamentObject info ) {
-
         var winnerAccounts = new List<AccountObject>();
         yield return StartCoroutine( base.UpdateItem( info ) );
 
         yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( info.Id.Id, winnerAccounts );
         if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
             winnerText.font = thisPlayerWinnerFont;
-            resultText.text = Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount )
-                                                               / Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
+            resultText.text = Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount )/ Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;
         } else {
             winnerText.font = anotherPlayerWinnerFont;
             resultText.text = "-" + buyInText.text;

@@ -19,7 +19,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     List<SceduleTournamentItemView> sceduleItemsList = new List<SceduleTournamentItemView>();
     List<TournamentObject> tournamentsOnPages = new List<TournamentObject>();
-
+    bool addPage;
     protected int maxItemsOnPage;
     protected int numberOfPages;
 
@@ -62,11 +62,6 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     public override void Hide() {
         loader.IsLoading = false;
-        if ( AuthorizationManager.Instance.IsAuthorized ) {
-            foreach ( var items in sceduleItemsList ) {
-                items.IsHover = false;
-            }
-        }
         base.Hide();
     }
 
@@ -83,31 +78,29 @@ public class CurrentTournamentsListTabView : DashboardTabView {
     }
 
     void Item_OnCancelClick( SceduleTournamentItemView item ) {
-        currentJoinItem = item;
         leaveTournamentConfirmation.OnOperationSuccess += Item_OnOperationSuccess;
         leaveTournamentConfirmation.SetUp( item.CurrentTournament );
+    }
+      
+    void Item_OnJoinClick( SceduleTournamentItemView item ) {
+        joinTournamentConfirmation.OnOperationSuccess += Item_OnOperationSuccess;
+        joinTournamentConfirmation.SetUp( item.CurrentTournament );
     }
 
     void Item_OnOperationSuccess() {
         leaveTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
         joinTournamentConfirmation.OnOperationSuccess -= Item_OnOperationSuccess;
         LoadTournaments();
-    }
-
-
-    void Item_OnJoinClick( SceduleTournamentItemView item ) {
-        currentJoinItem = item;
-        joinTournamentConfirmation.OnOperationSuccess += Item_OnOperationSuccess;
-        joinTournamentConfirmation.SetUp( item.CurrentTournament );
-
-    }
-
-    private SceduleTournamentItemView currentJoinItem;
+    }  
 
     void LoadTournaments() {
         if ( !gameObject.activeInHierarchy || !gameObject.activeSelf ) {
             return;
         }
+        foreach ( var item in sceduleItemsList ) {
+            item.IsHover = false;
+        }
+
         loader.IsLoading = true;
         itemContainer.anchoredPosition = new Vector2( itemContainer.anchoredPosition.x, 0f );
         TournamentManager.Instance.LoadTournamentsInState( ChainTypes.TournamentState.AcceptingRegistrations, 50 )
@@ -152,9 +145,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                             filterSettings.FilterTournaments( sortedTournaments, search.searchFilterText )
                                                 .Then( resultTpurnamentList => {
                                                     if ( resultTpurnamentList.Count > 0 ) {
-                                                        if ( resultTpurnamentList.Count <=
-                                                             maxItemsOnPage * ( numberOfPages - 1 ) &&
-                                                             numberOfPages > 1 ) {
+                                                        if ( resultTpurnamentList.Count <= maxItemsOnPage * ( numberOfPages - 1 ) && numberOfPages > 1 ) {
                                                             numberOfPages--;
                                                         }
 
@@ -219,7 +210,6 @@ public class CurrentTournamentsListTabView : DashboardTabView {
             yield break;
         }
         
-
         for ( int i = 0; i < tournamentsList.Count; i++ ) {
             var item = ( sceduleItemsList.Count <= i ) ? GetItem() : sceduleItemsList[i];
             item.gameObject.SetActive( true );
@@ -249,8 +239,6 @@ public class CurrentTournamentsListTabView : DashboardTabView {
         item.OnJoinClick += Item_OnJoinClick;
         return item;
     }
-
-    private bool addPage;
 
     protected override void AddPage() {
         numberOfPages++;

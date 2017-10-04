@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Globalization;
+using Base.Config;
 using Base.Data.Assets;
 using UnityEngine.EventSystems;
 
@@ -39,13 +40,13 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
     [Header( "Item width" )] [SerializeField] private float increaseWidth = 140;
     [SerializeField] float animationTimer;
     [SerializeField] Image itemShadowImage;
-    
+
     protected bool isHover;
     protected bool stopUpdating;
     float hoverWidth;
     float normalWidth;
 
-   
+
     public virtual TournamentObject CurrentTournament {
         get { return currentTournament; }
         set { currentTournament = value; }
@@ -130,7 +131,7 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             ID = "#RPS" + info.Id;
             PlayerRegistered = info.RegisteredPlayers.ToString();
             MaxPlayers = info.Options.NumberOfPlayers.ToString();
-            
+
             if ( currentAsset.IsNull() || !currentAsset.Id.Equals( currentTournament.Options.BuyIn.Asset ) ) {
                 AssetObject asset = null;
                 TournamentManager.Instance.GetAssetObject( currentTournament.Options.BuyIn.Asset.Id )
@@ -216,6 +217,10 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         stopUpdating = false;
     }
 
+    public void OnPointerClick( PointerEventData eventData ) {
+        footerView.OpenGameScreen();
+    }
+
     protected virtual void UpdateView( bool isHover ) {
         idTextTitle.SetActive( isHover );
         numberOfPlayersTextTitle.SetActive( isHover );
@@ -225,10 +230,8 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             idText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
                 jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 1f, 0.5f );
 
-            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax =
-                jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
-                    idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin =
-                        jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 1f, 1f );
+            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax = jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
+                idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin = jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 1f, 1f );
 
             idText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, idText.GetComponent<RectTransform>().anchoredPosition.y );
             buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2( -27, buyInText.GetComponent<RectTransform>().anchoredPosition.y );
@@ -239,10 +242,8 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
             idText.GetComponent<RectTransform>().pivot = playerRegisteredText.GetComponent<RectTransform>().pivot = buyInText.GetComponent<RectTransform>().pivot =
                 jackpotText.GetComponent<RectTransform>().pivot = numberOfPlayersObject.pivot = new Vector2( 0.5f, 0.5f );
 
-            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax =
-                jackpotText.GetComponent<RectTransform>().anchorMax = numberOfPlayersObject.anchorMax =
-                    idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin =
-                        jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 0.5f, 1f );
+            idText.GetComponent<RectTransform>().anchorMax = buyInText.GetComponent<RectTransform>().anchorMax = jackpotText.GetComponent<RectTransform>().anchorMax =
+                numberOfPlayersObject.anchorMax = idText.GetComponent<RectTransform>().anchorMin = buyInText.GetComponent<RectTransform>().anchorMin = jackpotText.GetComponent<RectTransform>().anchorMin = numberOfPlayersObject.anchorMin = new Vector2( 0.5f, 1f );
 
             idText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, idText.GetComponent<RectTransform>().anchoredPosition.y );
             buyInText.GetComponent<RectTransform>().anchoredPosition = new Vector2( 0, buyInText.GetComponent<RectTransform>().anchoredPosition.y );
@@ -251,9 +252,5 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         }
     }
 
-    public void OnPointerClick( PointerEventData eventData ) {
-        IsHover = false;
-        footerView.OpenGameScreen();
-    }
 
 }

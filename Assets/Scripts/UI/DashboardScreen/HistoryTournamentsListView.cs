@@ -105,9 +105,12 @@ public class HistoryTournamentsListView : DashboardTabView {
     }
 
     void LoadTournaments() {
-
         if ( !gameObject.activeInHierarchy || !gameObject.activeSelf ) {
             return;
+        }
+
+        foreach ( var item in historyItemsList ) {
+            item.IsHover = false;
         }
         loader.IsLoading = true;
         itemContainer.anchoredPosition = new Vector2( itemContainer.anchoredPosition.x, 0f );
