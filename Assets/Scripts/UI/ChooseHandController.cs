@@ -30,6 +30,8 @@ public class ChooseHandController : SingletonMonoBehaviour<ChooseHandController>
 
     public List<HandSetting> HandsList = new List<HandSetting>();
 
+    public HandColour CurrentChoosenHand { get; set; }
+
   
     void Start() {
         SetCurrentChoosedHand((HandColour)PlayerPrefs.GetInt("PlayerChoosedHand"));
@@ -38,6 +40,7 @@ public class ChooseHandController : SingletonMonoBehaviour<ChooseHandController>
     public void SetCurrentChoosedHand( HandColour color ) {
         if ( OnChooseColor != null ) {
             OnChooseColor( color );
+            CurrentChoosenHand = color;
         }
     }
 

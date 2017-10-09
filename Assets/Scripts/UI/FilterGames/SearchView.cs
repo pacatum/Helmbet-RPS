@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SearchView : MonoBehaviour {
+public class SearchView : MonoBehaviour{
 
     public event Action<string> OnValueChange;
 
@@ -16,7 +16,6 @@ public class SearchView : MonoBehaviour {
 
 
     void Awake() {
-
         input = GetComponent<InputField>();
         searchFilterText = input.text;
         endEditSearchButton.onClick.AddListener( Value_OnChange );
@@ -91,5 +90,4 @@ public class SearchView : MonoBehaviour {
             input.text = searchFilterText = string.Empty;
         }
     }
-
 }

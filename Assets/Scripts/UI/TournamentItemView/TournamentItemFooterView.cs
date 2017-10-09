@@ -89,7 +89,7 @@ public class TournamentItemFooterView : MonoBehaviour{
         } else {
             footerTargetImage.color = currenTournamentViewState.Equals( TournamentViewState.PlayerInTournament ) ? playerInTournamentColor : otherTournamentsColor;
             itemBgColor.color = currenTournamentViewState.Equals(TournamentViewState.PlayerInTournament) ? myTournamentsItemBgColor : otherTournamentsItemBgColor;
-            startTimeText.color = currenTournamentViewState.Equals( TournamentViewState.PlayerInTournament ) ? myTournamentsItemBgColor : normalTextColor;
+            startTimeText.color = normalTextColor;
             UpdateButtonColor(joinButton, ButtonViewState.Normal);
             UpdateButtonColor(activePlayButton, ButtonViewState.Normal);
         }
@@ -209,18 +209,19 @@ public class TournamentItemFooterView : MonoBehaviour{
     }
 
     public void OpenGameScreen() {
-        UIController.Instance.ScreenLoader_OnLoad( true );
         if ( currenTournamentObject.State == ChainTypes.TournamentState.AcceptingRegistrations ) {
-            UIController.Instance.ScreenLoader_OnLoad(false);
             return;
         }
+
+        UIController.Instance.ScreenLoader_OnLoad( true );
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id;
         if ( currenTournamentObject.State.Equals( ChainTypes.TournamentState.AwaitingStart ) && IsPlayerJoined( currenTournamentDetailsObject ) ) {
+            UIController.Instance.ScreenLoader_OnLoad(false);
             UIController.Instance.UpdateStartGamePreview( currenTournamentObject );
             return;
         }
 
-        if ( currenTournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
+        if (currenTournamentObject.State.Equals(ChainTypes.TournamentState.InProgress) && currenTournamentDetailsObject.RegisteredPlayers.Contains( me ) ) {
             ApiManager.Instance.Database.GetMatches( Array.ConvertAll( currenTournamentDetailsObject.Matches, match => match.Id ) )
                 .Then( matches => {
                     var matchesInProgress = Array.FindAll( matches, match => match.State == ChainTypes.MatchState.InProgress );
@@ -232,7 +233,6 @@ public class TournamentItemFooterView : MonoBehaviour{
                         UIController.Instance.UpdateTournamentInProgress( currenTournamentObject );
                     }
                 } );
-
         } else {
             UIController.Instance.ScreenLoader_OnLoad(false);
             OpenDetailsView();

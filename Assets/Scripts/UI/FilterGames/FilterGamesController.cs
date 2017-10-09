@@ -146,7 +146,7 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
         var registerDeadline = false;
         registerDeadline = ( "Register: <" + ( time.TotalDays < 1 ? 1 : (int) Math.Round( time.TotalDays ) ) + "d" ).Contains( searchText );
         var startDelay = "2 minutes after full".Contains( search );
-        var gameName = "rps".Contains( search );
+        var gameName = ("#rps" + tournament.Id).Contains( search );
         if ( tournament.State.Equals( ChainTypes.TournamentState.Concluded ) ) {
             var result = account.Id.Equals( AuthorizationManager.Instance.UserData.FullAccount.Account.Id )
                 ? ( ( tournament.Options.BuyIn.Amount / Math.Pow( 10, asset.Precision ) * ( tournament.Options.NumberOfPlayers - 1 ) ) + asset.Symbol ).ToLower().Contains( search )

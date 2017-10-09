@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Base.Config;
 using UnityEngine;
 using Gesture = Base.Config.ChainTypes.RockPaperScissorsGesture;
 
@@ -10,10 +11,17 @@ public class ResultLogController : MonoBehaviour {
     [SerializeField] GameButtonView stepPrefab;
     [SerializeField] GameButtonView opponentStepPrefab;
     [SerializeField] RoundItemView roundIreItemViewPrefab;
+    [SerializeField] RectTransform scrollContent;
 
     List<GameButtonView> steps = new List<GameButtonView>();
     List<RoundItemView> roundItemViews = new List<RoundItemView>();
 
+
+    void Awake() {
+        for ( int i = 0; i < 20; i++ ) {
+            LogNewRound( i + 1, Gesture.Paper, Gesture.Scissors, GameResult.Lose );
+        }
+    }
 
     public void LogNewRound( int roundNumber, Gesture? anotherPlayerChoise, Gesture? thisPlayerChoise,
                              GameResult state ) {
@@ -24,10 +32,15 @@ public class ResultLogController : MonoBehaviour {
         var thisPlayerStep = Instantiate( stepPrefab );
         thisPlayerStep.SetStep( roundNumber, thisPlayerChoise );
         thisPlayerStep.transform.SetParent( thisPlayerStepsContainer, false );
+        thisPlayerStep.transform.SetAsFirstSibling();
 
         var anotherPlayerStep = Instantiate( opponentStepPrefab );
         anotherPlayerStep.SetStep( roundNumber, anotherPlayerChoise );
         anotherPlayerStep.transform.SetParent( anotherPlayerStepsContainer, false );
+        anotherPlayerStep.transform.SetAsFirstSibling();
+
+        var height = ( opponentStepPrefab.GetComponent<RectTransform>().rect.height + 3f ) * anotherPlayerStepsContainer.transform.childCount + 7f;
+        scrollContent.sizeDelta = new Vector2( scrollContent.sizeDelta.x, height );
 
         steps.Add( thisPlayerStep );
         steps.Add( anotherPlayerStep );
@@ -44,6 +57,8 @@ public class ResultLogController : MonoBehaviour {
             Destroy( roundItem.gameObject );
         }
         roundItemViews.Clear();
+
+        scrollContent.rect.Set( scrollContent.rect.x, scrollContent.rect.y, anotherPlayerStepsContainer.GetComponent<RectTransform>().rect.width, scrollContent.rect.height );
     }
 
 }

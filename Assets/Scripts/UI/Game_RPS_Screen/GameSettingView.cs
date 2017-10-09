@@ -30,7 +30,11 @@ public class GameSettingView : MonoBehaviour {
 
     public void Show() {
         gameObject.SetActive( true );
+        var currentColor = (ChooseHandController.HandColour)PlayerPrefs.GetInt("PlayerChoosedHand");
+        currentHandSetting = ChooseHandController.Instance.HandsList.Find(h => h.ColourOfHand == currentColor);
         viewIndex = ChooseHandController.Instance.HandsList.IndexOf( currentHandSetting );
+        ChooseHandController.Instance.SetCurrentChoosedHand(currentColor);
+        ChooseHandController.Instance.UpdateGamePreview( currentColor );
         ChangeViewIndex( 0 );
     }
 
@@ -64,13 +68,13 @@ public class GameSettingView : MonoBehaviour {
         }
 
         var activeHandIndex = PlayerPrefs.GetInt( "PlayerChoosedHand" );
-        var handButton = Instantiate( ChooseHandButtonPrefab );
+        var handButton = Instantiate(ChooseHandButtonPrefab);
         var handStruct = ChooseHandController.Instance.HandsList[viewIndex];
-        handButton.SetUpHandButton( handStruct.HandScissorsSprite, activeHandIndex == viewIndex, handStruct.ColourOfHand );
+        handButton.SetUpHandButton(handStruct.HandScissorsSprite, handStruct.ColourOfHand == ChooseHandController.Instance.CurrentChoosenHand, handStruct.ColourOfHand);
 
-        var nextHandButton = Instantiate( ChooseHandButtonPrefab );
+        var nextHandButton = Instantiate(ChooseHandButtonPrefab);
         var nextHandStruct = ChooseHandController.Instance.HandsList[nextIndex];
-        nextHandButton.SetUpHandButton( nextHandStruct.HandScissorsSprite, activeHandIndex == nextIndex, nextHandStruct.ColourOfHand );
+        nextHandButton.SetUpHandButton(nextHandStruct.HandScissorsSprite, nextHandStruct.ColourOfHand == ChooseHandController.Instance.CurrentChoosenHand, nextHandStruct.ColourOfHand);
 
         handButton.transform.SetParent( LayoutGroup.transform, false );
         nextHandButton.transform.SetParent( LayoutGroup.transform, false );
@@ -82,8 +86,7 @@ public class GameSettingView : MonoBehaviour {
     void ApplyOnClick() {
         PlayerPrefs.SetInt( "PlayerChoosedHand", (int) selectedHandSetting.ColourOfHand );
         currentHandSetting = selectedHandSetting;
-        var choosenHand =
-            ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == selectedHandSetting.ColourOfHand );
+        var choosenHand = ChooseHandController.Instance.HandsList.Find( h => h.ColourOfHand == selectedHandSetting.ColourOfHand );
         if ( playerMeshRendererHand != null ) {
             playerMeshRendererHand.material = choosenHand.HandMaterial;
         }

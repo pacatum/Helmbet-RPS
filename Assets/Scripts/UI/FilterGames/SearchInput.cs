@@ -1,9 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SearchInput : MonoBehaviour, ISelectHandler {
+public class SearchInput : MonoBehaviour {
 
     public event Action OnValueChange;
 
@@ -13,9 +12,9 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
 
 
     void Awake() {
-
         input = GetComponent<InputField>();
         searchInput.OnValueChange += Value_OnChange;
+        GetComponentInParent<Button>().onClick.AddListener( searchInput.Show );
     }
 
     void Value_OnChange( string searchText ) {
@@ -25,11 +24,7 @@ public class SearchInput : MonoBehaviour, ISelectHandler {
             OnValueChange();
         }
     }
-
-    public void OnSelect( BaseEventData eventData ) {
-        searchInput.Show();
-    }
-
+    
     public void ClearInput() {
         searchFilterText = string.Empty;
         if ( input != null ) {

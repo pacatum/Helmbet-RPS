@@ -13,7 +13,7 @@ public class ChooseHandButton : MonoBehaviour {
     
 
     void Awake() {
-        ChooseHandController.Instance.SetCurrentChoosedHand((ChooseHandController.HandColour)PlayerPrefs.GetInt("PlayerChoosedHand"));
+        //ChooseHandController.Instance.SetCurrentChoosedHand((ChooseHandController.HandColour)PlayerPrefs.GetInt("PlayerChoosedHand"));
     }
 
     public void SetUpHandButton( Sprite handScissorsSprite, bool isHandActive, ChooseHandController.HandColour colourOfHand ) {

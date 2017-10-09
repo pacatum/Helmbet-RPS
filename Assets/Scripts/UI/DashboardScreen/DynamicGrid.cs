@@ -46,7 +46,7 @@ public class DynamicGrid : MonoBehaviour {
             gridLayoutGroup.childAlignment = gridRectTransform.childCount < columsWithMaxnWidth ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter;
             currentColums = Mathf.Min( maxColumnCount, columsWithMaxnWidth );
         }
-        currentRows = (int) ( ( maxSizeOfPage.rect.height - cellSpacing ) / ( gridLayoutGroup.cellSize.y + cellSpacing ) );
+        currentRows = (int) ( ( maxSizeOfPage.rect.height - cellSpacing ) / ( gridLayoutGroup.cellSize.y) );
     }
 
     public int ColumnCount {

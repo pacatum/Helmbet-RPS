@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Base.Config;
 using Base.Data.Json;
 using Base.Data.Tournaments;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,10 +29,8 @@ public enum ScreenState {
 
 public class GameScreenView : BaseCanvasView {
 
-    [SerializeField] Text thisUserNickname;
+    [SerializeField] TextMeshProUGUI playersUsernamesText;
     [SerializeField] Text thisUserNicknameRounds;
-
-    [SerializeField] Text opponentNickname;
     [SerializeField] Text opponentNicknameRounds;
     [SerializeField] Text opponentNicknameWaitingView;
 
@@ -50,7 +49,6 @@ public class GameScreenView : BaseCanvasView {
 
     [SerializeField] Text timerText;
     [SerializeField] UnityEngine.GameObject waitObject;
-    [SerializeField] LastRoundChoiseView lastRoundChoiseView;
     [SerializeField] Text jackpoText;
 
     [SerializeField] Text gamesToWinRoundText;
@@ -79,8 +77,8 @@ public class GameScreenView : BaseCanvasView {
         buttons.Add( paperButton );
     }
 
-    public override void Show() {
 
+    public override void Show() {
         gameRoundOverView.Hide();
         gameStartPreview.gameObject.SetActive( false );
 
@@ -124,7 +122,7 @@ public class GameScreenView : BaseCanvasView {
             .Then( details => {
                 TournamentManager.Instance.GetAssetObject( tournament.Options.BuyIn.Asset.Id )
                     .Then( asset => {
-                        jackpoText.text = Utils.GetFormatedDecimaNumber( ( tournament.PrizePool / Math.Pow( 10, asset.Precision ) ).ToString() ) + asset.Symbol;
+                        jackpoText.text = Utils.GetFormatedDecimaNumber( ( tournament.PrizePool / Math.Pow( 10, asset.Precision ) ).ToString() ) + " " + asset.Symbol;
                         if ( tournament.RegisteredPlayers == 2 ) {
                             ApiManager.Instance.Database.GetAccounts( Array.ConvertAll( details.RegisteredPlayers, player => player.Id ) )
                                 .Then( accounts => {
@@ -143,7 +141,7 @@ public class GameScreenView : BaseCanvasView {
                     } );
                 winsToWinGame = 5;
                 gamesToWinRoundText.text = winsToWinGame.ToString();
-                gamesToWinTournamentText.text = winsToWinTournament < 0 ? 0.ToString() : winsToWinTournament.ToString();
+                gamesToWinTournamentText.text = winsToWinTournament < 0 ? "0" : winsToWinTournament.ToString();
 
             } );
     }
@@ -173,31 +171,31 @@ public class GameScreenView : BaseCanvasView {
 
     void ChoosePaper() {
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id.ToString();
-        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "" ) {
+        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "" ) {
             DisabledButtons( paperButton );
             GameManager.Instance.PaperMove();
             AudioManager.Instance.PlayPaperChooseSound();
-            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step", "paper" );
+            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id + me + " choosen step", "paper" );
         }
     }
 
     void ChooseRock() {
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id.ToString();
-        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "" ) {
+        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "" ) {
             DisabledButtons( rockButton );
             GameManager.Instance.RockMove();
             AudioManager.Instance.PlayRockChooseSound();
-            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step", "rock" );
+            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id + me + " choosen step", "rock" );
         }
     }
 
     void ChooseScissors() {
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id.ToString();
-        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "" ) {
+        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "" ) {
             DisabledButtons( scissorsButton );
             GameManager.Instance.ScissorsMove();
             AudioManager.Instance.PlayScissorsChooseSound();
-            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step", "scissors" );
+            PlayerPrefs.SetString( GameManager.Instance.CurrentGame.Id + me + " choosen step", "scissors" );
         }
     }
 
@@ -214,14 +212,14 @@ public class GameScreenView : BaseCanvasView {
 
     void UpdateMoveButtons() {
         var me = AuthorizationManager.Instance.UserData.FullAccount.Account.Id.ToString();
-        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "" ) {
+        if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "" ) {
             ActivateButton();
         } else {
-            if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "paper" ) {
+            if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "paper" ) {
                 DisabledButtons( paperButton );
-            } else if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "rock" ) {
+            } else if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "rock" ) {
                 DisabledButtons( rockButton );
-            } else if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id.ToString() + me + " choosen step" ) == "scissors" ) {
+            } else if ( PlayerPrefs.GetString( GameManager.Instance.CurrentGame.Id + me + " choosen step" ) == "scissors" ) {
                 DisabledButtons( scissorsButton );
             }
         }
@@ -254,8 +252,8 @@ public class GameScreenView : BaseCanvasView {
             gameRoundOverView.UpdateOpponentUsername( match.Opponent.Name );
             AudioManager.Instance.PlayTotalLooseSound();
 
-            winsToWinTournament = 0;
-            gamesToWinTournamentText.text = winsToWinTournament.ToString();
+            winsToWinTournament = winsToWinGame = 0;
+            gamesToWinRoundText.text = gamesToWinTournamentText.text = "0";
             UpdateBattleLog( match );
             GameManager.Instance.OnGameComplete -= GameComplete;
             GameManager.Instance.OnMatchComplete -= MatcheComplete;
@@ -270,6 +268,8 @@ public class GameScreenView : BaseCanvasView {
                         if ( matches[matches.Length - 1].Id.Equals( match.Id ) && matches[matches.Length - 1].MatchWinners.Contains( match.Me.Id ) ) {
                             gameRoundOverView.CurrentGameRoundOverState = GameRoundOverState.Win;
                             AudioManager.Instance.PlayTotalWinSound();
+                            winsToWinTournament = winsToWinGame = 0;
+                            gamesToWinRoundText.text = gamesToWinTournamentText.text = "0";
                         } else {
                             var count = 0;
                             foreach ( var matche in matches ) {
@@ -279,8 +279,10 @@ public class GameScreenView : BaseCanvasView {
                             }
                             gameRoundOverView.SetMatchesInProgressCount( count );
                             gameRoundOverView.CurrentGameRoundOverState = GameRoundOverState.RoundOver;
-                            winsToWinTournament = ( ( (int) Math.Log( GameManager.Instance.GetTournamentNumberOfPlayers( match.Tournament ), 2 ) -
-                                                      GameManager.Instance.GetCompletedMatches( match.Tournament ) ) * 5 - ( 5 - winsToWinGame ) );
+                            winsToWinGame = 0;
+                            gamesToWinRoundText.text = "0";
+                            winsToWinTournament = ( ( (int) Math.Log( GameManager.Instance.GetTournamentNumberOfPlayers( match.Tournament ), 2 )
+                                                      - GameManager.Instance.GetCompletedMatches( match.Tournament ) ) * 5 - ( 5 - winsToWinGame ) );
                             gamesToWinTournamentText.text = winsToWinTournament < 0 ? 0.ToString() : winsToWinTournament.ToString();
                         }
                         UpdateBattleLog( match );
@@ -293,10 +295,9 @@ public class GameScreenView : BaseCanvasView {
     void UpdateUsernameText( string username, string opponentUsername ) {
         var player = Utils.GetFormatedString( username );
         var opponent = Utils.GetFormatedString( opponentUsername );
-        thisUserNickname.text = player;
+        playersUsernamesText.text = string.Format( Utils.Formats.PLAYERS_USERNAME_IN_GAME, player, opponent );
         thisUserNicknameRounds.text = player;
 
-        opponentNickname.text = opponent;
         opponentNicknameRounds.text = opponent;
         opponentNicknameWaitingView.text = opponent;
     }
@@ -306,7 +307,7 @@ public class GameScreenView : BaseCanvasView {
             return;
         }
 
-        nextTimeout = game.NextTimeout.Value;
+        nextTimeout = game.NextTimeout.Value.AddSeconds( -2 );
         if ( gameObject.activeInHierarchy ) {
             StartCoroutine( NewGameStart() );
         }
@@ -333,11 +334,12 @@ public class GameScreenView : BaseCanvasView {
         StopCoroutine( "MatcheCompleteCoroutine" );
         gameRoundOverView.gameObject.SetActive( false );
         gameStartPreview.gameObject.SetActive( false );
-
         GameManager.Instance.UpdateMetches( TournamentManager.Instance.CurrentTournament )
             .Then( () => {
+                base.Show();
+                UIController.Instance.CloseNotGamingPanels();
                 if ( !match.CurrentGame.IsNull() ) {
-                    nextTimeout = match.CurrentGame.NextTimeout == null ? DateTime.UtcNow.AddSeconds( 15 ) : match.CurrentGame.NextTimeout.Value;
+                    nextTimeout = match.CurrentGame.NextTimeout == null ? DateTime.UtcNow.AddSeconds( 12 ) : match.CurrentGame.NextTimeout.Value.AddSeconds( -2 );
 
                     if ( match.CurrentGame.GameState == ChainTypes.GameState.ExpectingCommitMoves || match.CurrentGame.GameState == ChainTypes.GameState.ExpectingRevealMoves ) {
                         AudioManager.Instance.PlayWaitingSound();
@@ -357,8 +359,6 @@ public class GameScreenView : BaseCanvasView {
 
                 UpdateJackpot( GameManager.Instance.CurrentMatch );
                 UpdateUsernameText( GameManager.Instance.CurrentMatch.Me.Name, GameManager.Instance.CurrentMatch.Opponent.Name );
-                base.Show();
-                UIController.Instance.CloseNotGamingPanels();
             } );
     }
 
@@ -422,7 +422,7 @@ public class GameScreenView : BaseCanvasView {
         if ( game.OpponentGesture.HasValue ) {
             opponentHand.SetTrigger( RockPaperScissorsGestureEnumConverter.ConvertTo( game.OpponentGesture.Value ) );
         }
-        StartCoroutine( BackToIdleCoroutine( 1f, match, game ) );
+        StartCoroutine( BackToIdleCoroutine( 2f, match, game ) );
     }
 
     GameChoiseResult GetNewStep( GameContainer game ) {

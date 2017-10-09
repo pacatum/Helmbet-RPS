@@ -58,6 +58,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
 
     public override void Hide() {
         loader.IsLoading = false;
+        ClearTournamentsItemViewList();
         base.Hide();
     }
 
@@ -157,6 +158,9 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                                 } )
                                                 .Catch( exception => loader.IsLoading = false );
                                         } );
+                                } else {
+                                    ClearTournamentsItemViewList();
+                                    loader.IsLoading = false;
                                 }
                             } )
                             .Catch( exception => loader.IsLoading = false );
@@ -215,7 +219,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
             addPage = false;
         }
 
-        for ( int i = sceduleItemsList.Count - 1; i >= tournamentsList.Count; i-- ) {
+        for ( int i = sceduleItemsList.Count - 1; i > tournamentsList.Count; i-- ) {
             sceduleItemsList[i].OnJoinClick -= Item_OnJoinClick;
             Destroy( sceduleItemsList[i].gameObject );
             sceduleItemsList.RemoveAt( i );
