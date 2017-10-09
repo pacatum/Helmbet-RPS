@@ -52,11 +52,16 @@ public class FilterGamesController : SingletonMonoBehaviour<FilterGamesControlle
 
     public void SwitchItemView( FilterItemView target ) {
         foreach ( var item in items ) {
+            item.ShowDivider( true );
             if ( item.Equals( target ) ) {
                 item.ShowExpandItem();
             } else {
                 item.ShowCloseItem();
             }
+        }
+
+        if ( Array.FindAll( items.ToArray(), item => item.gameObject.activeSelf ).Length <items.Count ) {
+            items[Mathf.Max( 0, items.IndexOf( target ) - 1 )].ShowDivider( false );
         }
     }
 

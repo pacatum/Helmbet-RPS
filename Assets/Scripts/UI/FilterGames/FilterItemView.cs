@@ -11,6 +11,7 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
     [SerializeField] TextMeshProUGUI selectChoiseText;
     [SerializeField] TextMeshProUGUI endRangeSelectChoise;
     [SerializeField] FilterItemExpandView expandFilterItemview;
+    [SerializeField] GameObject line;
 
 
     void Awake() {
@@ -33,6 +34,10 @@ public class FilterItemView : MonoBehaviour, IPointerClickHandler {
     public void ShowCloseItem() {
         gameObject.SetActive( true );
         expandFilterItemview.gameObject.SetActive( false );
+    }
+
+    public void ShowDivider(bool isActive) {
+        line.SetActive( isActive );
     }
 
     void IPointerClickHandler.OnPointerClick( PointerEventData eventData ) {
