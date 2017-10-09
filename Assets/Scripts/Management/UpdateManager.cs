@@ -73,6 +73,19 @@ public sealed class UpdateManager : SingletonMonoBehaviour<UpdateManager> {
 			return Object.ReferenceEquals( left, right ) ? 0 : (Object.ReferenceEquals( left, null ) ? -1 : left.CompareTo( right ));
 		}
 
+		public override bool Equals( object obj ) {
+			if ( Object.ReferenceEquals( obj, null ) ) {
+				return false;
+			}
+			if ( Object.ReferenceEquals( this, obj ) ) {
+				return true;
+			}
+			if ( !(obj is VersionInfo) ) {
+				return false;
+			}
+			return Equals( obj as VersionInfo );
+		}
+
 		public bool Equals( VersionInfo other ) {
 			return !Object.ReferenceEquals( other, null ) && CompareTo( other ) == 0;
 		}
@@ -103,24 +116,25 @@ public sealed class UpdateManager : SingletonMonoBehaviour<UpdateManager> {
 
 		public string Title {
 			get {
-				if ( displayText.IsNull() || displayText.EnglishLocaleHTMLValue.IsNullOrEmpty() ) {
+				try {
+					var document = new HtmlDocument();
+					document.LoadHtml( displayText.EnglishLocaleHTMLValue );
+					return document.DocumentNode.FirstChild.InnerText;
+				} catch {
 					return null;
 				}
-				var document = new HtmlDocument();
-				document.LoadHtml( displayText.EnglishLocaleHTMLValue );
-				return document.DocumentNode.FirstChild.InnerText;
 			}
 		}
 
 		public string Url {
 			get {
-				if ( displayText.IsNull() || displayText.EnglishLocaleHTMLValue.IsNullOrEmpty() ) {
+				try {
+					var document = new HtmlDocument();
+					document.LoadHtml( displayText.EnglishLocaleHTMLValue );
+					return document.DocumentNode.LastChild.Attributes[ HYPER_REFERENCE_ATTRIBUTE_NAME ].Value;
+				} catch {
 					return null;
 				}
-				var document = new HtmlDocument();
-				document.LoadHtml( displayText.EnglishLocaleHTMLValue );
-				var lastChild = document.DocumentNode.LastChild;
-				return lastChild.Attributes.Contains( HYPER_REFERENCE_ATTRIBUTE_NAME ) ? lastChild.Attributes[ HYPER_REFERENCE_ATTRIBUTE_NAME ].Value : null;
 			}
 		}
 	}
