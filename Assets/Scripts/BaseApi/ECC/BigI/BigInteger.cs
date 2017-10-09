@@ -916,7 +916,7 @@ namespace BigI {
 		// convert to bigendian byte array
 		byte[] ToByteArray() {
 			var i = t;
-			var result = new int[] { sign };
+			var result = new [] { sign };
 			var p = DB - (i * DB) % 8;
 			var d = 0;
 			var k = 0;
