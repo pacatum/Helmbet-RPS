@@ -16,13 +16,7 @@ public class ResultLogController : MonoBehaviour {
     List<GameButtonView> steps = new List<GameButtonView>();
     List<RoundItemView> roundItemViews = new List<RoundItemView>();
 
-
-    void Awake() {
-        for ( int i = 0; i < 20; i++ ) {
-            LogNewRound( i + 1, Gesture.Paper, Gesture.Scissors, GameResult.Lose );
-        }
-    }
-
+    
     public void LogNewRound( int roundNumber, Gesture? anotherPlayerChoise, Gesture? thisPlayerChoise,
                              GameResult state ) {
         var logInstance = Instantiate( roundIreItemViewPrefab ).GetComponent<RoundItemView>();
@@ -57,8 +51,7 @@ public class ResultLogController : MonoBehaviour {
             Destroy( roundItem.gameObject );
         }
         roundItemViews.Clear();
-
-        scrollContent.rect.Set( scrollContent.rect.x, scrollContent.rect.y, anotherPlayerStepsContainer.GetComponent<RectTransform>().rect.width, scrollContent.rect.height );
+        scrollContent.sizeDelta = new Vector2(scrollContent.sizeDelta.x, 0 );
     }
 
 }
