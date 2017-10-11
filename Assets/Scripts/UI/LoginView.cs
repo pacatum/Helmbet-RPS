@@ -20,8 +20,8 @@ public class LoginView : BaseCanvasView {
     [SerializeField] string connectionURL;
 
 	List<InputFieldView> inputFields = new List<InputFieldView>();
-	 string username;
-	 string password;
+	string username;
+	string password;
     GameObject selectedGameObject;
 
 
@@ -83,7 +83,6 @@ public class LoginView : BaseCanvasView {
                 loader.IsLoading = false;
             } );
     }
-
 
     void Login_OnDone() {
         HideErrorMessage();

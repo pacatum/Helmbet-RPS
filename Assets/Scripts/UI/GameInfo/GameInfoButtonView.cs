@@ -16,13 +16,13 @@ public class GameInfoButtonView : ButtonView {
     }
 
     protected override void SetNormalState() {
-        targetGraphic.color = activeColor;
+        TargetGraphicColor = activeColor;
         targetImageGraphic.color = normalBgColor;
         iconImage.color = normalIconColor;
     }
 
     protected override void SetPressedState() {
-        targetGraphic.color = pressedColor;
+        TargetGraphicColor = pressedColor;
         targetImageGraphic.color = pressedBgColor;
         iconImage.color = pressedIconColor;
     }

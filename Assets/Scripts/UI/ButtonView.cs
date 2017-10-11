@@ -24,7 +24,7 @@ public class ButtonView : MonoBehaviour, IPointerClickHandler {
     ButtonState currentstate;
 
 
-    private Color TargetGraphicColor {
+    protected Color TargetGraphicColor {
         get { return targetGraphic == null ? targetTextMeshProUgui.color : targetGraphic.color; }
         set {
             if ( targetGraphic != null ) {

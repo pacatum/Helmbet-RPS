@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Base.Data.Accounts;
 using Base.Data.Tournaments;
 using TMPro;
+using Tools;
 using UnityEngine;
 
 public class HistoryTournamentItemView : BaseTournamentItemView {
@@ -13,6 +14,7 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
     [SerializeField] TMP_FontAsset anotherPlayerWinnerFont;
     [SerializeField] TMP_FontAsset thisPlayerWinnerFont;
 
+    AccountObject winnerAccount;
 
     public string Winner {
         get { return winnerText ? string.Empty : winnerText.text; }
@@ -27,7 +29,9 @@ public class HistoryTournamentItemView : BaseTournamentItemView {
         var winnerAccounts = new List<AccountObject>();
         yield return StartCoroutine( base.UpdateItem( info ) );
 
-        yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( info.Id.Id, winnerAccounts );
+        
+        if(winnerAccount.IsNull())
+        yield return TournamentManager.Instance.GetMatcheWinnerAccountsObjects( tournamentDetailsObject, winnerAccounts );
         if ( winnerAccounts[0].Name == AuthorizationManager.Instance.UserData.UserName ) {
             winnerText.font = thisPlayerWinnerFont;
             resultText.text = Utils.GetFormatedDecimaNumber( ( ( info.PrizePool - info.Options.BuyIn.Amount )/ Math.Pow( 10, currentAsset.Precision ) ).ToString() ) + currentAsset.Symbol;

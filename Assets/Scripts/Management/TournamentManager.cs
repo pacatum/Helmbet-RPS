@@ -14,23 +14,22 @@ using UnityEngine;
 
 public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
 
-	public event Action<TournamentObject> OnTournamentChanged;
-    
-	Dictionary<uint, AssetObject> cacheAsset = new Dictionary<uint, AssetObject>();
+    public event Action<TournamentObject> OnTournamentChanged;
 
+    Dictionary<uint, AssetObject> cacheAsset = new Dictionary<uint, AssetObject>();
     List<TournamentObject> awaitingStartTournaments = new List<TournamentObject>();
     public TournamentObject CurrentTournament { get; set; }
 
 
-	protected override void Awake() {
-		base.Awake();
-		Repository.OnObjectUpdate -= UpdateTournamentsHandler;
-		Repository.OnObjectUpdate += UpdateTournamentsHandler;
-	    StartCoroutine( UpdateAwaitingStartTournaments() );
-	}
+    protected override void Awake() {
+        base.Awake();
+        Repository.OnObjectUpdate -= UpdateTournamentsHandler;
+        Repository.OnObjectUpdate += UpdateTournamentsHandler;
+        StartCoroutine( UpdateAwaitingStartTournaments() );
+    }
 
     public void AddAwaitingStartTournaments( TournamentObject tournament ) {
-        if ( awaitingStartTournaments.Contains( tournament ) || ((tournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2.0) ) {
+        if ( awaitingStartTournaments.Contains( tournament ) || ( ( tournament.StartTime.Value - DateTime.UtcNow ).TotalMinutes <= 2.0 ) ) {
             return;
         }
         awaitingStartTournaments.Add( tournament );
@@ -39,7 +38,7 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
     IEnumerator UpdateAwaitingStartTournaments() {
         while ( true ) {
             foreach ( var tournament in awaitingStartTournaments ) {
-                if ( (tournament.StartTime.Value - DateTime.UtcNow).TotalMinutes <= 2.0 ) {
+                if ( ( tournament.StartTime.Value - DateTime.UtcNow ).TotalMinutes <= 2.0 ) {
                     UpdateTournaments( tournament );
                 }
             }
@@ -48,10 +47,10 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
     }
 
     void UpdateTournamentsHandler( IdObject idObject ) {
-		if ( idObject.SpaceType.Equals( SpaceType.Tournament ) ) {
-			UpdateTournaments( idObject as TournamentObject );
-		}
-	}
+        if ( idObject.SpaceType.Equals( SpaceType.Tournament ) ) {
+            UpdateTournaments( idObject as TournamentObject );
+        }
+    }
 
     void UpdateTournaments( TournamentObject tournament ) {
         if ( OnTournamentChanged != null ) {
@@ -93,42 +92,44 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
 
     public IPromise<TournamentObject> LoadTournament( uint id ) {
         return ApiManager.Instance.Database.GetTournament( id );
-	}
+    }
 
     public IPromise<TournamentObject[]> LoadTournamentsInState( ChainTypes.TournamentState state, uint maxCount ) {
         return ApiManager.Instance.Database.GetTournamentsInState( state, maxCount );
     }
 
     public IPromise<TournamentDetailsObject> GetDetailsTournamentObject( uint tournamentId ) {
-        return  ApiManager.Instance.Database.GetTournamentDetails( tournamentId );
-	}
+        return ApiManager.Instance.Database.GetTournamentDetails( tournamentId );
+    }
 
-	public IPromise<AssetObject> GetAssetObject( uint assetId=0 ) {
-		return new Promise<AssetObject>( ( resolve, reject ) => {
-			if ( !cacheAsset.ContainsKey( assetId ) ) {
-				ApiManager.Instance.Database.GetAsset( assetId ).Then( result => {
-					cacheAsset.Add( assetId, result );
-					resolve( result );
-				} );
-			} else {
-				resolve( cacheAsset[ assetId ] );
-			}
-		} );
-	}
+    public IPromise<AssetObject> GetAssetObject( uint assetId = 0 ) {
+        return new Promise<AssetObject>( ( resolve, reject ) => {
+            if ( !cacheAsset.ContainsKey( assetId ) ) {
+                ApiManager.Instance.Database.GetAsset( assetId )
+                    .Then( result => {
+                        cacheAsset.Add( assetId, result );
+                        resolve( result );
+                    } );
+            } else {
+                resolve( cacheAsset[assetId] );
+            }
+        } );
+    }
 
-	public IPromise<AssetObject[]> GetAssetsObject( uint[] assetIds ) {
-		return ApiManager.Instance.Database.GetAssets( assetIds );
-	}
+    public IPromise<AssetObject[]> GetAssetsObject( uint[] assetIds ) {
+        return ApiManager.Instance.Database.GetAssets( assetIds );
+    }
 
     public IPromise<MatchObject[]> GetMatchesPromise( uint tournamentId ) {
-		return new Promise<MatchObject[]> ( ( resolve, exeption ) => ApiManager.Instance.Database.GetTournamentDetails( tournamentId ).Then( details => {
-			ApiManager.Instance.Database.GetMatches( Array.ConvertAll( details.Matches, matche => matche.Id ) ).Then( resolve );
-		} ) );
-	}
+        return new Promise<MatchObject[]>( ( resolve, exeption ) => ApiManager.Instance.Database.GetTournamentDetails( tournamentId )
+                                              .Then( details => {
+                                                  ApiManager.Instance.Database.GetMatches( Array.ConvertAll( details.Matches, matche => matche.Id ) ).Then( resolve );
+                                              } ) );
+    }
 
     public IPromise<TournamentDetailsObject[]> GetDetailsTournamentsObject( uint[] tournamentIds ) {
-        return ApiManager.Instance.Database.GetTournamentsDetails(tournamentIds); 
-	}
+        return ApiManager.Instance.Database.GetTournamentsDetails( tournamentIds );
+    }
 
     public IEnumerator GetTournamentDetailsObject( uint tournamentId, List<TournamentDetailsObject> result ) {
         List<TournamentDetailsObject> tournamentDetailList = null;
@@ -141,72 +142,53 @@ public class TournamentManager : SingletonMonoBehaviour<TournamentManager> {
         result.AddRange( tournamentDetailList );
     }
 
-    public IEnumerator GetMatcheObjects(uint[] matchesId, List<MatchObject> result)
-    {
+    public IEnumerator GetMatcheObjects( uint[] matchesId, List<MatchObject> result ) {
         List<MatchObject> matchList = null;
-        ApiManager.Instance.Database.GetMatches(matchesId)
-            .Then(matches => (matchList = new List<MatchObject>()).AddRange(matches))
-            .Catch(exeption => matchList = new List<MatchObject>());
-        while (matchList == null)
-        {
+        ApiManager.Instance.Database.GetMatches( matchesId )
+            .Then( matches => ( matchList = new List<MatchObject>() ).AddRange( matches ) )
+            .Catch( exeption => matchList = new List<MatchObject>() );
+        while ( matchList == null ) {
             yield return null;
         }
-        result.AddRange(matchList);
+        result.AddRange( matchList );
     }
 
-    public IEnumerator GetAccount(SpaceTypeId accountId, List<AccountObject> accountResult) {
+    public IEnumerator GetAccount( SpaceTypeId accountId, List<AccountObject> accountResult ) {
         List<AccountObject> account = null;
-        ApiManager.Instance.Database.GetAccount(accountId.Id  ).Then( result => {
-            account = new List<AccountObject>();
-            account.Add( result );
-        }  ).Catch(exeption => account = new List<AccountObject>()  );
+        ApiManager.Instance.Database.GetAccount( accountId.Id )
+            .Then( result => {
+                account = new List<AccountObject>();
+                account.Add( result );
+            } )
+            .Catch( exeption => account = new List<AccountObject>() );
 
         while ( account == null ) {
             yield return null;
         }
 
         if ( account.Count > 0 ) {
-            accountResult.AddRange(account);
+            accountResult.AddRange( account );
         }
 
     }
 
-    public IEnumerator GetMatcheWinnerAccountsObjects( uint tournamentId, List<AccountObject> accountWinners ) {
-		List<AccountObject> loadedAccounts = null;
-		GetDetailsTournamentObject( tournamentId ).Then( details => {
-			ApiManager.Instance.Database.GetMatche( details.Matches[details.Matches.Length-1].Id ).Then( matchResult => {
-				ApiManager.Instance.Database.GetAccounts( Array.ConvertAll( matchResult.MatchWinners, winner => winner.Id ) ).Then( accountResult => {
-					loadedAccounts = new List<AccountObject>( accountResult );
-				} ).Catch( exception =>
-					loadedAccounts = new List<AccountObject>()
-				);
-			} ).Catch( exception =>
-				loadedAccounts = new List<AccountObject>()
-			);
-		} ).Catch( exception =>
-			loadedAccounts = new List<AccountObject>()
-		);
-		while ( loadedAccounts == null ) {
-			yield return null;
-		}
-		if ( loadedAccounts.Count > 0 ) {
-			accountWinners.AddRange( loadedAccounts );
-		}
-	}
-    
-    public IPromise<AccountObject[]> GetMatchWinners( TournamentDetailsObject[] tournamentDetails ) {
-		return new Promise<AccountObject[]>( ( resolve, exeption ) => {
-			var lastMatchesIds = new List<uint>();
-			foreach ( var detail in tournamentDetails ) {
-				lastMatchesIds.Add( detail.Matches[ detail.Matches.Length - 1 ].Id );
-			}
-			ApiManager.Instance.Database.GetMatches( lastMatchesIds.ToArray() ).Then( matchResult => {
-				var matchWinners = new List<uint>();
-				foreach ( var match in matchResult ) {
-					matchWinners.Add( match.MatchWinners[ 0 ].Id );
-				}
-				ApiManager.Instance.Database.GetAccounts( matchWinners.ToArray() ).Then(resolve);
-			} );
-		} );
-	}
+    public IEnumerator GetMatcheWinnerAccountsObjects( TournamentDetailsObject details, List<AccountObject> accountWinners ) {
+        List<AccountObject> loadedAccounts = null;
+        ApiManager.Instance.Database.GetMatche( details.Matches[details.Matches.Length - 1].Id )
+            .Then( matchResult => {
+                ApiManager.Instance.Database.GetAccounts( Array.ConvertAll( matchResult.MatchWinners, winner => winner.Id ) )
+                    .Then( accountResult => loadedAccounts = new List<AccountObject>( accountResult ) )
+                    .Catch( exception => loadedAccounts = new List<AccountObject>() );
+            } )
+            .Catch( exception => loadedAccounts = new List<AccountObject>() );
+
+        while ( loadedAccounts == null ) {
+            yield return null;
+        }
+
+        if ( loadedAccounts.Count > 0 ) {
+            accountWinners.AddRange( loadedAccounts );
+        }
+    }
+
 }

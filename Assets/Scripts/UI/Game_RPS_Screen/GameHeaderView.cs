@@ -18,6 +18,7 @@ public class GameHeaderView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] Image gameIcon;
     [SerializeField] Text gameTitleText;
     [SerializeField] GameObject volumeSettingView;
+    [SerializeField] Button closeSoundView;
 
     Image bgImage;
 
@@ -29,6 +30,7 @@ public class GameHeaderView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         minimazeWindowButton.GetComponent<Button>().onClick.AddListener( OnMinimaxeButtonClick );
         SetNormalState();
         volumeSettingView.SetActive( false );
+        closeSoundView.onClick.AddListener( HideSoundView );
     }
 
     public void OnPointerEnter( PointerEventData eventData ) {
@@ -68,16 +70,31 @@ public class GameHeaderView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     }
 
     void OnVolumeSettingClick() {
-        volumeSettingView.SetActive( !volumeSettingView.activeSelf );
-        soundButton.CurrentState = volumeSettingView.activeSelf
-            ? GameHeaderButtonState.Pressed
-            : GameHeaderButtonState.HeaderHover;
+        if ( volumeSettingView.activeSelf ) {
+            HideSoundView();
+        } else {
+            ShowSoundView();
+        }
+        soundButton.CurrentState = volumeSettingView.activeSelf ? GameHeaderButtonState.Pressed : GameHeaderButtonState.HeaderHover;
     }
 
     void OnMinimaxeButtonClick() {
         if ( OnMinimazeButton != null ) {
             OnMinimazeButton();
         }
+    }
+
+    void ShowSoundView() {
+        closeSoundView.gameObject.SetActive( true );
+        soundButton.CurrentState = GameHeaderButtonState.Pressed;
+        volumeSettingView.SetActive( true );
+    }
+
+    void HideSoundView() {
+        closeSoundView.gameObject.SetActive(false);
+        soundButton.CurrentState = GameHeaderButtonState.HeaderHover;
+        volumeSettingView.SetActive(false);
+        SetNormalState();
     }
 
 }

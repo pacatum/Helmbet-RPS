@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MessagePopupView : MonoBehaviour {
 
-    [SerializeField] Text messageText;
-    [SerializeField] Text errorMessageText;
+    [SerializeField] TextMeshProUGUI messageText;
+    [SerializeField] TextMeshProUGUI errorMessageText;
     [SerializeField] GameObject successPopup;
     [SerializeField] GameObject errorPopup;
     [SerializeField] Button succesButton;

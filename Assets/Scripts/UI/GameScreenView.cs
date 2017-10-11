@@ -293,9 +293,9 @@ public class GameScreenView : BaseCanvasView {
     }
 
     void UpdateUsernameText( string username, string opponentUsername ) {
-        var player = Utils.GetFormatedString( username );
-        var opponent = Utils.GetFormatedString( opponentUsername );
-        playersUsernamesText.text = string.Format( Utils.Formats.PLAYERS_USERNAME_IN_GAME, player, opponent );
+        var player = Utils.GetFormatedString( username, 9 );
+        var opponent = Utils.GetFormatedString( opponentUsername, 9 );
+        playersUsernamesText.text = string.Format( Utils.Formats.PLAYERS_USERNAME_IN_GAME, Utils.GetFormatedString(username, 15), Utils.GetFormatedString(opponentUsername, 15));
         thisUserNicknameRounds.text = player;
 
         opponentNicknameRounds.text = opponent;

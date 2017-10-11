@@ -118,9 +118,11 @@ public class BaseTournamentItemView : MonoBehaviour, IPointerEnterHandler, IPoin
         if ( gameObject.activeSelf && gameObject.activeInHierarchy ) {
             CurrentTournament = info;
 
-            var detailsObject = new List<TournamentDetailsObject>();
-            yield return TournamentManager.Instance.GetTournamentDetailsObject( info.Id.Id, detailsObject );
-            tournamentDetailsObject = detailsObject[0];
+            if ( tournamentDetailsObject.IsNull() || !tournamentDetailsObject.Tournament.Equals( info.Id ) ) {
+                var detailsObject = new List<TournamentDetailsObject>();
+                yield return TournamentManager.Instance.GetTournamentDetailsObject( info.Id.Id, detailsObject );
+                tournamentDetailsObject = detailsObject[0];
+            }
 
             ID = "#RPS" + info.Id;
             PlayerRegistered = info.RegisteredPlayers.ToString();

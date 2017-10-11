@@ -75,7 +75,8 @@ public class CreateNewTournamentPopupView : MonoBehaviour {
                             }
                         }
 
-                        var amount = isJoin ? Convert.ToDouble( createFee.Fee + joinFee.Fee ) : Convert.ToDouble( createFee.Fee );
+                        var amount = isJoin ? Convert.ToDouble( createFee.Fee + joinFee.Fee ): Convert.ToDouble( createFee.Fee );
+                        amount /=result.Parameters.CurrentFees.Scale ;
                         feeText.text = amount + asset.Symbol;
                         gameObject.SetActive( true );
 
