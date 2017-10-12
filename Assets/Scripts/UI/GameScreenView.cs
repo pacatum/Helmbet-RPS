@@ -402,13 +402,7 @@ public class GameScreenView : BaseCanvasView {
     }
 
     void GameComplete( MatchContainer match, GameContainer game ) {
-        if ( !gameObject.activeSelf ) {
-            return;
-        }
-        if ( TournamentManager.Instance.CurrentTournament == null ) {
-            return;
-        }
-        if ( !match.Tournament.Equals( TournamentManager.Instance.CurrentTournament.Id ) ) {
+        if ( !gameObject.activeSelf ||  TournamentManager.Instance.CurrentTournament == null || !match.Tournament.Equals( TournamentManager.Instance.CurrentTournament.Id )) {
             return;
         }
 
@@ -435,7 +429,7 @@ public class GameScreenView : BaseCanvasView {
     }
 
     IEnumerator BackToIdleCoroutine( float delay, MatchContainer match, GameContainer game ) {
-        yield return new WaitForSecondsRealtime( delay );
+        yield return new WaitForSecondsRealtime( 1f );
         if ( game.Result == GameResult.Win ) {
             AudioManager.Instance.PlayWinSound();
         } else if ( game.Result == GameResult.Lose ) {
@@ -444,6 +438,7 @@ public class GameScreenView : BaseCanvasView {
         UpdateGameUi( match );
         playerHand.SetTrigger( "idle" );
         opponentHand.SetTrigger( "idle" );
+        yield return new WaitForSecondsRealtime(1f);
     }
 
     void UpdateTimer() {

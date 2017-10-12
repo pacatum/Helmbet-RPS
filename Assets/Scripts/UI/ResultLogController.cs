@@ -16,9 +16,8 @@ public class ResultLogController : MonoBehaviour {
     List<GameButtonView> steps = new List<GameButtonView>();
     List<RoundItemView> roundItemViews = new List<RoundItemView>();
 
-    
-    public void LogNewRound( int roundNumber, Gesture? anotherPlayerChoise, Gesture? thisPlayerChoise,
-                             GameResult state ) {
+
+    public void LogNewRound( int roundNumber, Gesture? anotherPlayerChoise, Gesture? thisPlayerChoise, GameResult state ) {
         var logInstance = Instantiate( roundIreItemViewPrefab ).GetComponent<RoundItemView>();
         logInstance.UpdateItem( roundNumber, anotherPlayerChoise, thisPlayerChoise, state );
         logInstance.transform.SetParent( transform, false );
@@ -33,11 +32,13 @@ public class ResultLogController : MonoBehaviour {
         anotherPlayerStep.transform.SetParent( anotherPlayerStepsContainer, false );
         anotherPlayerStep.transform.SetAsFirstSibling();
 
-        var height = ( opponentStepPrefab.GetComponent<RectTransform>().rect.height + 3f ) * anotherPlayerStepsContainer.transform.childCount + 7f;
-        scrollContent.sizeDelta = new Vector2( scrollContent.sizeDelta.x, height );
 
         steps.Add( thisPlayerStep );
         steps.Add( anotherPlayerStep );
+
+        var height = 75f * steps.Count / 2 + 7f;
+
+        scrollContent.sizeDelta = new Vector2( scrollContent.sizeDelta.x, height );
         roundItemViews.Add( logInstance );
     }
 

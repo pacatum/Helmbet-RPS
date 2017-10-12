@@ -94,7 +94,7 @@ public class GameHeaderView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         closeSoundView.gameObject.SetActive(false);
         soundButton.CurrentState = GameHeaderButtonState.HeaderHover;
         volumeSettingView.SetActive(false);
-        SetNormalState();
+        //SetNormalState();
     }
 
 }
