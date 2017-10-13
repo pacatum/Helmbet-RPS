@@ -29,7 +29,8 @@ namespace Base.Config {
 			{ "Base",			new NetworkParameters( "TEST",  "TEST", "f34fcd74a151676cfce5121f37c4c3257821cd6754239a3f9c63023018cdd710" ) },
 			{ "BaseDev",		new NetworkParameters( "TEST",  "TEST", "f34fcd74a151676cfce5121f37c4c3257821cd6754239a3f9c63023018cdd710" ) },
 			{ "PPY2T",			new NetworkParameters( "PPY2T", "PPY",  "ecbdc74d20aa1d4bab31b7c2152f505cf0c732e69c55643319cd8e41960f43df" ) },
-			{ "PPYTEST",		new NetworkParameters( "PPYTEST", "PPYTEST",  "be6b79295e728406cbb7494bcb626e62ad278fa4018699cf8f75739f4c1a81fd" ) }
+			{ "PPYTEST",		new NetworkParameters( "PPYTEST", "PPYTEST",  "be6b79295e728406cbb7494bcb626e62ad278fa4018699cf8f75739f4c1a81fd" ) },
+			{ "PPY",			new NetworkParameters( "PPY", "PPY",  "6b6b5f0ce7a36d323768e534f3edb41c6d6332a541a95725b98e28d140850134" ) }
 		};
 
 		static string coreAsset = "CORE";

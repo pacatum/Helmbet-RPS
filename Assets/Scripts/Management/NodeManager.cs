@@ -68,7 +68,17 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	}
 
 	void InitConnection() {
-		ConnectTo( SelecteHost, result => { } );
+		var host = SelecteHost;
+		if ( host.IsNull() || (host = host.Trim()).IsNullOrEmpty() ) {
+			return;
+		}
+		var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
+		var scheme = parts.First();
+		host = parts.Last();
+		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
+			return;
+		}
+		ConnectionManager.Instance.ReconnectTo( SelecteHost );
 	}
 
 	bool Validation( string host ) {
@@ -114,7 +124,7 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			yield return ping;
 			if ( ping.error.IsNull() ) {
 				host = scheme + ConnectionManager.SEPARATOR + host;
-				ConnectionManager.Instance.ReconnectTo( SelecteHost = host );
+				ConnectionManager.Instance.ReconnectTo( SelecteHost = host ); // save new host only if them exist
 				resultCallback.Invoke( ConnectResult.Ok );
 			} else {
 				resultCallback.Invoke( ConnectResult.BadRequest );
