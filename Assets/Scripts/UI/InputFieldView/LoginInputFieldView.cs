@@ -19,7 +19,7 @@ public class LoginInputFieldView : InputFieldView {
             }
         }
 
-        if ( expectedString.IsMatch( inputText ) && Char.IsLetterOrDigit( inputText[inputText.Length - 1] ) && ContainDigitOrSeparator( inputText ) ) {
+        if ( expectedString.IsMatch( inputText )) {
             ActiveHint( false );
             IsValidate = true;
         } else {

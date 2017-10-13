@@ -7,7 +7,8 @@ public class SettingsApiView : BaseCanvasView {
 
     public event Action OnCalcelClick;
 
-    [Header( "Remove Websocket Api" )] [SerializeField] SettingApiRemoveController settingApiRemoveController;
+    [Header( "Remove Websocket Api" )]
+    [SerializeField] SettingApiRemoveController settingApiRemoveController;
     [SerializeField] SettingApiAddController settingApiAddController;
     [SerializeField] Dropdown apiConnectionDropDown;
     [SerializeField] ScreenLoader screenLoader;
@@ -29,8 +30,11 @@ public class SettingsApiView : BaseCanvasView {
 
     public override void Show() {
         base.Show();
+        settingApiAddController.HideExpandPanel();
+        settingApiRemoveController.HideExpandPanel();
         InitDropdown();
     }
+
 
     void InitDropdown() {
         apiConnectionDropDown.ClearOptions();

@@ -16,6 +16,7 @@ public class LoginView : BaseCanvasView {
 	[SerializeField] LoginButtonView loginBtn;
     [SerializeField] Button registrationButton;
     [SerializeField] Button linkButton;
+    [SerializeField] Button settingsButton;
     [SerializeField] ScreenLoader loader;
     [SerializeField] string connectionURL;
 
@@ -36,7 +37,12 @@ public class LoginView : BaseCanvasView {
 		passwordInputField.OnValueChange += CheckInputs;
         registrationButton.onClick.AddListener( OpenRegistrationPageInBrowser );
         linkButton.onClick.AddListener( OpenRegistrationPageInBrowser );
+        settingsButton.onClick.AddListener( ShowSettings );
         CheckInputs();
+    }
+
+    void ShowSettings() {
+        UIManager.Instance.CurrentState = UIManager.ScreenState.Settings;
     }
 
     void OpenRegistrationPageInBrowser() {
