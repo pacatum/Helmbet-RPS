@@ -15,6 +15,8 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	}
 
 
+	public static Action<string> OnSelecteHostChanged;
+
 	const string SELECTED_HOST = "host";
 	const string HOSTS_LIST = "hosts_list";
 
@@ -45,6 +47,9 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		private set {
 			PlayerPrefs.SetString( SELECTED_HOST, value );
 			PlayerPrefs.Save();
+			if ( !OnSelecteHostChanged.IsNull() ) {
+				OnSelecteHostChanged( value );
+			}
 		}
 	}
 
