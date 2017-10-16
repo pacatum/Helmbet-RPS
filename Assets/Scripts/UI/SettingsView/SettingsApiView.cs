@@ -13,6 +13,9 @@ public class SettingsApiView : BaseCanvasView {
     [SerializeField] Dropdown apiConnectionDropDown;
     [SerializeField] ScreenLoader screenLoader;
 
+    [SerializeField] Sprite currentItemColor;
+    [SerializeField] Sprite normalItemColor;
+
     MessagePopupView messagePopupView;
     string prevoiusSelectApi = "";
 
@@ -32,16 +35,22 @@ public class SettingsApiView : BaseCanvasView {
         base.Show();
         settingApiAddController.HideExpandPanel();
         settingApiRemoveController.HideExpandPanel();
+        NodeManager.OnSelecteHostChanged += OnDropdown_Init;
         InitDropdown();
     }
 
 
+    void OnDropdown_Init( string host ) {
+        InitDropdown();
+    }
+
     void InitDropdown() {
         apiConnectionDropDown.ClearOptions();
         foreach ( var host in NodeManager.Instance.Hosts ) {
-            Dropdown.OptionData option = new Dropdown.OptionData( ( host ) );
+            Dropdown.OptionData option = new Dropdown.OptionData(  host, host.Equals( NodeManager.Instance.SelecteHost ) ? currentItemColor :normalItemColor );
             apiConnectionDropDown.AddOptions( new List<Dropdown.OptionData>() { option } );
-        }
+            }
+        
         if ( prevoiusSelectApi == "" ) {
             prevoiusSelectApi = apiConnectionDropDown.captionText.text;
         }
