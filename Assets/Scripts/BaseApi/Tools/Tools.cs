@@ -502,6 +502,30 @@ namespace Tools {
 			}
 			return a[ a.Length - 1 ];
 		}
+
+		public static T Next<T>( this T[] a, T o ) where T : class {
+			if ( a.IsNullOrEmpty() ) {
+				return null;
+			}
+			for ( var i = 0; i < a.Length; i++ ) {
+				if ( a[ i ].Equals( o ) ) {
+					return a[ (i + 1) % a.Length ];
+				}
+			}
+			return null;
+		}
+
+		public static T Previous<T>( this T[] a, T o ) where T : class {
+			if ( a.IsNullOrEmpty() ) {
+				return null;
+			}
+			for ( var i = 0; i < a.Length; i++ ) {
+				if ( a[ i ].Equals( o ) ) {
+					return a[ (i - 1 + a.Length) % a.Length ];
+				}
+			}
+			return null;
+		}
 		#endregion
 
 		#region DateTime

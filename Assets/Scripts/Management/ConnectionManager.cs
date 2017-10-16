@@ -16,6 +16,9 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 	static public event Action<Connection> OnConnectionOpened;
 	static public event Action<Connection> OnConnectionClosed;
 	static public event Action<Connection, Response> OnMessageReceived;
+	static public event Action<string> OnConnectionAttemptsDone;
+
+	const int MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE = 20;
 
 	public const string HTTP = "http://";
 	public const string WSS = "wss://";
@@ -23,12 +26,12 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 	public const string SEPARATOR = "://";
 	public const string DOT = ".";
 
-
+	[SerializeField] bool pingHostBeforeConnecting = true;
 	[SerializeField] float delayBetweenTryConnect = 5f;
 	[SerializeField] int tryConnectCount = 5;
 	[SerializeField] bool sendFromIndividualThread = false;
 
-	string host = string.Empty;
+	string url = string.Empty;
 	float lastTryConnectTime;
 	int connectAttempts;
 	bool connectProcessing;
@@ -37,10 +40,13 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 	static Connection openConnection;
 
 
+	public static string PingUrl {
+		get { return HTTP + "www.google.com/"; }
+	}
+
 	void Update() {
 		if ( !openConnection.IsNull() ) {
-			//openConnection.DequeuOneReceivedMessage();
-			openConnection.DequeuReceivedMessages( 20 );
+			openConnection.DequeuReceivedMessages( MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE );
 		}
 	}
 
@@ -61,14 +67,6 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 		OnConnectionClosed = null;
 		OnMessageReceived = null;
 		base.OnDestroy();
-	}
-
-	string Url {
-		get { return host; }
-	}
-
-	public string PingUrl {
-		get { return HTTP + "www.google.com/"; }// host + "/ping"; }
 	}
 
 	// call when client connect to server successful
@@ -149,7 +147,7 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 	}
 
 	public bool InitConnect() {
-		if ( Url.IsNull() || Url.Equals( string.Empty ) ) {
+		if ( url.IsNull() || url.Equals( string.Empty ) ) {
 			return false;
 		}
 		if ( connectProcessing ) {
@@ -160,20 +158,31 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 				return false;
 			}
 			connectAttempts = 0;
+			if ( !OnConnectionAttemptsDone.IsNull() ) {
+				OnConnectionAttemptsDone( url );
+				return false;
+			}
 		}
-		connectProcessing = true;
-		StartCoroutine( TryConnect() );
+		if ( pingHostBeforeConnecting ) {
+			connectProcessing = true;
+			StartCoroutine( PingAndConnect( url ) );
+		} else {
+			lastServerAvaliableFlag = true;
+			Connect( url );
+			lastTryConnectTime = Time.realtimeSinceStartup;
+			connectAttempts++;
+		}
 		return true;
 	}
 
-	public void ReconnectTo( string newHost ) {
-		if ( newHost.IsNull() || newHost.Equals( string.Empty ) ) {
+	public void ReconnectTo( string newUrl ) {
+		if ( newUrl.IsNull() || newUrl.Equals( string.Empty ) ) {
 			return;
 		}
-		if ( newHost.Equals( host ) ) {
+		if ( newUrl.Equals( url ) ) {
 			return;
 		}
-		host = newHost;
+		url = newUrl;
 		Disconnect( true );
 		lastServerAvaliableFlag = false;
 		InitConnect();
@@ -188,28 +197,32 @@ public sealed class ConnectionManager : SingletonMonoBehaviour<ConnectionManager
 		}
 	}
 
-	IEnumerator TryConnect() {
-		var parts = Url.Split( new [] { SEPARATOR }, StringSplitOptions.None );
+	IEnumerator PingAndConnect( string targetHost ) {
+		var parts = targetHost.Split( new [] { SEPARATOR }, StringSplitOptions.None );
 		var scheme = parts.First();
 		var host = parts.Last();
-		var request = new WWW( HTTP + host );
-		yield return request;
-		if ( (lastServerAvaliableFlag = request.error.IsNull()) ) {
-			lastTryConnectTime = Time.realtimeSinceStartup;
-			connectAttempts++;
-			if ( openConnection.IsNull() ) {
-				openConnection = new Connection( scheme + SEPARATOR + host, sendFromIndividualThread );
-				openConnection.ConnectionOpened += ConnectionOpened;
-				openConnection.ConnectionClosed += ConnectionClosed;
-				openConnection.MessageReceived += MessageReceived;
-				if ( !OnConnectionChanged.IsNull() ) {
-					OnConnectionChanged( openConnection );
-				}
-			}
-			openConnection.Connect();
+		var pindHostRequest = new WWW( HTTP + host );
+		yield return pindHostRequest;
+		if ( (lastServerAvaliableFlag = pindHostRequest.error.IsNull()) ) {
+			Connect( scheme + SEPARATOR + host );
 		} else {
-			Unity.Console.DebugError( "ConnectionManager", "TryConnect()", "Host", Url, "doesn't pinging.", "Error -", request.error );
+			Unity.Console.DebugError( "ConnectionManager", "TryConnect()", "Host", host, "doesn't pinging.", "Error -", pindHostRequest.error );
 		}
+		lastTryConnectTime = Time.realtimeSinceStartup;
+		connectAttempts++;
 		connectProcessing = false;
+	}
+
+	void Connect( string targetHost ) {
+		if ( openConnection.IsNull() ) {
+			openConnection = new Connection( targetHost, sendFromIndividualThread );
+			openConnection.ConnectionOpened += ConnectionOpened;
+			openConnection.ConnectionClosed += ConnectionClosed;
+			openConnection.MessageReceived += MessageReceived;
+			if ( !OnConnectionChanged.IsNull() ) {
+				OnConnectionChanged( openConnection );
+			}
+		}
+		openConnection.Connect();
 	}
 }

@@ -103,9 +103,9 @@ public sealed class ApiManager : SingletonMonoBehaviour<ApiManager>, ISender {
 	void ConnectionOpened( Response response ) {
 		Unity.Console.DebugLog( "ApiManager class", Unity.Console.SetMagentaColor( "Regular Callback:" ), "ConnectionOpened()" );
 		InitializeApi( LoginApi.Create( this ) );
-		response.SendResultData<string>( reason => {
+		response.SendResultData<string>( url => {
 			if ( OnConnectionOpened != null ) {
-				OnConnectionOpened.Invoke( reason );
+				OnConnectionOpened.Invoke( url );
 			}
 		} );
 	}

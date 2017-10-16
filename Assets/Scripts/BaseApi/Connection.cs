@@ -252,7 +252,7 @@ namespace Base {
 				if ( !wsScheme.Equals( "wss" ) && !wsScheme.Equals( "ws" ) ) {
 					wsScheme = serverUri.Scheme.Equals( Uri.UriSchemeHttps ) ? "wss" : "ws";
 				}
-				webSocket = new WebSocket( string.Format( "{0}://{1}/ws", wsScheme, serverUri.Host ) );
+				webSocket = new WebSocket( string.Format( "{0}://{1}/ws", wsScheme, serverUri.Host + ((serverUri.Port > 0) ? (":" + serverUri.Port) : string.Empty) ) );
 				webSocket.SslConfiguration.ServerCertificateValidationCallback = ( sender, certificate, chain, sslPolicyErrors ) => true;
 				webSocket.OnOpen += WebSocketOpened;
 				webSocket.OnClose += WebSocketClose;
@@ -282,7 +282,7 @@ namespace Base {
 			if ( !ConnectionOpened.IsNull() ) {
 				ConnectionOpened( this );
 			}
-			receivedQueue.Enqueue( Response.Open( FullUrl ) );
+			receivedQueue.Enqueue( Response.Open( Url ) );
 		}
 
 		void WebSocketMessageReceived( object sender, MessageEventArgs e ) {

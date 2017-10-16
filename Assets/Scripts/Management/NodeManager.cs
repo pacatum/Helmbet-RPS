@@ -18,14 +18,14 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	const string SELECTED_HOST = "host";
 	const string HOSTS_LIST = "hosts_list";
 
-	[SerializeField] string defaultHost = "http://";
+	[SerializeField] string[] defaultHosts = new string[ 0 ];
 	[SerializeField] bool resetAtStart;
 
 
 	public string[] Hosts {
 		get {
 			if ( !PlayerPrefs.HasKey( HOSTS_LIST ) ) {
-				PlayerPrefs.SetString( HOSTS_LIST, JsonConvert.SerializeObject( new [] { defaultHost } ) );
+				PlayerPrefs.SetString( HOSTS_LIST, JsonConvert.SerializeObject( defaultHosts ?? new string[ 0 ] ) );
 			}
 			return JsonConvert.DeserializeObject<string[]>( PlayerPrefs.GetString( HOSTS_LIST ) );
 		}
@@ -38,7 +38,7 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	public string SelecteHost {
 		get {
 			if ( !PlayerPrefs.HasKey( SELECTED_HOST ) ) {
-				PlayerPrefs.SetString( SELECTED_HOST, defaultHost );
+				PlayerPrefs.SetString( SELECTED_HOST, defaultHosts.IsNullOrEmpty() ? string.Empty : defaultHosts[ 0 ] );
 			}
 			return PlayerPrefs.GetString( SELECTED_HOST );
 		}
@@ -55,13 +55,17 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			ResetAll();
 		}
 #endif
-		if ( !Hosts.Contains( defaultHost ) ) {
-			ResetAll();
+		foreach ( var defaultHost in defaultHosts ) {
+			if ( !Hosts.Contains( defaultHost ) ) {
+				ResetAll();
+				break;
+			}
 		}
 		InitConnection();
 	}
 
 	void ResetAll() {
+		Unity.Console.DebugError( "NodeManager", "ResetAll()", "Reset all saved hosts" );
 		PlayerPrefs.DeleteKey( HOSTS_LIST );
 		PlayerPrefs.DeleteKey( SELECTED_HOST );
 		PlayerPrefs.Save();
@@ -78,7 +82,19 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
 			return;
 		}
+		if ( IsDefault( SelecteHost ) ) {
+			SelecteHost = defaultHosts.Next( SelecteHost );
+		}
 		ConnectionManager.Instance.ReconnectTo( SelecteHost );
+		ConnectionManager.OnConnectionAttemptsDone -= ConnectionAttemptsDone;
+		ConnectionManager.OnConnectionAttemptsDone += ConnectionAttemptsDone;
+	}
+
+	void ConnectionAttemptsDone( string host ) {
+		if ( IsDefault( SelecteHost ) ) {
+			SelecteHost = defaultHosts.Next( SelecteHost );
+			ConnectionManager.Instance.ReconnectTo( SelecteHost );
+		}
 	}
 
 	bool Validation( string host ) {
@@ -96,25 +112,23 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	}
 
 	public bool IsDefault( string host ) {
-		return defaultHost.Equals( host );
+		return !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains( host );
 	}
 
 	public bool ConnectTo( string host, Action<ConnectResult> resultCallback ) {
 		if ( host.IsNull() || (host = host.Trim()).IsNullOrEmpty() ) {
 			return false;
 		}
-		var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
-		var scheme = parts.First();
-		host = parts.Last();
+		host = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
 		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
 			return false;
 		}
-		StartCoroutine( TryConnectTo( scheme + ConnectionManager.SEPARATOR + host, resultCallback ) );
+		StartCoroutine( TryConnectTo( host, resultCallback ) );
 		return true;
 	}
 
 	IEnumerator TryConnectTo( string host, Action<ConnectResult> resultCallback ) {
-		var ping = new WWW( ConnectionManager.Instance.PingUrl );
+		var ping = new WWW( ConnectionManager.PingUrl );
 		yield return ping;
 		if ( ping.error.IsNull() ) {
 			var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
@@ -124,7 +138,8 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			yield return ping;
 			if ( ping.error.IsNull() ) {
 				host = scheme + ConnectionManager.SEPARATOR + host;
-				ConnectionManager.Instance.ReconnectTo( SelecteHost = host ); // save new host only if them exist
+				SelecteHost = host; // save new host only if them exist
+				ConnectionManager.Instance.ReconnectTo( host );
 				resultCallback.Invoke( ConnectResult.Ok );
 			} else {
 				resultCallback.Invoke( ConnectResult.BadRequest );
@@ -151,7 +166,7 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	}
 
 	public bool RemoveHost( string host ) {
-		if ( defaultHost.Equals( host ) ) {
+		if ( !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains( host ) ) {
 			return false;
 		}
 		var currentHosts = Hosts;
