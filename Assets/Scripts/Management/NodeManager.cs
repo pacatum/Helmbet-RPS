@@ -129,7 +129,7 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			return false;
 		}
 		host = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
-		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
+        if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
 			return false;
 		}
 		StartCoroutine( TryConnectTo( host, resultCallback ) );

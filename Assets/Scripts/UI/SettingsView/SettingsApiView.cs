@@ -28,45 +28,57 @@ public class SettingsApiView : BaseCanvasView {
         apiConnectionDropDown.onValueChanged.AddListener( delegate( int value ) { ChangeApiConnection( value ); } );
         settingApiAddController.OnApiAdded += InitDropdown;
         settingApiRemoveController.OnApiRemoved += InitDropdown;
-        InitDropdown();
     }
 
     public override void Show() {
         base.Show();
         settingApiAddController.HideExpandPanel();
         settingApiRemoveController.HideExpandPanel();
-        NodeManager.OnSelecteHostChanged += OnDropdown_Init;
         InitDropdown();
+        NodeManager.OnSelecteHostChanged += OnDropdown_Init;
     }
 
+    public override void Hide() {
+        NodeManager.OnSelecteHostChanged -= OnDropdown_Init;
+        base.Hide();
+    }
 
     void OnDropdown_Init( string host ) {
+       // Debug.LogError( "On DROPDOWN INIT " +  host);
         InitDropdown();
     }
+
+    List<Dropdown.OptionData> optionDatas = new List<Dropdown.OptionData>();
 
     void InitDropdown() {
         apiConnectionDropDown.ClearOptions();
+        optionDatas.Clear();
+        //Debug.LogError( "CURRENT HOST: " + NodeManager.Instance.SelecteHost );
         foreach ( var host in NodeManager.Instance.Hosts ) {
-            Dropdown.OptionData option = new Dropdown.OptionData(  host, host.Equals( NodeManager.Instance.SelecteHost ) ? currentItemColor :normalItemColor );
-            apiConnectionDropDown.AddOptions( new List<Dropdown.OptionData>() { option } );
+            Dropdown.OptionData option = new Dropdown.OptionData( host, host.Equals( NodeManager.Instance.SelecteHost ) ? currentItemColor : normalItemColor );
+
+            if ( !host.Equals( NodeManager.Instance.SelecteHost ) ) {
+                optionDatas.Add( option );
+            } else {
+                optionDatas.Insert( 0, option );
             }
-        
+        }
+
+        apiConnectionDropDown.AddOptions( optionDatas );
         if ( prevoiusSelectApi == "" ) {
             prevoiusSelectApi = apiConnectionDropDown.captionText.text;
-        }
-        if ( !prevoiusSelectApi.Equals( apiConnectionDropDown.captionText.text ) ) {
-            apiConnectionDropDown.value = 0;
-            ChangeApiConnection( 0 );
         }
     }
 
     void ChangeApiConnection( int value ) {
         var selectedApi = apiConnectionDropDown.options[value].text;
+        //Debug.LogError( "selected api: " + selectedApi );
         screenLoader.IsLoading = true;
         NodeManager.Instance.ConnectTo( selectedApi, ConnectResultCallback );
     }
 
     void ConnectResultCallback( NodeManager.ConnectResult result ) {
+        //Debug.LogError("result callback");
         screenLoader.IsLoading = false;
         if ( result == NodeManager.ConnectResult.Ok ) {
             prevoiusSelectApi = apiConnectionDropDown.captionText.text;
@@ -75,8 +87,8 @@ public class SettingsApiView : BaseCanvasView {
         } else if ( result == NodeManager.ConnectResult.BadRequest ) {
             messagePopupView.SerErrorPopup( "BAD REQUEST!" );
 
-            apiConnectionDropDown.value = 0;
-            ChangeApiConnection( 0 );
+            //apiConnectionDropDown.value = 0;
+            //ChangeApiConnection( 0 );
         }
     }
 

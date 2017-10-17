@@ -12,14 +12,18 @@ public class ScreenLoader : MonoBehaviour {
 	public bool IsLoading {
 		get { return isLoading; }
 		set {
-			isLoading = value;
-		    currentTimeoutTimer = timeoutTimer;
-            if ( isLoading ) {
-                ShowLoader();
-                StartCoroutine( StopLoader() );
-            } else {
-                HideLoader();
-			}
+		    if ( value && isLoading ) {
+		        return;
+		    } else {
+                isLoading = value;
+		        currentTimeoutTimer = timeoutTimer;
+		        if ( isLoading ) {
+		            ShowLoader();
+		            StartCoroutine( StopLoader() );
+		        } else {
+		            HideLoader();
+		        }
+		    }
 		}
 	}
     
