@@ -60,12 +60,16 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			ResetAll();
 		}
 #endif
+		var hosts = Hosts;
 		foreach ( var defaultHost in defaultHosts ) {
-			if ( !Hosts.Contains( defaultHost ) ) {
+			if ( !hosts.Contains( defaultHost ) ) {
 				ResetAll();
 				break;
 			}
 		}
+	}
+
+	void Start() {
 		InitConnection();
 	}
 
