@@ -54,10 +54,10 @@ public class SettingsApiView : BaseCanvasView {
         apiConnectionDropDown.ClearOptions();
         optionDatas.Clear();
         //Debug.LogError( "CURRENT HOST: " + NodeManager.Instance.SelecteHost );
-        foreach ( var host in NodeManager.Instance.Hosts ) {
-            Dropdown.OptionData option = new Dropdown.OptionData( host, host.Equals( NodeManager.Instance.SelecteHost ) ? currentItemColor : normalItemColor );
+		foreach ( var host in NodeManager.Instance.Urls ) {
+			var option = new Dropdown.OptionData( host, host.Equals( NodeManager.Instance.SelecteUrl ) ? currentItemColor : normalItemColor );
 
-            if ( !host.Equals( NodeManager.Instance.SelecteHost ) ) {
+			if ( !host.Equals( NodeManager.Instance.SelecteUrl ) ) {
                 optionDatas.Add( option );
             } else {
                 optionDatas.Insert( 0, option );

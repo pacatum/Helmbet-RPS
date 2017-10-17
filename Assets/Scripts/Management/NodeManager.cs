@@ -17,35 +17,35 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 
 	public static Action<string> OnSelecteHostChanged;
 
-	const string SELECTED_HOST = "host";
-	const string HOSTS_LIST = "hosts_list";
+	const string SELECTED_HOST_KEY = "host";
+	const string HOSTS_LIST_KEY = "hosts_list";
 
 	[SerializeField] string[] defaultHosts = new string[ 0 ];
 	[SerializeField] bool resetAtStart;
 
 
-	public string[] Hosts {
+	public string[] Urls {
 		get {
-			if ( !PlayerPrefs.HasKey( HOSTS_LIST ) ) {
-				PlayerPrefs.SetString( HOSTS_LIST, JsonConvert.SerializeObject( defaultHosts ?? new string[ 0 ] ) );
+			if ( !PlayerPrefs.HasKey( HOSTS_LIST_KEY ) ) {
+				PlayerPrefs.SetString( HOSTS_LIST_KEY, JsonConvert.SerializeObject( defaultHosts ?? new string[ 0 ] ) );
 			}
-			return JsonConvert.DeserializeObject<string[]>( PlayerPrefs.GetString( HOSTS_LIST ) );
+			return JsonConvert.DeserializeObject<string[]>( PlayerPrefs.GetString( HOSTS_LIST_KEY ) );
 		}
 		private set {
-			PlayerPrefs.SetString( HOSTS_LIST, JsonConvert.SerializeObject( value.OrEmpty() ) );
+			PlayerPrefs.SetString( HOSTS_LIST_KEY, JsonConvert.SerializeObject( value.OrEmpty() ) );
 			PlayerPrefs.Save();
 		}
 	}
 
-	public string SelecteHost {
+	public string SelecteUrl {
 		get {
-			if ( !PlayerPrefs.HasKey( SELECTED_HOST ) ) {
-				PlayerPrefs.SetString( SELECTED_HOST, defaultHosts.IsNullOrEmpty() ? string.Empty : defaultHosts[ 0 ] );
+			if ( !PlayerPrefs.HasKey( SELECTED_HOST_KEY ) ) {
+				PlayerPrefs.SetString( SELECTED_HOST_KEY, defaultHosts.IsNullOrEmpty() ? string.Empty : defaultHosts[ 0 ] );
 			}
-			return PlayerPrefs.GetString( SELECTED_HOST );
+			return PlayerPrefs.GetString( SELECTED_HOST_KEY );
 		}
 		private set {
-			PlayerPrefs.SetString( SELECTED_HOST, value );
+			PlayerPrefs.SetString( SELECTED_HOST_KEY, value );
 			PlayerPrefs.Save();
 			if ( !OnSelecteHostChanged.IsNull() ) {
 				OnSelecteHostChanged( value );
@@ -60,9 +60,9 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 			ResetAll();
 		}
 #endif
-		var hosts = Hosts;
+		var urls = Urls;
 		foreach ( var defaultHost in defaultHosts ) {
-			if ( !hosts.Contains( defaultHost ) ) {
+			if ( !urls.Contains( defaultHost ) ) {
 				ResetAll();
 				break;
 			}
@@ -74,43 +74,39 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 	}
 
 	void ResetAll() {
-		Unity.Console.DebugError( "NodeManager", "ResetAll()", "Reset all saved hosts" );
-		PlayerPrefs.DeleteKey( HOSTS_LIST );
-		PlayerPrefs.DeleteKey( SELECTED_HOST );
+		Unity.Console.DebugError( "NodeManager", "ResetAll()", "Reset all saved hosts." );
+		PlayerPrefs.DeleteKey( HOSTS_LIST_KEY );
+		PlayerPrefs.DeleteKey( SELECTED_HOST_KEY );
 		PlayerPrefs.Save();
 	}
 
 	void InitConnection() {
-		var host = SelecteHost;
-		if ( host.IsNull() || (host = host.Trim()).IsNullOrEmpty() ) {
+		var url = SelecteUrl;
+		if ( url.IsNull() || (url = url.Trim()).IsNullOrEmpty() ) {
 			return;
 		}
-		var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
-		var scheme = parts.First();
-		host = parts.Last();
-		if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
+		if ( !Urls.Contains( url ) && !Urls.Contains( url ) ) {
 			return;
 		}
-		if ( IsDefault( SelecteHost ) ) {
-			SelecteHost = defaultHosts.Next( SelecteHost );
+		if ( IsDefault( SelecteUrl ) ) {
+			SelecteUrl = defaultHosts.Next( SelecteUrl );
 		}
-		ConnectionManager.Instance.ReconnectTo( SelecteHost );
+		ConnectionManager.Instance.ReconnectTo( SelecteUrl );
 		ConnectionManager.OnConnectionAttemptsDone -= ConnectionAttemptsDone;
 		ConnectionManager.OnConnectionAttemptsDone += ConnectionAttemptsDone;
 	}
 
-	void ConnectionAttemptsDone( string host ) {
-		if ( IsDefault( SelecteHost ) ) {
-			SelecteHost = defaultHosts.Next( SelecteHost );
-			ConnectionManager.Instance.ReconnectTo( SelecteHost );
+	void ConnectionAttemptsDone( string url ) {
+		if ( IsDefault( url ) ) {
+			ConnectionManager.Instance.ReconnectTo( SelecteUrl = defaultHosts.Next( url ) );
 		}
 	}
 
-	bool Validation( string host ) {
-		if ( !host.StartsWith( ConnectionManager.WSS, StringComparison.Ordinal ) ) {
+	bool Validation( string url ) {
+		if ( !url.StartsWith( ConnectionManager.WSS, StringComparison.Ordinal ) ) {
 			return false;
 		}
-		host = host.Replace( ConnectionManager.WSS, string.Empty );
+		var host = url.Replace( ConnectionManager.WSS, string.Empty );
 		if ( host.IsNullOrEmpty() ) {
 			return false;
 		}
@@ -120,35 +116,29 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		return true;
 	}
 
-	public bool IsDefault( string host ) {
-		return !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains( host );
+	public bool IsDefault( string url ) {
+		return !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains( url );
 	}
 
-	public bool ConnectTo( string host, Action<ConnectResult> resultCallback ) {
-		if ( host.IsNull() || (host = host.Trim()).IsNullOrEmpty() ) {
+	public bool ConnectTo( string url, Action<ConnectResult> resultCallback ) {
+		if ( url.IsNull() || (url = url.Trim()).IsNullOrEmpty() ) {
 			return false;
 		}
-		host = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
-        if ( !Hosts.Contains( ConnectionManager.WSS + host ) && !Hosts.Contains( ConnectionManager.WS + host ) ) {
+		if ( !Urls.Contains( url ) && !Urls.Contains( url ) ) {
 			return false;
 		}
-		StartCoroutine( TryConnectTo( host, resultCallback ) );
+		StartCoroutine( TryConnectTo( url, resultCallback ) );
 		return true;
 	}
 
-	IEnumerator TryConnectTo( string host, Action<ConnectResult> resultCallback ) {
+	IEnumerator TryConnectTo( string url, Action<ConnectResult> resultCallback ) {
 		var ping = new WWW( ConnectionManager.PingUrl );
 		yield return ping;
 		if ( ping.error.IsNull() ) {
-			var parts = host.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None );
-			var scheme = parts.First();
-			host = parts.Last();
-			ping = new WWW( ConnectionManager.HTTP + host );
+			ping = new WWW( ConnectionManager.HTTP + url.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last() );
 			yield return ping;
-			if ( ping.error.IsNull() ) {
-				host = scheme + ConnectionManager.SEPARATOR + host;
-				SelecteHost = host; // save new host only if them exist
-				ConnectionManager.Instance.ReconnectTo( host );
+			if ( IsDefault( url ) || ping.error.IsNull() ) {
+				ConnectionManager.Instance.ReconnectTo( SelecteUrl = url ); // save new host only if them exist
 				resultCallback.Invoke( ConnectResult.Ok );
 			} else {
 				resultCallback.Invoke( ConnectResult.BadRequest );
@@ -158,31 +148,30 @@ public sealed class NodeManager : SingletonMonoBehaviour<NodeManager> {
 		}
 	}
 
-	public bool AddHost( string newHost ) {
-		if ( newHost.IsNull() || (newHost = newHost.Trim()).IsNullOrEmpty() ) {
+	public bool AddHost( string url ) {
+		if ( url.IsNull() || (url = url.Trim()).IsNullOrEmpty() ) {
 			return false;
 		}
-		newHost = ConnectionManager.WSS + newHost.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last();
-		if ( !Validation( newHost ) ) {
+		if ( !Validation( ConnectionManager.WSS + url.Split( new [] { ConnectionManager.SEPARATOR }, StringSplitOptions.None ).Last() ) ) {
 			return false;
 		}
-		var currentHosts = Hosts;
-		if ( currentHosts.Contains( newHost ) ) {
+		var currentUrls = Urls;
+		if ( currentUrls.Contains( url ) ) {
 			return false;
 		}
-		Hosts = currentHosts.Add( newHost );
+		Urls = currentUrls.Add( url );
 		return true;
 	}
 
-	public bool RemoveHost( string host ) {
-		if ( !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains( host ) ) {
+	public bool RemoveHost( string url ) {
+		if ( IsDefault( url ) ) {
 			return false;
 		}
-		var currentHosts = Hosts;
-		if ( !currentHosts.Contains( host ) ) {
+		var currentUrls = Urls;
+		if ( !currentUrls.Contains( url ) ) {
 			return false;
 		}
-		Hosts = currentHosts.Remove( host );
+		Urls = currentUrls.Remove( url );
 		return true;
 	}
 }

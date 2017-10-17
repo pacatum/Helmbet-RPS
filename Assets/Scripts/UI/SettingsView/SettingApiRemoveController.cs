@@ -48,9 +48,9 @@ public class SettingApiRemoveController : MonoBehaviour {
 
     void InitDropdown() {
         dropdown.ClearOptions();
-        foreach ( var host in NodeManager.Instance.Hosts ) {
-            Dropdown.OptionData option = new Dropdown.OptionData( ( host ) );
-            dropdown.AddOptions( new List<Dropdown.OptionData>() { option } );
+        foreach ( var host in NodeManager.Instance.Urls ) {
+            var option = new Dropdown.OptionData( ( host ) );
+            dropdown.AddOptions( new List<Dropdown.OptionData> { option } );
         }
     }
 
