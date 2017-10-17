@@ -93,7 +93,7 @@ public class HistoryTournamentsListView : DashboardTabView {
                             tournamentsOnPages.Clear();
                             tournamentsOnPages.AddRange( filterResult.GetRange( 0, Math.Min( filterResult.Count, maxItemsOnPage * numberOfPages ) ) );
 
-                            StartCoroutine( UpdateTable( tournamentsOnPages ) );
+                            CoroutineManager.Instance.StartCoroutineMethod( UpdateTable( tournamentsOnPages ) );
 
                         } else {
                             ClearTournamentsItemViewList();

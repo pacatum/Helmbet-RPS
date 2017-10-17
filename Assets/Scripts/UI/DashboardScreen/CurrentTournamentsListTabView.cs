@@ -150,7 +150,7 @@ public class CurrentTournamentsListTabView : DashboardTabView {
                                                         tournamentsOnPages.Clear();
 
                                                         tournamentsOnPages.AddRange( resultTpurnamentList.GetRange( 0, Mathf.Min( resultTpurnamentList.Count, maxItemsOnPage * numberOfPages ) ) );
-                                                        StartCoroutine( UpdateTable( tournamentsOnPages ) );
+                                                        CoroutineManager.Instance.StartCoroutineMethod( UpdateTable( tournamentsOnPages ) );
                                                     } else {
                                                         ClearTournamentsItemViewList();
                                                         loader.IsLoading = false;
