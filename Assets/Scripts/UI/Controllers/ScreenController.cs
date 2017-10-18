@@ -18,8 +18,12 @@ public class ScreenController : SingletonMonoBehaviour<ScreenController> {
     void Update() {
         if ( Screen.width < minScreenWidth ) {
             Screen.SetResolution( minScreenWidth, Screen.height, false );
-        }else if ( Screen.height < minScreenHeight ) {
-            Screen.SetResolution(Screen.width, minScreenHeight, false);
+        } else if ( Screen.height < minScreenHeight ) {
+            Screen.SetResolution( Screen.width, minScreenHeight, false );
+        }
+
+        if ( Input.GetKey( KeyCode.LeftShift )  && Input.GetKey( KeyCode.Escape )) {
+            Application.Quit();
         }
     }
 
