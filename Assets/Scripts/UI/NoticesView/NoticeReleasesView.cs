@@ -30,7 +30,7 @@ public class NoticeReleasesView : BaseCanvasView {
 
     public override void Show() {
         base.Show();
-        releasesText.text = "Current version: Helmbet-RPS v" + UpdateManager.CURRENT_VERSION;
+		releasesText.text = "Current version: Helmbet-RPS v" + UpdateManager.CurrentVersion;
         UpdateButton.gameObject.SetActive( false );
         noticesButton.SetActive( false );
     }

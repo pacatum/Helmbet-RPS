@@ -140,8 +140,6 @@ public sealed class UpdateManager : SingletonMonoBehaviour<UpdateManager> {
 	}
 
 
-	public const string CURRENT_VERSION = "1.0.0";
-
 	const string DEFAULT_UPDATER = "ppcoreupdates";
 	const string LAST_CUSTOM_UPDATER_KEY = "last_custom_updater_key";
 
@@ -193,6 +191,10 @@ public sealed class UpdateManager : SingletonMonoBehaviour<UpdateManager> {
 		return CustomUpdater ?? DEFAULT_UPDATER;
 	}
 
+	public static string CurrentVersion {
+		get { return UnityEngine.Application.version + ".0"; }
+	}
+
 	public string CustomUpdater {
 		get {
 			if ( UnityEngine.PlayerPrefs.HasKey( LAST_CUSTOM_UPDATER_KEY ) ) {
@@ -214,7 +216,7 @@ public sealed class UpdateManager : SingletonMonoBehaviour<UpdateManager> {
 		ApiManager.Instance.History.GetAccountHistory( account.Id, fromId, 100, 0 ).Then( operations => {
 			if ( !operations.IsNullOrEmpty() ) {
 				Array.Sort( operations, OperationHistoryObject.Compare );
-				var currentVersion = new VersionInfo( CURRENT_VERSION );
+				var currentVersion = new VersionInfo( CurrentVersion );
 				var maxVersion = currentVersion;
 				for ( var i = 0; i < operations.Length; i++ ) {
 					var operationData = operations[ i ].Operation;
